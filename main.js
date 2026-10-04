@@ -28,7 +28,6 @@ let dentalData = null;
 let model = null;
 let frontView = null;
 
-// Wisdom teeth: source tooth to clone, eruption age, direction
 const thirdMolarData = {
   '38': { name: 'Lower Left Third Molar',  eruption: 17.0, upper: false, source: '37', side: 'left'  },
   '48': { name: 'Lower Right Third Molar', eruption: 18.0, upper: false, source: '47', side: 'right' },
@@ -44,21 +43,15 @@ Promise.all([
   dentalData = d;
   model = gltf.scene;
 
-  // ----- FIX 1: strip duplicate sub-mesh from tooth_36 and tooth_46 -----
+  // ----- FIX: hide extra overlapping shells on tooth_36 & tooth_46 -----
   ['tooth_36', 'tooth_46'].forEach(name => {
-    const group = model.getObjectByName(name);
-    if (!group) return;
-    const meshes = group.children.filter(c => c.isMesh);
-    if (meshes.length <= 2) return;
-    // Keep the two largest sub-meshes
-    meshes.sort((a, b) =>
-      (b.geometry.attributes.position.count) - (a.geometry.attributes.position.count));
-    for (let i = 2; i < meshes.length; i++) {
-      const m = meshes[i];
-      group.remove(m);
-      m.geometry.dispose();
+    const g = model.getObjectByName(name);
+    if (!g) return;
+    const meshes = g.children.filter(c => c.isMesh);
+    for (let i = 1; i < meshes.length; i++) {
+      meshes[i].visible = false;
     }
-    console.log(`Cleaned ${name}: kept 2 of ${meshes.length} sub-meshes`);
+    console.log(`Hid ${Math.max(0, meshes.length - 1)} extra shell(s) on ${name}`);
   });
 
   scene.add(model);
@@ -77,7 +70,6 @@ Promise.all([
   controls.target.copy(frontView.target);
   controls.update();
 
-  // Bone vs teeth material
   model.traverse(o => {
     if (!o.isMesh) return;
     let ancestor = o, groupName = '';
@@ -97,7 +89,6 @@ Promise.all([
     });
   });
 
-  // Register the 28 original teeth
   model.traverse(o => {
     const m = o.name.match(/^tooth_(\d{2})$/);
     if (!m) return;
@@ -111,7 +102,7 @@ Promise.all([
     };
   });
 
-  // ----- FIX 2: Place wisdom molars further back -----
+  // ----- Wisdom molars: tucked in behind 2nd molars, inside ramus -----
   for (const fdi in thirdMolarData) {
     const info = thirdMolarData[fdi];
     const src = teeth[info.source];
@@ -120,19 +111,17 @@ Promise.all([
     const clone = src.group.clone(true);
     clone.name = `tooth_${fdi}`;
 
-    // Posterior direction = -Z in this scene.
-    // Move behind the source molar by ~1 tooth-width plus small gap.
-    const posterior = maxDim * 0.20;
-    const sideInward = maxDim * 0.003;
-    const sideDir = info.side === 'left' ? +1 : -1;   // +X is the model's left side
+    const posterior  = maxDim * 0.13;   // close — inside ramus, not past bone
+    const sideInward = maxDim * 0.008;  // slightly inward toward arch
+    const sideDir = info.side === 'left' ? +1 : -1;
     const upDir = info.upper ? -1 : +1;
 
     clone.position.x += sideDir * sideInward;
-    clone.position.y += upDir * maxDim * 0.003;
+    clone.position.y += upDir * maxDim * 0.005;   // sink into bone
     clone.position.z -= posterior;
 
-    // Real third molars are close to the size of second molars
-    clone.scale.multiplyScalar(0.9);
+    // Smaller — impacted teeth are often smaller
+    clone.scale.multiplyScalar(0.75);
 
     src.group.parent.add(clone);
 
@@ -140,7 +129,7 @@ Promise.all([
       group: clone,
       data: { name: info.name, eruption: info.eruption },
       upper: info.upper,
-      baseScale: 0.9,
+      baseScale: 0.75,
     };
   }
 
