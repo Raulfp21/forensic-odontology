@@ -20,7 +20,7 @@ controls.maxDistance = 1;
 
 scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 const k = new THREE.DirectionalLight(0xffffff, 2); k.position.set(0.3, 0.5, 0.5); scene.add(k);
-const f = new THREE.DirectionalLight(0x88bbff, 1.2); f.position.set(-0.5, 0.1, 0.3); scene.add(f);
+const f = new THREE.DirectionalLight(0xffe0b0, 1.0); f.position.set(-0.5, 0.1, 0.3); scene.add(f);
 const r = new THREE.DirectionalLight(0xffffff, 0.8); r.position.set(0, -0.5, -0.3); scene.add(r);
 
 const teeth = {};
@@ -51,12 +51,32 @@ Promise.all([
   controls.target.copy(frontView.target);
   controls.update();
 
+  // Color bone (ivory) vs teeth (white)
   model.traverse(o => {
-    if (o.isMesh) {
-      o.material = new THREE.MeshStandardMaterial({
-        color: 0xffffff, roughness: 0.55, metalness: 0.05,
-      });
+    if (!o.isMesh) return;
+
+    // Walk up ancestors to find the identifying group name
+    let ancestor = o;
+    let groupName = '';
+    while (ancestor) {
+      if (/^tooth_\d{2}$/.test(ancestor.name) ||
+          ancestor.name === 'Mandible' ||
+          ancestor.name === 'Maxilla' ||
+          ancestor.name === 'Maxilla.l' ||
+          ancestor.name === 'Maxilla.r') {
+        groupName = ancestor.name;
+        break;
+      }
+      ancestor = ancestor.parent;
     }
+    const isTooth = /^tooth_\d{2}$/.test(groupName);
+
+    o.material = new THREE.MeshStandardMaterial({
+      color: isTooth ? 0xfafaf5 : 0xd9c79a,   // bright white teeth, ivory bone
+      roughness: isTooth ? 0.35 : 0.85,
+      metalness: 0.02,
+      emissive: isTooth ? 0x101010 : 0x000000,
+    });
   });
 
   model.traverse(o => {
@@ -71,7 +91,6 @@ Promise.all([
     };
   });
 
-  // Hide all teeth initially
   for (const fdi in teeth) teeth[fdi].group.visible = false;
 
   console.log(`Found ${Object.keys(teeth).length} teeth`);
@@ -83,27 +102,19 @@ Promise.all([
 
 function updateAge(age) {
   document.getElementById('age-value').textContent = age.toFixed(1);
-
   let visible = 0;
-
   for (const fdi in teeth) {
     const t = teeth[fdi];
-    const eruptAge = t.data.eruption;
-
-    if (age < eruptAge) {
+    if (age < t.data.eruption) {
       t.group.visible = false;
       t.group.scale.setScalar(1);
       continue;
     }
-
-    // 0.6-year smooth scale-in from 0.4 to 1.0
-    const p = THREE.MathUtils.clamp((age - eruptAge) / 0.6, 0, 1);
-    const s = 0.4 + 0.6 * p;
+    const p = THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
     t.group.visible = true;
-    t.group.scale.setScalar(s);
+    t.group.scale.setScalar(0.4 + 0.6 * p);
     visible++;
   }
-
   const total = Object.keys(teeth).length;
   const info = document.getElementById('tooth-info');
   if (visible === 0) info.textContent = 'No teeth erupted';
@@ -114,8 +125,7 @@ function updateAge(age) {
 document.getElementById('ageSlider')
   .addEventListener('input', e => updateAge(parseFloat(e.target.value)));
 
-// Reset view button (in case user gets lost)
-window.resetView = function() {
+window.resetView = function () {
   if (!frontView) return;
   camera.position.copy(frontView.cam);
   controls.target.copy(frontView.target);
