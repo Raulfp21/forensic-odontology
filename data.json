@@ -1,0 +1,32 @@
+{
+  "permanentTeeth": {
+    "11": { "name": "Upper Right Central Incisor",  "eruption": 7.0,  "calcComplete": 10.0 },
+    "12": { "name": "Upper Right Lateral Incisor",  "eruption": 8.0,  "calcComplete": 11.0 },
+    "13": { "name": "Upper Right Canine",           "eruption": 11.5, "calcComplete": 12.5 },
+    "14": { "name": "Upper Right First Premolar",   "eruption": 10.0, "calcComplete": 12.5 },
+    "15": { "name": "Upper Right Second Premolar",  "eruption": 11.0, "calcComplete": 13.0 },
+    "16": { "name": "Upper Right First Molar",      "eruption": 6.5,  "calcComplete": 9.5 },
+    "17": { "name": "Upper Right Second Molar",     "eruption": 13.0, "calcComplete": 15.0 },
+    "21": { "name": "Upper Left Central Incisor",   "eruption": 7.0,  "calcComplete": 10.0 },
+    "22": { "name": "Upper Left Lateral Incisor",   "eruption": 8.0,  "calcComplete": 11.0 },
+    "23": { "name": "Upper Left Canine",            "eruption": 11.5, "calcComplete": 12.5 },
+    "24": { "name": "Upper Left First Premolar",    "eruption": 10.0, "calcComplete": 12.5 },
+    "25": { "name": "Upper Left Second Premolar",   "eruption": 11.0, "calcComplete": 13.0 },
+    "26": { "name": "Upper Left First Molar",       "eruption": 6.5,  "calcComplete": 9.5 },
+    "27": { "name": "Upper Left Second Molar",      "eruption": 13.0, "calcComplete": 15.0 },
+    "31": { "name": "Lower Left Central Incisor",   "eruption": 6.0,  "calcComplete": 9.0 },
+    "32": { "name": "Lower Left Lateral Incisor",   "eruption": 7.0,  "calcComplete": 10.0 },
+    "33": { "name": "Lower Left Canine",            "eruption": 11.5, "calcComplete": 12.5 },
+    "34": { "name": "Lower Left First Premolar",    "eruption": 10.0, "calcComplete": 12.5 },
+    "35": { "name": "Lower Left Second Premolar",   "eruption": 11.0, "calcComplete": 13.0 },
+    "36": { "name": "Lower Left First Molar",       "eruption": 6.0,  "calcComplete": 9.5 },
+    "37": { "name": "Lower Left Second Molar",      "eruption": 12.0, "calcComplete": 15.0 },
+    "41": { "name": "Lower Right Central Incisor",  "eruption": 6.0,  "calcComplete": 9.0 },
+    "42": { "name": "Lower Right Lateral Incisor",  "eruption": 7.0,  "calcComplete": 10.0 },
+    "43": { "name": "Lower Right Canine",           "eruption": 11.5, "calcComplete": 12.5 },
+    "44": { "name": "Lower Right First Premolar",   "eruption": 10.0, "calcComplete": 12.5 },
+    "45": { "name": "Lower Right Second Premolar",  "eruption": 11.0, "calcComplete": 13.0 },
+    "46": { "name": "Lower Right First Molar",      "eruption": 6.0,  "calcComplete": 9.5 },
+    "47": { "name": "Lower Right Second Molar",     "eruption": 12.0, "calcComplete": 15.0 }
+  }
+}
