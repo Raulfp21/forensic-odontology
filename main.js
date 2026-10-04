@@ -28,12 +28,12 @@ let dentalData = null;
 let model = null;
 let frontView = null;
 
-// Extra data for wisdom teeth (not in data.json)
+// Wisdom teeth: source tooth to clone, eruption age, direction
 const thirdMolarData = {
-  '38': { name: 'Lower Left Third Molar',  eruption: 17.0, upper: false, source: '37' },
-  '48': { name: 'Lower Right Third Molar', eruption: 18.0, upper: false, source: '47' },
-  '18': { name: 'Upper Right Third Molar', eruption: 18.0, upper: true,  source: '17' },
-  '28': { name: 'Upper Left Third Molar',  eruption: 20.0, upper: true,  source: '27' },
+  '38': { name: 'Lower Left Third Molar',  eruption: 17.0, upper: false, source: '37', side: 'left'  },
+  '48': { name: 'Lower Right Third Molar', eruption: 18.0, upper: false, source: '47', side: 'right' },
+  '18': { name: 'Upper Right Third Molar', eruption: 18.0, upper: true,  source: '17', side: 'right' },
+  '28': { name: 'Upper Left Third Molar',  eruption: 20.0, upper: true,  source: '27', side: 'left'  },
 };
 
 const loader = new GLTFLoader();
@@ -43,6 +43,24 @@ Promise.all([
 ]).then(([d, gltf]) => {
   dentalData = d;
   model = gltf.scene;
+
+  // ----- FIX 1: strip duplicate sub-mesh from tooth_36 and tooth_46 -----
+  ['tooth_36', 'tooth_46'].forEach(name => {
+    const group = model.getObjectByName(name);
+    if (!group) return;
+    const meshes = group.children.filter(c => c.isMesh);
+    if (meshes.length <= 2) return;
+    // Keep the two largest sub-meshes
+    meshes.sort((a, b) =>
+      (b.geometry.attributes.position.count) - (a.geometry.attributes.position.count));
+    for (let i = 2; i < meshes.length; i++) {
+      const m = meshes[i];
+      group.remove(m);
+      m.geometry.dispose();
+    }
+    console.log(`Cleaned ${name}: kept 2 of ${meshes.length} sub-meshes`);
+  });
+
   scene.add(model);
 
   const box = new THREE.Box3().setFromObject(model);
@@ -65,9 +83,8 @@ Promise.all([
     let ancestor = o, groupName = '';
     while (ancestor) {
       if (/^tooth_\d{2}$/.test(ancestor.name) ||
-          ['Mandible', 'Maxilla', 'Maxilla.l', 'Maxilla.r'].includes(ancestor.name)) {
-        groupName = ancestor.name;
-        break;
+          ['Mandible','Maxilla','Maxilla.l','Maxilla.r'].includes(ancestor.name)) {
+        groupName = ancestor.name; break;
       }
       ancestor = ancestor.parent;
     }
@@ -80,7 +97,7 @@ Promise.all([
     });
   });
 
-  // Register the 28 model teeth
+  // Register the 28 original teeth
   model.traverse(o => {
     const m = o.name.match(/^tooth_(\d{2})$/);
     if (!m) return;
@@ -90,10 +107,11 @@ Promise.all([
       group: o,
       data: dentalData.permanentTeeth[fdi],
       upper: fdi.startsWith('1') || fdi.startsWith('2'),
+      baseScale: 1,
     };
   });
 
-  // Clone second molars as third molar placeholders
+  // ----- FIX 2: Place wisdom molars further back -----
   for (const fdi in thirdMolarData) {
     const info = thirdMolarData[fdi];
     const src = teeth[info.source];
@@ -102,35 +120,33 @@ Promise.all([
     const clone = src.group.clone(true);
     clone.name = `tooth_${fdi}`;
 
-    // Offset posteriorly (behind the source molar) and slightly inward
-    // Posterior direction is -Z in glTF (front is +Z)
-    const posterior = maxDim * 0.055;
-    const inward = maxDim * 0.005;
+    // Posterior direction = -Z in this scene.
+    // Move behind the source molar by ~1 tooth-width plus small gap.
+    const posterior = maxDim * 0.20;
+    const sideInward = maxDim * 0.003;
+    const sideDir = info.side === 'left' ? +1 : -1;   // +X is the model's left side
+    const upDir = info.upper ? -1 : +1;
 
-    // Which side (left/right)?  Left teeth = +X, right teeth = -X in this model
-    const leftSide = fdi === '28' || fdi === '38';
-    const sideDir = leftSide ? -1 : 1;
-    const upDir = info.upper ? 1 : -1;
-
-    clone.position.x += sideDir * inward;
-    clone.position.y += upDir * maxDim * 0.001;
+    clone.position.x += sideDir * sideInward;
+    clone.position.y += upDir * maxDim * 0.003;
     clone.position.z -= posterior;
 
-    // Slightly smaller (real wisdom teeth vary; often comparable but simplified)
-    clone.scale.multiplyScalar(0.85);
+    // Real third molars are close to the size of second molars
+    clone.scale.multiplyScalar(0.9);
 
     src.group.parent.add(clone);
 
     teeth[fdi] = {
       group: clone,
-      data: { name: info.name, eruption: info.eruption, calcComplete: 22.0 },
+      data: { name: info.name, eruption: info.eruption },
       upper: info.upper,
+      baseScale: 0.9,
     };
   }
 
   for (const fdi in teeth) teeth[fdi].group.visible = false;
 
-  console.log(`Registered ${Object.keys(teeth).length} teeth (28 original + 4 wisdom clones)`);
+  console.log(`Registered ${Object.keys(teeth).length} teeth`);
   document.getElementById('loading').classList.add('hidden');
   updateAge(0);
 }).catch(e => {
@@ -144,11 +160,11 @@ function updateAge(age) {
     const t = teeth[fdi];
     if (age < t.data.eruption) {
       t.group.visible = false;
-      t.group.scale.setScalar(t.group.userData.baseScale || 1);
+      t.group.scale.setScalar(t.baseScale || 1);
       continue;
     }
     const p = THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
-    const base = t.group.userData.baseScale || 1;
+    const base = t.baseScale || 1;
     t.group.visible = true;
     t.group.scale.setScalar(base * (0.4 + 0.6 * p));
     visible++;
@@ -156,12 +172,9 @@ function updateAge(age) {
   const total = Object.keys(teeth).length;
   const info = document.getElementById('tooth-info');
   if (visible === 0) info.textContent = 'No teeth erupted';
-  else if (visible === total) info.textContent = `All ${total} teeth present (including wisdom)`;
+  else if (visible === total) info.textContent = `All ${total} teeth present`;
   else info.textContent = `${visible} / ${total} teeth present`;
 }
-
-// Store the clone's initial scale so animation doesn't shrink it further
-// (Run once at setup — patch into the loader callback if needed)
 
 document.getElementById('ageSlider')
   .addEventListener('input', e => updateAge(parseFloat(e.target.value)));
