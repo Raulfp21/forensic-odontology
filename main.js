@@ -140,9 +140,16 @@ function buildScene(gltf) {
     else if (isBone)  { color = 0xd9c79a; roughness = 0.85; emissive = 0x000000; }
     else              { color = 0xd9c79a; roughness = 0.85; emissive = 0x000000; }
 
-    o.material = new THREE.MeshStandardMaterial({
-      color, roughness, metalness: 0.02, emissive,
-    });
+    if (isBone) {
+      o.material = new THREE.MeshStandardMaterial({
+        color: 0xd9c79a, roughness: 0.85, metalness: 0.02,
+        side: THREE.DoubleSide, shadowSide: THREE.DoubleSide,
+      });
+    } else {
+      o.material = new THREE.MeshStandardMaterial({
+        color, roughness, metalness: 0.02, emissive,
+      });
+    }
   });
 
   // ---- Register teeth ----

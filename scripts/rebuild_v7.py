@@ -7,6 +7,7 @@ bpy.ops.import_scene.gltf(filepath="/workspaces/forensic-odontology/models/anato
 DEC_DIR = "/workspaces/forensic-odontology/deciduous_clean"
 PERM_DIR = "/workspaces/forensic-odontology/deciduous_raw/models"
 DECIDUOUS_RATIO = 0.55
+MOLAR_SIZE_FACTOR = 0.85
 
 MOLAR_SWAPS = {
     "16": "maxillary_first_molar_with_cusp_of_carabelli.glb",
@@ -86,7 +87,7 @@ for fdi, srcfile in MOLAR_SWAPS.items():
 
     cur_center = world_center(new_meshes)
     cur_size = world_size(new_meshes)
-    auto_scale = tgt_size / cur_size
+    auto_scale = (tgt_size / cur_size) * MOLAR_SIZE_FACTOR
 
     M = Matrix.Translation(tgt_center) @ Matrix.Scale(auto_scale, 4) @ Matrix.Translation(-cur_center)
     for m in new_meshes:
