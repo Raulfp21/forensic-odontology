@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a0a);
@@ -55,8 +56,8 @@ fetch('./data.json')
   })
   .then(d => {
     dentalData = d;
-    setStatus('Data loaded. Loading anatomy.glb (12 MB)...');
-    return loadGLB('./models/anatomy' + ({v10:'_v10', v12:'_v12', v12:'_v12'}[new URLSearchParams(location.search).get('model')] || '_v12') + '.glb');
+    setStatus('Data loaded. Loading model...');
+    return loadGLB('./models/anatomy' + ({v10:'_v10_draco', v12:'_v12_draco'}[new URLSearchParams(location.search).get('model')] || '_v12_draco') + '.glb');
   })
   .then(gltf => {
     setStatus('Model loaded. Processing...');
@@ -77,6 +78,9 @@ fetch('./data.json')
 function loadGLB(url) {
   return new Promise((resolve, reject) => {
     const loader = new GLTFLoader();
+    const draco = new DRACOLoader();
+    draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+    loader.setDRACOLoader(draco);
     loader.load(
       url,
       g => resolve(g),

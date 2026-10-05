@@ -83,7 +83,9 @@
 
   <div id="loading">Loading anatomy model...</div>
 
-  <script type="importmap">
+  <script src="https://www.gstatic.com/draco/versioned/decoders/1.5.7/draco_decoder.js"></script>
+<script src="https://www.gstatic.com/draco/versioned/decoders/1.5.7/draco_wasm_wrapper.js"></script>
+<script type="importmap">
   {
     "imports": {
       "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
@@ -92,5 +94,9 @@
   }
   </script>
   <script type="module" src="./main.js"></script>
+<script type="module">
+  import "./apstrc.js";
+  window.APSRTC.init();
+</script>
 </body>
 </html>
