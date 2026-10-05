@@ -87,16 +87,16 @@ function nextQuestion(){
   host.innerHTML = `Question ${state.test.total+1} of 10 · Score ${state.test.correct}/${state.test.total}`;
 }
 function startTest(){ state.test={active:true,target:null,total:0,correct:0,locked:false}; state.mode='test'; nextQuestion(); }
-function open(){ state.open=true; document.getElementById('fdi-panel').classList.add('open'); }
-function close(){ state.open=false; document.getElementById('fdi-panel').classList.remove('open'); if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights(); state.currentFDI=null; }
+function open(){ state.open=true; if(window.__diagShow) window.__diagShow('[FDI] open'); document.getElementById('fdi-panel').classList.remove('hidden'); }
+function close(){ state.open=false; document.getElementById('fdi-panel').classList.add('hidden'); if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights(); state.currentFDI=null; }
 function injectStyles(){
   if(document.getElementById('fdi-styles')) return;
   const s=document.createElement('style'); s.id='fdi-styles';
   s.textContent=`
     #fdi-open{position:fixed;right:12px;bottom:150px;background:rgba(10,10,10,0.9);color:#60a5fa;border:1px solid #2a2a2a;border-radius:10px;padding:10px 14px;font-family:system-ui,sans-serif;font-size:0.78em;font-weight:600;cursor:pointer;z-index:30;}
     #fdi-open:active{background:rgba(96,165,250,0.15);}
-    #fdi-panel{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;flex-direction:column;justify-content:flex-end;z-index:50;font-family:system-ui,sans-serif;}
-    #fdi-panel.open{display:flex;}
+    #fdi-panel{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;justify-content:flex-end;z-index:200;font-family:system-ui,sans-serif;}
+    #fdi-panel.hidden{display:none;}
     #fdi-panel>.fdi-head,#fdi-panel>.fdi-arc,#fdi-panel>.fdi-chart-host,#fdi-panel>.fdi-info-host,#fdi-panel>.fdi-feedback-host{background:#0c0c0c;}
     #fdi-panel .fdi-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1a1a1a;}
     #fdi-panel .fdi-head h3{margin:0;font-size:0.85em;color:#60a5fa;font-weight:600;letter-spacing:0.5px;}
@@ -138,6 +138,7 @@ function init(){
   injectStyles();
   const openBtn=document.createElement('button'); openBtn.id='fdi-open'; openBtn.textContent='FDI Chart'; document.body.appendChild(openBtn);
   const panel=document.createElement('div'); panel.id='fdi-panel';
+  panel.classList.add("hidden");
   panel.innerHTML=`<div class="fdi-head"><h3>FDI TWO-DIGIT CHART</h3><div class="fdi-modes"><button data-mode="learn" class="active">Learn</button><button data-mode="test">Test</button><button data-mode="close">✕</button></div></div><div class="fdi-arc"><button data-arc="permanent" class="active">Permanent</button><button data-arc="deciduous">Deciduous</button></div><div class="fdi-chart-host"></div><div class="fdi-info-host"></div><div class="fdi-feedback-host"></div>`;
   document.body.appendChild(panel);
   const chartHost = panel.querySelector('.fdi-chart-host');
@@ -174,6 +175,7 @@ function init(){
   });
   openBtn.addEventListener('click',()=>{ state.open ? close() : open(); });
   panel.addEventListener('click', e => { if (e.target === panel) close(); });
+  if(window.__diagShow) window.__diagShow('[FDI] init done, button attached');
   console.log('FDIChart ready');
 }
 return { init, open, close };
