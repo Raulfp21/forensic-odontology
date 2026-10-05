@@ -165,24 +165,17 @@ function buildScene(gltf) {
     }
   });
 
-  // ---- Wisdom clones ----
-  const wisdomSources = { '38': '37', '48': '47', '18': '17', '28': '27' };
-  for (const fdi in dentalData.thirdMolars) {
-    const src = permanent[wisdomSources[fdi]];
-    if (!src) continue;
-    const clone = src.group.clone(true);
-    clone.name = `tooth_${fdi}`;
-    clone.position.x += (fdi === '28' || fdi === '38' ? 1 : -1) * maxDim * 0.008;
-    clone.position.y += (fdi === '18' || fdi === '28' ? -1 : 1) * maxDim * 0.005;
-    clone.position.z -= maxDim * 0.13;
-    clone.scale.multiplyScalar(0.75);
-    src.group.parent.add(clone);
-    wisdom[fdi] = { group: clone, data: dentalData.thirdMolars[fdi], baseScale: 0.75 };
-  }
-
   for (const fdi in deciduous) deciduous[fdi].group.visible = false;
   for (const fdi in permanent) permanent[fdi].group.visible = false;
   for (const fdi in wisdom) wisdom[fdi].group.visible = false;
+
+  if (new URLSearchParams(location.search).has('xray')) {
+    const isTooth = o => { for (let n = o; n; n = n.parent) if (/^tooth_/.test(n.name)) return true; return false; };
+    model.traverse(o => {
+      if (!o.isMesh || isTooth(o)) return;
+      o.material.transparent = true; o.material.opacity = 0.3; o.material.depthWrite = false;
+    });
+  }
 
   console.log(`Loaded: ${Object.keys(deciduous).length}D / ${Object.keys(permanent).length}P / ${Object.keys(wisdom).length}W`);
 }
