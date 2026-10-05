@@ -37,6 +37,7 @@ function growthScale(age) {
 const deciduous = {};
 const permanent = {};
 const wisdom = {};  // unused — teeth come from GLB
+const teeth = {};   // unified map for FDI chart API
 let dentalData = null;
 let frontView = null;
 let maxDim = 0.15;
@@ -180,6 +181,11 @@ function buildScene(gltf) {
       o.material.transparent = true; o.material.opacity = 0.3; o.material.depthWrite = false;
     });
   }
+
+  // Merge into unified teeth map for FDI chart API
+  for (const fdi in deciduous) teeth[fdi] = deciduous[fdi];
+  for (const fdi in permanent) teeth[fdi] = permanent[fdi];
+  for (const fdi in wisdom)    teeth[fdi] = wisdom[fdi];
 
   console.log(`Loaded: ${Object.keys(deciduous).length}D / ${Object.keys(permanent).length}P / ${Object.keys(wisdom).length}W`);
 }
