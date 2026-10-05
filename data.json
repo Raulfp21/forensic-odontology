@@ -1,72 +1,252 @@
 {
   "deciduousTeeth": {
-    "51": { "name": "Upper Right Deciduous Central Incisor", "eruption": 0.7, "fall": 6.5 },
-    "61": { "name": "Upper Left Deciduous Central Incisor",  "eruption": 0.7, "fall": 6.5 },
-    "71": { "name": "Lower Left Deciduous Central Incisor",  "eruption": 0.6, "fall": 6.5 },
-    "81": { "name": "Lower Right Deciduous Central Incisor", "eruption": 0.6, "fall": 6.5 },
-
-    "52": { "name": "Upper Right Deciduous Lateral Incisor", "eruption": 0.8, "fall": 7.5 },
-    "62": { "name": "Upper Left Deciduous Lateral Incisor",  "eruption": 0.8, "fall": 7.5 },
-    "72": { "name": "Lower Left Deciduous Lateral Incisor",  "eruption": 0.9, "fall": 7.5 },
-    "82": { "name": "Lower Right Deciduous Lateral Incisor", "eruption": 0.9, "fall": 7.5 },
-
-    "53": { "name": "Upper Right Deciduous Canine",          "eruption": 1.5, "fall": 11.5 },
-    "63": { "name": "Upper Left Deciduous Canine",           "eruption": 1.5, "fall": 11.5 },
-    "73": { "name": "Lower Left Deciduous Canine",           "eruption": 1.5, "fall": 10.5 },
-    "83": { "name": "Lower Right Deciduous Canine",          "eruption": 1.5, "fall": 10.5 },
-
-    "54": { "name": "Upper Right Deciduous First Molar",     "eruption": 1.2, "fall": 10.5 },
-    "64": { "name": "Upper Left Deciduous First Molar",      "eruption": 1.2, "fall": 10.5 },
-    "74": { "name": "Lower Left Deciduous First Molar",      "eruption": 1.1, "fall": 10.0 },
-    "84": { "name": "Lower Right Deciduous First Molar",     "eruption": 1.1, "fall": 10.0 },
-
-    "55": { "name": "Upper Right Deciduous Second Molar",    "eruption": 2.0, "fall": 11.0 },
-    "65": { "name": "Upper Left Deciduous Second Molar",     "eruption": 2.0, "fall": 11.0 },
-    "75": { "name": "Lower Left Deciduous Second Molar",     "eruption": 2.0, "fall": 11.0 },
-    "85": { "name": "Lower Right Deciduous Second Molar",    "eruption": 2.0, "fall": 11.0 }
+    "51": {
+      "name": "Upper Right Deciduous Central Incisor",
+      "eruption": 0.7,
+      "fall": 6.5
+    },
+    "61": {
+      "name": "Upper Left Deciduous Central Incisor",
+      "eruption": 0.7,
+      "fall": 6.5
+    },
+    "71": {
+      "name": "Lower Left Deciduous Central Incisor",
+      "eruption": 0.6,
+      "fall": 6.5
+    },
+    "81": {
+      "name": "Lower Right Deciduous Central Incisor",
+      "eruption": 0.6,
+      "fall": 6.5
+    },
+    "52": {
+      "name": "Upper Right Deciduous Lateral Incisor",
+      "eruption": 0.8,
+      "fall": 7.5
+    },
+    "62": {
+      "name": "Upper Left Deciduous Lateral Incisor",
+      "eruption": 0.8,
+      "fall": 7.5
+    },
+    "72": {
+      "name": "Lower Left Deciduous Lateral Incisor",
+      "eruption": 0.9,
+      "fall": 7.5
+    },
+    "82": {
+      "name": "Lower Right Deciduous Lateral Incisor",
+      "eruption": 0.9,
+      "fall": 7.5
+    },
+    "53": {
+      "name": "Upper Right Deciduous Canine",
+      "eruption": 1.5,
+      "fall": 11.5
+    },
+    "63": {
+      "name": "Upper Left Deciduous Canine",
+      "eruption": 1.5,
+      "fall": 11.5
+    },
+    "73": {
+      "name": "Lower Left Deciduous Canine",
+      "eruption": 1.5,
+      "fall": 10.5
+    },
+    "83": {
+      "name": "Lower Right Deciduous Canine",
+      "eruption": 1.5,
+      "fall": 10.5
+    },
+    "54": {
+      "name": "Upper Right Deciduous First Molar",
+      "eruption": 1.2,
+      "fall": 10.5
+    },
+    "64": {
+      "name": "Upper Left Deciduous First Molar",
+      "eruption": 1.2,
+      "fall": 10.5
+    },
+    "74": {
+      "name": "Lower Left Deciduous First Molar",
+      "eruption": 1.1,
+      "fall": 10.0
+    },
+    "84": {
+      "name": "Lower Right Deciduous First Molar",
+      "eruption": 1.1,
+      "fall": 10.0
+    },
+    "55": {
+      "name": "Upper Right Deciduous Second Molar",
+      "eruption": 2.0,
+      "fall": 11.0
+    },
+    "65": {
+      "name": "Upper Left Deciduous Second Molar",
+      "eruption": 2.0,
+      "fall": 11.0
+    },
+    "75": {
+      "name": "Lower Left Deciduous Second Molar",
+      "eruption": 2.0,
+      "fall": 11.0
+    },
+    "85": {
+      "name": "Lower Right Deciduous Second Molar",
+      "eruption": 2.0,
+      "fall": 11.0
+    }
   },
   "permanentTeeth": {
-    "36": { "name": "Lower Left First Molar",       "eruption": 6.0 },
-    "46": { "name": "Lower Right First Molar",      "eruption": 6.0 },
-    "16": { "name": "Upper Right First Molar",      "eruption": 6.5 },
-    "26": { "name": "Upper Left First Molar",       "eruption": 6.5 },
-
-    "31": { "name": "Lower Left Central Incisor",   "eruption": 6.5 },
-    "41": { "name": "Lower Right Central Incisor",  "eruption": 6.5 },
-    "11": { "name": "Upper Right Central Incisor",  "eruption": 7.0 },
-    "21": { "name": "Upper Left Central Incisor",   "eruption": 7.0 },
-
-    "12": { "name": "Upper Right Lateral Incisor",  "eruption": 7.5 },
-    "22": { "name": "Upper Left Lateral Incisor",   "eruption": 7.5 },
-    "32": { "name": "Lower Left Lateral Incisor",   "eruption": 8.0 },
-    "42": { "name": "Lower Right Lateral Incisor",  "eruption": 8.0 },
-
-    "33": { "name": "Lower Left Canine",            "eruption": 9.5 },
-    "43": { "name": "Lower Right Canine",           "eruption": 9.5 },
-
-    "34": { "name": "Lower Left First Premolar",    "eruption": 10.0 },
-    "44": { "name": "Lower Right First Premolar",   "eruption": 10.0 },
-    "35": { "name": "Lower Left Second Premolar",   "eruption": 10.5 },
-    "45": { "name": "Lower Right Second Premolar",  "eruption": 10.5 },
-
-    "14": { "name": "Upper Right First Premolar",   "eruption": 10.5 },
-    "24": { "name": "Upper Left First Premolar",    "eruption": 10.5 },
-    "15": { "name": "Upper Right Second Premolar",  "eruption": 11.0 },
-    "25": { "name": "Upper Left Second Premolar",   "eruption": 11.0 },
-
-    "37": { "name": "Lower Left Second Molar",      "eruption": 11.0 },
-    "47": { "name": "Lower Right Second Molar",     "eruption": 11.0 },
-
-    "13": { "name": "Upper Right Canine",           "eruption": 11.5 },
-    "23": { "name": "Upper Left Canine",            "eruption": 11.5 },
-
-    "17": { "name": "Upper Right Second Molar",     "eruption": 12.0 },
-    "27": { "name": "Upper Left Second Molar",      "eruption": 12.0 }
+    "36": {
+      "name": "Lower Left First Molar",
+      "eruption": 6.0
+    },
+    "46": {
+      "name": "Lower Right First Molar",
+      "eruption": 6.0
+    },
+    "16": {
+      "name": "Upper Right First Molar",
+      "eruption": 6.5
+    },
+    "26": {
+      "name": "Upper Left First Molar",
+      "eruption": 6.5
+    },
+    "31": {
+      "name": "Lower Left Central Incisor",
+      "eruption": 6.5
+    },
+    "41": {
+      "name": "Lower Right Central Incisor",
+      "eruption": 6.5
+    },
+    "11": {
+      "name": "Upper Right Central Incisor",
+      "eruption": 7.0
+    },
+    "21": {
+      "name": "Upper Left Central Incisor",
+      "eruption": 7.0
+    },
+    "12": {
+      "name": "Upper Right Lateral Incisor",
+      "eruption": 7.5
+    },
+    "22": {
+      "name": "Upper Left Lateral Incisor",
+      "eruption": 7.5
+    },
+    "32": {
+      "name": "Lower Left Lateral Incisor",
+      "eruption": 8.0
+    },
+    "42": {
+      "name": "Lower Right Lateral Incisor",
+      "eruption": 8.0
+    },
+    "33": {
+      "name": "Lower Left Canine",
+      "eruption": 9.5
+    },
+    "43": {
+      "name": "Lower Right Canine",
+      "eruption": 9.5
+    },
+    "34": {
+      "name": "Lower Left First Premolar",
+      "eruption": 10.0
+    },
+    "44": {
+      "name": "Lower Right First Premolar",
+      "eruption": 10.0
+    },
+    "35": {
+      "name": "Lower Left Second Premolar",
+      "eruption": 10.5
+    },
+    "45": {
+      "name": "Lower Right Second Premolar",
+      "eruption": 10.5
+    },
+    "14": {
+      "name": "Upper Right First Premolar",
+      "eruption": 10.5
+    },
+    "24": {
+      "name": "Upper Left First Premolar",
+      "eruption": 10.5
+    },
+    "15": {
+      "name": "Upper Right Second Premolar",
+      "eruption": 11.0
+    },
+    "25": {
+      "name": "Upper Left Second Premolar",
+      "eruption": 11.0
+    },
+    "37": {
+      "name": "Lower Left Second Molar",
+      "eruption": 11.0
+    },
+    "47": {
+      "name": "Lower Right Second Molar",
+      "eruption": 11.0
+    },
+    "13": {
+      "name": "Upper Right Canine",
+      "eruption": 11.5
+    },
+    "23": {
+      "name": "Upper Left Canine",
+      "eruption": 11.5
+    },
+    "17": {
+      "name": "Upper Right Second Molar",
+      "eruption": 12.0
+    },
+    "27": {
+      "name": "Upper Left Second Molar",
+      "eruption": 12.0
+    },
+    "38": {
+      "name": "Lower Left Third Molar",
+      "eruption": 17.0
+    },
+    "48": {
+      "name": "Lower Right Third Molar",
+      "eruption": 18.0
+    },
+    "18": {
+      "name": "Upper Right Third Molar",
+      "eruption": 18.0
+    },
+    "28": {
+      "name": "Upper Left Third Molar",
+      "eruption": 20.0
+    }
   },
   "thirdMolars": {
-    "38": { "name": "Lower Left Third Molar",  "eruption": 17.0 },
-    "48": { "name": "Lower Right Third Molar", "eruption": 18.0 },
-    "18": { "name": "Upper Right Third Molar", "eruption": 18.0 },
-    "28": { "name": "Upper Left Third Molar",  "eruption": 20.0 }
+    "38": {
+      "name": "Lower Left Third Molar",
+      "eruption": 17.0
+    },
+    "48": {
+      "name": "Lower Right Third Molar",
+      "eruption": 18.0
+    },
+    "18": {
+      "name": "Upper Right Third Molar",
+      "eruption": 18.0
+    },
+    "28": {
+      "name": "Upper Left Third Molar",
+      "eruption": 20.0
+    }
   }
 }

@@ -35,7 +35,7 @@ function growthScale(age) {
 
 const deciduous = {};
 const permanent = {};
-const wisdom = {};
+const wisdom = {};  // unused — teeth come from GLB
 let dentalData = null;
 let frontView = null;
 let maxDim = 0.15;
