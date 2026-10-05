@@ -95,7 +95,7 @@ function injectStyles(){
   s.textContent=`
     #fdi-open{position:fixed;right:12px;bottom:150px;background:rgba(10,10,10,0.9);color:#60a5fa;border:1px solid #2a2a2a;border-radius:10px;padding:10px 14px;font-family:system-ui,sans-serif;font-size:0.78em;font-weight:600;cursor:pointer;z-index:30;}
     #fdi-open:active{background:rgba(96,165,250,0.15);}
-    #fdi-panel{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;justify-content:flex-end;z-index:200;font-family:system-ui,sans-serif;}
+    #fdi-panel{position:fixed;left:10px;right:10px;bottom:84px;max-height:56vh;background:#0c0c0c;border:1px solid #2a2a2a;border-radius:14px;display:flex;flex-direction:column;z-index:50;font-family:system-ui,sans-serif;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,0.75);}
     #fdi-panel.hidden{display:none;}
     #fdi-panel>.fdi-head,#fdi-panel>.fdi-arc,#fdi-panel>.fdi-chart-host,#fdi-panel>.fdi-info-host,#fdi-panel>.fdi-feedback-host{background:#0c0c0c;}
     #fdi-panel .fdi-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1a1a1a;}
@@ -174,7 +174,6 @@ function init(){
     });
   });
   openBtn.addEventListener('click',()=>{ state.open ? close() : open(); });
-  panel.addEventListener('click', e => { if (e.target === panel) close(); });
     console.log('FDIChart ready');
 }
 return { init, open, close };
