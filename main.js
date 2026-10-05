@@ -237,7 +237,7 @@ function updateAge(age) {
 
   const info = document.getElementById('tooth-info');
   if (age < 0.5) info.textContent = 'No teeth';
-  else info.textContent = `${d}D · ${p}P · ${w}W · jaw ${Math.round(growth * 100)}%`;
+  else info.textContent = `${d} deciduous · ${p} permanent · jaw ${Math.round(growth * 100)}%`;
 }
 
 document.getElementById('ageSlider')
@@ -289,4 +289,32 @@ window.appAPI = {
   requestAnimationFrame(loop);
   controls.update();
   renderer.render(scene, camera);
+})();
+
+// First-load hint — fades on first slider touch
+(function(){
+  const slider = document.getElementById('ageSlider');
+  if (!slider) return;
+  const hint = document.createElement('div');
+  hint.id = 'first-hint';
+  hint.textContent = 'Drag the age slider to watch teeth erupt';
+  document.body.appendChild(hint);
+  const style = document.createElement('style');
+  style.textContent = `
+    #first-hint {
+      position: fixed; bottom: 108px; left: 50%; transform: translateX(-50%);
+      background: rgba(74,222,128,0.15);
+      border: 1px solid #4ade80; border-radius: 20px;
+      padding: 8px 18px; color: #4ade80;
+      font-family: system-ui, sans-serif; font-size: 0.8em;
+      font-weight: 600; z-index: 20; transition: opacity 0.4s;
+      pointer-events: none; max-width: 88vw; text-align: center;
+      white-space: nowrap;
+    }
+  `;
+  document.head.appendChild(style);
+  slider.addEventListener('input', () => {
+    hint.style.opacity = '0';
+    setTimeout(() => hint.remove(), 500);
+  }, { once: true });
 })();

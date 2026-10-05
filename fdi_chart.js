@@ -37,8 +37,9 @@ function renderInfo(fdi){
   const data = window.appAPI.getDentalData();
   const info = decodeFDI(fdi);
   const d = data.deciduousTeeth?.[fdi] || data.permanentTeeth?.[fdi] || {};
-  const fallLine = d.fall ? `<div><b>Shedding:</b> ${d.fall} yr</div>` : '';
-  return `<div class="fdi-info"><div class="fdi-info-code">${fdi}</div><div class="fdi-info-name">${info.label}</div><div class="fdi-info-grid"><div><b>Eruption:</b> ${formatRange(d)}</div>${fallLine}<div class="fdi-info-kind">${info.isDeciduous?'Deciduous':'Permanent'}</div></div></div><div class="fdi-rule"><b>Exam logic:</b> find the tooth that has <i>just erupted</i>. If the next tooth in the eruption order has <i>not</i> erupted, the age lies between their two ranges. Take the lower bound if the previous tooth recently erupted; the upper bound if the next is about to erupt.</div>`;
+  const resorpLine = d.resorptionBegins ? `<div><b>Resorption begins:</b> year ${d.resorptionBegins}</div>` : '';
+  const gotoBtn = (d.eruption != null) ? `<button class="fdi-goto" data-age="${d.eruption}">Set age to ${d.eruption} yr</button>` : '';
+  return `<div class="fdi-info"><div class="fdi-info-code">${fdi}</div><div class="fdi-info-name">${info.label}</div><div class="fdi-info-grid"><div><b>Eruption:</b> ${formatRange(d)}</div>${resorpLine}<div class="fdi-info-kind">${info.isDeciduous?'Deciduous':'Permanent'}</div></div></div>${gotoBtn}<div class="fdi-rule"><b>Exam logic:</b> find the tooth that has <i>just erupted</i>. If the next tooth in the eruption order has <i>not</i> erupted, the age lies between their two ranges. Take the lower bound if the previous tooth recently erupted; the upper bound if the next is about to erupt.</div>`;
 }
 function handleClick(fdi){
   if(state.mode==='learn'){
@@ -127,6 +128,8 @@ function injectStyles(){
     .fdi-info-kind{grid-column:1/-1;font-size:0.7em;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
     .fdi-rule{margin-top:10px;padding:8px 10px;background:#101820;border-left:3px solid #60a5fa;border-radius:0 6px 6px 0;font-size:0.72em;color:#a8c8e8;line-height:1.4;}
     .fdi-rule b{color:#60a5fa;font-weight:600;}
+    .fdi-goto{margin-top:10px;padding:8px 14px;background:#1a2a3e;color:#60a5fa;border:1px solid #3b82f6;border-radius:8px;font-family:inherit;font-size:0.78em;font-weight:600;cursor:pointer;width:100%;}
+    .fdi-goto:active{background:#22354d;}
     .fdi-rule i{color:#d0d0d0;font-style:italic;}
     .fdi-feedback-host .ok{color:#4ade80;font-weight:600;}
     .fdi-feedback-host .no{color:#f87171;}
@@ -173,6 +176,16 @@ function init(){
       b.classList.add('active'); rebuild();
     });
   });
+
+  panel.addEventListener('click', e => {
+    const b = e.target.closest('.fdi-goto');
+    if (!b) return;
+    const a = parseFloat(b.dataset.age);
+    if (isNaN(a)) return;
+    const s = document.getElementById('ageSlider');
+    if (s) { s.value = a; s.dispatchEvent(new Event('input', { bubbles: true })); }
+  });
+
   openBtn.addEventListener('click',()=>{ state.open ? close() : open(); });
     console.log('FDIChart ready');
 }

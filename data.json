@@ -7,7 +7,8 @@
       "eruptionRange": [
         0.58,
         0.75
-      ]
+      ],
+      "resorptionBegins": 5
     },
     "61": {
       "name": "Upper Left Deciduous Central Incisor",
@@ -16,7 +17,8 @@
       "eruptionRange": [
         0.58,
         0.75
-      ]
+      ],
+      "resorptionBegins": 5
     },
     "71": {
       "name": "Lower Left Deciduous Central Incisor",
@@ -25,7 +27,8 @@
       "eruptionRange": [
         0.5,
         0.67
-      ]
+      ],
+      "resorptionBegins": 4
     },
     "81": {
       "name": "Lower Right Deciduous Central Incisor",
@@ -34,7 +37,8 @@
       "eruptionRange": [
         0.5,
         0.67
-      ]
+      ],
+      "resorptionBegins": 4
     },
     "52": {
       "name": "Upper Right Deciduous Lateral Incisor",
@@ -43,7 +47,8 @@
       "eruptionRange": [
         0.58,
         0.75
-      ]
+      ],
+      "resorptionBegins": 5
     },
     "62": {
       "name": "Upper Left Deciduous Lateral Incisor",
@@ -52,7 +57,8 @@
       "eruptionRange": [
         0.58,
         0.75
-      ]
+      ],
+      "resorptionBegins": 5
     },
     "72": {
       "name": "Lower Left Deciduous Lateral Incisor",
@@ -61,7 +67,8 @@
       "eruptionRange": [
         0.83,
         1.0
-      ]
+      ],
+      "resorptionBegins": 5
     },
     "82": {
       "name": "Lower Right Deciduous Lateral Incisor",
@@ -70,7 +77,8 @@
       "eruptionRange": [
         0.83,
         1.0
-      ]
+      ],
+      "resorptionBegins": 5
     },
     "53": {
       "name": "Upper Right Deciduous Canine",
@@ -79,7 +87,8 @@
       "eruptionRange": [
         1.42,
         1.5
-      ]
+      ],
+      "resorptionBegins": 8
     },
     "63": {
       "name": "Upper Left Deciduous Canine",
@@ -88,7 +97,8 @@
       "eruptionRange": [
         1.42,
         1.5
-      ]
+      ],
+      "resorptionBegins": 8
     },
     "73": {
       "name": "Lower Left Deciduous Canine",
@@ -97,7 +107,8 @@
       "eruptionRange": [
         1.42,
         1.5
-      ]
+      ],
+      "resorptionBegins": 8
     },
     "83": {
       "name": "Lower Right Deciduous Canine",
@@ -106,7 +117,8 @@
       "eruptionRange": [
         1.42,
         1.5
-      ]
+      ],
+      "resorptionBegins": 8
     },
     "54": {
       "name": "Upper Right Deciduous First Molar",
@@ -115,7 +127,8 @@
       "eruptionRange": [
         1.0,
         1.17
-      ]
+      ],
+      "resorptionBegins": 6
     },
     "64": {
       "name": "Upper Left Deciduous First Molar",
@@ -124,7 +137,8 @@
       "eruptionRange": [
         1.0,
         1.17
-      ]
+      ],
+      "resorptionBegins": 6
     },
     "74": {
       "name": "Lower Left Deciduous First Molar",
@@ -133,7 +147,8 @@
       "eruptionRange": [
         1.0,
         1.17
-      ]
+      ],
+      "resorptionBegins": 6
     },
     "84": {
       "name": "Lower Right Deciduous First Molar",
@@ -142,7 +157,8 @@
       "eruptionRange": [
         1.0,
         1.17
-      ]
+      ],
+      "resorptionBegins": 6
     },
     "55": {
       "name": "Upper Right Deciduous Second Molar",
@@ -151,7 +167,8 @@
       "eruptionRange": [
         1.67,
         2.5
-      ]
+      ],
+      "resorptionBegins": 7
     },
     "65": {
       "name": "Upper Left Deciduous Second Molar",
@@ -160,7 +177,8 @@
       "eruptionRange": [
         1.67,
         2.5
-      ]
+      ],
+      "resorptionBegins": 7
     },
     "75": {
       "name": "Lower Left Deciduous Second Molar",
@@ -169,7 +187,8 @@
       "eruptionRange": [
         1.67,
         2.5
-      ]
+      ],
+      "resorptionBegins": 7
     },
     "85": {
       "name": "Lower Right Deciduous Second Molar",
@@ -178,7 +197,8 @@
       "eruptionRange": [
         1.67,
         2.5
-      ]
+      ],
+      "resorptionBegins": 7
     }
   },
   "permanentTeeth": {
@@ -280,18 +300,18 @@
     },
     "33": {
       "name": "Lower Left Canine",
-      "eruption": 9.5,
+      "eruption": 11.5,
       "eruptionRange": [
-        9,
-        10
+        11,
+        12
       ]
     },
     "43": {
       "name": "Lower Right Canine",
-      "eruption": 9.5,
+      "eruption": 11.5,
       "eruptionRange": [
-        9,
-        10
+        11,
+        12
       ]
     },
     "34": {
@@ -360,18 +380,18 @@
     },
     "37": {
       "name": "Lower Left Second Molar",
-      "eruption": 11.0,
+      "eruption": 13.0,
       "eruptionRange": [
-        11,
-        13
+        12,
+        14
       ]
     },
     "47": {
       "name": "Lower Right Second Molar",
-      "eruption": 11.0,
+      "eruption": 13.0,
       "eruptionRange": [
-        11,
-        13
+        12,
+        14
       ]
     },
     "13": {
