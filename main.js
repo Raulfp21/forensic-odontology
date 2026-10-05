@@ -99,20 +99,7 @@ function buildScene(gltf) {
   const model = gltf.scene;
   worldGroup.add(model);
 
-  // ---- Hide extra shells on molar glitch teeth ----
-  ['36', '46'].forEach(fdi => {
-    const target = `tooth_${fdi}`;
-    let parentGroup = null;
-    model.traverse(o => {
-      if (!parentGroup && o.name === target) parentGroup = o;
-    });
-    if (!parentGroup) return;
-    const meshes = [];
-    parentGroup.traverse(o => { if (o.isMesh) meshes.push(o); });
-    meshes.sort((a, b) => b.geometry.attributes.position.count - a.geometry.attributes.position.count);
-    for (let i = 1; i < meshes.length; i++) meshes[i].visible = false;
-    console.log('tooth_' + fdi + ': hid ' + (meshes.length - 1) + ' extra shells');
-  });
+  // Molars sourced from Dundee — no shell hiding needed
 
   // Center model at origin, capture adult size for camera
   const box = new THREE.Box3().setFromObject(model);
