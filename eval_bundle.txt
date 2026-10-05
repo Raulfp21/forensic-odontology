@@ -1,0 +1,1582 @@
+============================
+FORENSIC ODONTOLOGY SIMULATOR — Interface code for evaluation
+============================
+
+You are evaluating a web app intended to teach dental age estimation to
+undergraduate medical/forensic students. Read the code. Then answer:
+
+1. As a student using this for the first time, is the interface understandable?
+2. What is confusing or missing?
+3. Does the interaction flow (age slider → FDI chart → APSRTC) build understanding?
+4. What would a first-time user not "get"?
+
+Here are the source files.
+
+========== BEGIN index.html ==========
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Forensic Odontology Simulator</title>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; overflow: hidden; font-family: system-ui, sans-serif; background: #0a0a0a; color: #eee; }
+    canvas { display: block; touch-action: none; }
+
+    #top-panel {
+      position: absolute; top: 12px; left: 12px; right: 12px;
+      background: rgba(10,10,10,0.85);
+      border: 1px solid #2a2a2a; border-radius: 10px;
+      padding: 10px 14px; backdrop-filter: blur(10px);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    #top-panel h1 { margin: 0; font-size: 1em; color: #4ade80; font-weight: 600; }
+    #top-panel p { margin: 0; font-size: 0.75em; color: #888; }
+    #tooth-info { font-size: 0.8em; color: #60a5fa; text-align: right; }
+
+    #side-buttons {
+      position: absolute; right: 12px; top: 80px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    #side-buttons button {
+      background: rgba(10,10,10,0.85);
+      border: 1px solid #2a2a2a; border-radius: 8px;
+      color: #4ade80; padding: 10px 14px;
+      font-size: 0.8em; font-weight: 600;
+      cursor: pointer;
+    }
+    #side-buttons button:active { background: rgba(74,222,128,0.15); }
+
+    #bottom-panel {
+      position: absolute; bottom: 16px; left: 12px; right: 12px;
+      background: rgba(10,10,10,0.9);
+      border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 14px 16px; backdrop-filter: blur(10px);
+    }
+    #age-row { display: flex; align-items: center; gap: 12px; }
+    #age-label { font-size: 0.85em; color: #aaa; white-space: nowrap; }
+    #age-value { font-size: 1.4em; font-weight: 700; color: #4ade80; min-width: 60px; text-align: right; }
+    input[type=range] {
+      flex: 1; appearance: none; height: 6px;
+      background: #2a2a2a; border-radius: 3px; outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      appearance: none; width: 22px; height: 22px;
+      background: #4ade80; border-radius: 50%;
+      cursor: pointer; box-shadow: 0 0 10px rgba(74,222,128,0.5);
+    }
+    #loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: #0a0a0a; font-size: 1.1em; color: #4ade80;
+      transition: opacity 0.5s;
+    }
+    #loading.hidden { opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="top-panel">
+    <div>
+      <h1>Forensic Odontology</h1>
+      <p>Age Estimation Simulator</p>
+    </div>
+    <div id="tooth-info">Loading...</div>
+  </div>
+
+  <div id="side-buttons">
+    <button onclick="resetView()">Reset View</button>
+  </div>
+
+  <div id="bottom-panel">
+    <div id="age-row">
+      <span id="age-label">Age</span>
+      <input type="range" id="ageSlider" min="0" max="25" step="0.1" value="0">
+      <span id="age-value">0.0</span>
+    </div>
+  </div>
+
+  <div id="loading">Loading anatomy model...</div>
+
+  <script src="https://www.gstatic.com/draco/versioned/decoders/1.5.7/draco_decoder.js"></script>
+<script src="https://www.gstatic.com/draco/versioned/decoders/1.5.7/draco_wasm_wrapper.js"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="./main.js"></script>
+<script type="module">
+  import "./apstrc.js";
+  window.APSRTC.init();
+</script>
+<script type="module">
+  import "./fdi_chart.js";
+  window.FDIChart.init();
+</script>
+</body>
+</html>
+
+========== END index.html ==========
+
+========== BEGIN main.js ==========
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a0a);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.0001, 100);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.minDistance = 0.05;
+controls.maxDistance = 1;
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+const k = new THREE.DirectionalLight(0xffffff, 2); k.position.set(0.3, 0.5, 0.5); scene.add(k);
+const f = new THREE.DirectionalLight(0xffe0b0, 1.0); f.position.set(-0.5, 0.1, 0.3); scene.add(f);
+const r = new THREE.DirectionalLight(0xffffff, 0.8); r.position.set(0, -0.5, -0.3); scene.add(r);
+
+// ---- Growth model ----
+// Child's jaw at birth is ~72% of adult size; reaches 100% around age 16.
+// (Simplified uniform scale — not anatomically precise but visually clear.)
+const GROWTH_MIN = 0.72;
+const GROWTH_MAX_AGE = 16;
+function growthScale(age) {
+  if (age >= GROWTH_MAX_AGE) return 1.0;
+  if (age < 0) age = 0;
+  return GROWTH_MIN + (1.0 - GROWTH_MIN) * (age / GROWTH_MAX_AGE);
+}
+
+const deciduous = {};
+const permanent = {};
+const wisdom = {};  // unused — teeth come from GLB
+const teeth = {};   // unified map for FDI chart API
+let dentalData = null;
+let frontView = null;
+let maxDim = 0.15;
+let worldGroup = null;    // wraps the entire model so we can scale it
+
+function setStatus(msg) {
+  const el = document.getElementById('loading');
+  el.classList.remove('hidden');
+  el.textContent = msg;
+  console.log('[status]', msg);
+}
+
+fetch('./data.json')
+  .then(r => {
+    if (!r.ok) throw new Error('data.json HTTP ' + r.status);
+    return r.json();
+  })
+  .then(d => {
+    dentalData = d;
+    setStatus('Data loaded. Loading model...');
+    return loadGLB('./models/anatomy' + ({v10:'_v10_draco', v12:'_v12_draco'}[new URLSearchParams(location.search).get('model')] || '_v12_draco') + '.glb');
+  })
+  .then(gltf => {
+    setStatus('Model loaded. Processing...');
+    try {
+      buildScene(gltf);
+      document.getElementById('loading').classList.add('hidden');
+      updateAge(0);
+    } catch (err) {
+      console.error('buildScene failed:', err);
+      setStatus('buildScene error: ' + (err && err.message ? err.message : String(err)));
+    }
+  })
+  .catch(err => {
+    console.error('Fatal load error:', err);
+    setStatus('Error: ' + (err && err.message ? err.message : String(err)));
+  });
+
+function loadGLB(url) {
+  return new Promise((resolve, reject) => {
+    const loader = new GLTFLoader();
+    const draco = new DRACOLoader();
+    draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+    loader.setDRACOLoader(draco);
+    loader.load(
+      url,
+      g => resolve(g),
+      evt => {
+        if (evt.total) {
+          const pct = Math.round(100 * evt.loaded / evt.total);
+          setStatus(`Loading model ${pct}%`);
+        }
+      },
+      err => reject(err instanceof Error ? err : new Error('GLB load failed'))
+    );
+  });
+}
+
+function buildScene(gltf) {
+  // Wrap model in a group so we can scale for growth
+  worldGroup = new THREE.Group();
+  scene.add(worldGroup);
+
+  const model = gltf.scene;
+  worldGroup.add(model);
+
+  // Molars sourced from Dundee — no shell hiding needed
+
+  // Center model at origin, capture adult size for camera
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  model.position.sub(center);
+  maxDim = Math.max(size.x, size.y, size.z);
+
+  frontView = {
+    cam: new THREE.Vector3(0, maxDim * 0.05, maxDim * 1.4),
+    target: new THREE.Vector3(0, 0, 0),
+  };
+  camera.position.copy(frontView.cam);
+  controls.target.copy(frontView.target);
+  controls.update();
+
+  // ---- Materials: fix bone colour mismatch ----
+  // Z-Anatomy names: "Mandible", "Maxillar", "Maxillal", "Maxilla.l", "Maxilla.r"
+  // Any name starting with Maxill OR Mandib is bone.
+  model.traverse(o => {
+    if (!o.isMesh || o.visible === false) return;
+
+    let a = o, group = '';
+    while (a) {
+      if (/^tooth_[5-8]\d$/.test(a.name)) { group = a.name; break; }
+      if (/^tooth_\d{2}$/.test(a.name))   { group = a.name; break; }
+      if (/^(Maxill|Mandib)/.test(a.name)) { group = a.name; break; }
+      a = a.parent;
+    }
+
+    const isDecid = /^tooth_[5-8]\d$/.test(group);
+    const isPerm  = /^tooth_\d{2}$/.test(group) && !isDecid;
+    const isBone  = /^(Maxill|Mandib)/.test(group);
+
+    let color, roughness, emissive;
+    if (isDecid)      { color = 0xffffff; roughness = 0.55; emissive = 0x0a0a0a; }
+    else if (isPerm)  { color = 0xf0e8cc; roughness = 0.30; emissive = 0x050505; }
+    else if (isBone)  { color = 0xd9c79a; roughness = 0.85; emissive = 0x000000; }
+    else              { color = 0xd9c79a; roughness = 0.85; emissive = 0x000000; }
+
+    if (isBone) {
+      o.material = new THREE.MeshStandardMaterial({
+        color: 0xd9c79a, roughness: 0.85, metalness: 0.02,
+        side: THREE.DoubleSide, shadowSide: THREE.DoubleSide,
+      });
+    } else {
+      o.material = new THREE.MeshStandardMaterial({
+        color, roughness, metalness: 0.02, emissive,
+      });
+    }
+  });
+
+  // ---- Register teeth ----
+  model.traverse(o => {
+    const m = o.name.match(/^tooth_(\d{2})$/);
+    if (!m) return;
+    const fdi = m[1];
+
+    if (dentalData.deciduousTeeth[fdi]) {
+      deciduous[fdi] = { group: o, data: dentalData.deciduousTeeth[fdi], baseY: o.position.y };
+    } else if (dentalData.permanentTeeth[fdi]) {
+      permanent[fdi] = { group: o, data: dentalData.permanentTeeth[fdi], baseY: o.position.y };
+    }
+  });
+
+  for (const fdi in deciduous) deciduous[fdi].group.visible = false;
+  for (const fdi in permanent) permanent[fdi].group.visible = false;
+  for (const fdi in wisdom) wisdom[fdi].group.visible = false;
+
+  if (new URLSearchParams(location.search).has('xray')) {
+    const isTooth = o => { for (let n = o; n; n = n.parent) if (/^tooth_/.test(n.name)) return true; return false; };
+    model.traverse(o => {
+      if (!o.isMesh || isTooth(o)) return;
+      o.material.transparent = true; o.material.opacity = 0.3; o.material.depthWrite = false;
+    });
+  }
+
+  // Merge into unified teeth map for FDI chart API
+  for (const fdi in deciduous) teeth[fdi] = deciduous[fdi];
+  for (const fdi in permanent) teeth[fdi] = permanent[fdi];
+  for (const fdi in wisdom)    teeth[fdi] = wisdom[fdi];
+
+  console.log(`Loaded: ${Object.keys(deciduous).length}D / ${Object.keys(permanent).length}P / ${Object.keys(wisdom).length}W`);
+}
+
+function updateAge(age) {
+  document.getElementById('age-value').textContent = age.toFixed(1);
+
+  // ---- Jaw growth: scale the whole model ----
+  const growth = growthScale(age);
+  if (worldGroup) worldGroup.scale.setScalar(growth);
+
+  let d = 0, p = 0, w = 0;
+
+  for (const fdi in deciduous) {
+    const t = deciduous[fdi];
+    const start = t.data.eruption, end = t.data.fall;
+    if (age < start || age >= end + 0.5) {
+      t.group.visible = false;
+      t.group.position.y = t.baseY;
+      t.group.scale.setScalar(1);
+      continue;
+    }
+    let s = 1;
+    if (age < start + 0.5) s = 0.4 + 1.2 * (age - start);
+    else if (age > end - 1.0) s = Math.max(0.1, 1.0 - (age - (end - 1.0)));
+    t.group.visible = true;
+    t.group.scale.setScalar(s);
+    t.group.position.y = t.baseY;
+    d++;
+  }
+
+  for (const fdi in permanent) {
+    const t = permanent[fdi];
+    if (age < t.data.eruption) { t.group.visible = false; t.group.scale.setScalar(1); continue; }
+    const pp = THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
+    t.group.visible = true;
+    t.group.scale.setScalar(0.4 + 0.6 * pp);
+    p++;
+  }
+
+  for (const fdi in wisdom) {
+    const t = wisdom[fdi];
+    if (age < t.data.eruption) { t.group.visible = false; t.group.scale.setScalar(t.baseScale); continue; }
+    const pp = THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
+    t.group.visible = true;
+    t.group.scale.setScalar(t.baseScale * (0.4 + 0.6 * pp));
+    w++;
+  }
+
+  const info = document.getElementById('tooth-info');
+  if (age < 0.5) info.textContent = 'No teeth';
+  else info.textContent = `${d}D · ${p}P · ${w}W · jaw ${Math.round(growth * 100)}%`;
+}
+
+document.getElementById('ageSlider')
+  .addEventListener('input', e => updateAge(parseFloat(e.target.value)));
+
+window.resetView = function () {
+  if (!frontView) return;
+  camera.position.copy(frontView.cam);
+  controls.target.copy(frontView.target);
+  controls.update();
+};
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+
+// ----- External API for FDI chart module -----
+window.appAPI = {
+  getTeethMap() { return teeth; },
+  getDentalData() { return dentalData; },
+  getCurrentAge() { const s = document.getElementById('ageSlider'); return s ? parseFloat(s.value) : 0; },
+  highlightTooth(fdi, hex = 0x4ade80) {
+    const t = teeth[fdi]; if (!t) return false;
+    t.group.traverse(o => {
+      if (!o.isMesh) return;
+      if (!o.userData._origEmissive) o.userData._origEmissive = o.material.emissive.clone();
+      if (!o.userData._highlightMat) {
+        o.userData._highlightMat = o.material.clone();
+        o.userData._highlightMat.emissive = new THREE.Color(hex);
+        o.userData._highlightMat.emissiveIntensity = 1.4;
+      }
+      o.material = o.userData._highlightMat;
+    });
+    return true;
+  },
+  clearHighlight(fdi) {
+    const t = teeth[fdi]; if (!t) return;
+    t.group.traverse(o => {
+      if (o.isMesh && o.userData._origEmissive) o.material.emissive.copy(o.userData._origEmissive);
+    });
+  },
+  clearAllHighlights() { for (const fdi in teeth) window.appAPI.clearHighlight(fdi); }
+};
+
+(function loop() {
+  requestAnimationFrame(loop);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+
+========== END main.js ==========
+
+========== BEGIN fdi_chart.js ==========
+// FDI Chart — Learn + Test modes, textbook eruption ranges
+const FDIChart = (() => {
+const PERM = {
+  upperR: ['18','17','16','15','14','13','12','11'],
+  upperL: ['21','22','23','24','25','26','27','28'],
+  lowerL: ['31','32','33','34','35','36','37','38'],
+  lowerR: ['48','47','46','45','44','43','42','41'],
+};
+const DEC = {
+  upperR: ['55','54','53','52','51'], upperL: ['61','62','63','64','65'],
+  lowerL: ['71','72','73','74','75'], lowerR: ['85','84','83','82','81'],
+};
+const state = {
+  open:false, mode:'learn', arc:'permanent', currentFDI:null,
+  test:{ active:false, target:null, total:0, correct:0, locked:false }
+};
+function decodeFDI(fdi){
+  const q=fdi[0], n=fdi[1];
+  const quad={'1':'Upper Right','2':'Upper Left','3':'Lower Left','4':'Lower Right','5':'Upper Right','6':'Upper Left','7':'Lower Left','8':'Lower Right'}[q];
+  const names={'1':'Central Incisor','2':'Lateral Incisor','3':'Canine','4':'First Premolar','5':'Second Premolar','6':'First Molar','7':'Second Molar','8':'Third Molar'};
+  return { quadrant:quad, label:`${quad} ${names[n]||''}`.trim(), isDeciduous:'5678'.includes(q) };
+}
+function buildGrid(arc){
+  const set = arc==='permanent' ? PERM : DEC;
+  const row = (L,R) => `<div class="fdi-row"><div class="fdi-side">${L.map(f=>`<button class="fdi-cell" data-fdi="${f}">${f}</button>`).join('')}</div><div class="fdi-mid"></div><div class="fdi-side">${R.map(f=>`<button class="fdi-cell" data-fdi="${f}">${f}</button>`).join('')}</div></div>`;
+  return `<div class="fdi-chart"><div class="fdi-axis"><span>Right</span><span class="fdi-axis-mid"></span><span>Left</span></div>${row(set.upperR,set.upperL)}<div class="fdi-hline"></div>${row(set.lowerR,set.lowerL)}</div>`;
+}
+function formatRange(d){
+  if(d.eruptionRange && d.eruptionRange.length===2){
+    const [lo,hi]=d.eruptionRange;
+    const fmt=v => v<2 ? `${Math.round(v*12)} mo` : `${v} yr`;
+    return `${fmt(lo)} – ${fmt(hi)}`;
+  }
+  return d.eruption!=null ? `${d.eruption} yr` : '—';
+}
+function renderInfo(fdi){
+  const data = window.appAPI.getDentalData();
+  const info = decodeFDI(fdi);
+  const d = data.deciduousTeeth?.[fdi] || data.permanentTeeth?.[fdi] || {};
+  const fallLine = d.fall ? `<div><b>Shedding:</b> ${d.fall} yr</div>` : '';
+  return `<div class="fdi-info"><div class="fdi-info-code">${fdi}</div><div class="fdi-info-name">${info.label}</div><div class="fdi-info-grid"><div><b>Eruption:</b> ${formatRange(d)}</div>${fallLine}<div class="fdi-info-kind">${info.isDeciduous?'Deciduous':'Permanent'}</div></div></div><div class="fdi-rule"><b>Exam logic:</b> find the tooth that has <i>just erupted</i>. If the next tooth in the eruption order has <i>not</i> erupted, the age lies between their two ranges. Take the lower bound if the previous tooth recently erupted; the upper bound if the next is about to erupt.</div>`;
+}
+function handleClick(fdi){
+  if(state.mode==='learn'){
+    if(state.currentFDI) if(window.appAPI&&window.appAPI.clearHighlight)window.appAPI.clearHighlight(state.currentFDI);
+    state.currentFDI=fdi;
+    if(window.appAPI&&window.appAPI.highlightTooth)window.appAPI.highlightTooth(fdi,0x4ade80);
+    document.querySelector('.fdi-info-host').innerHTML = renderInfo(fdi);
+    return;
+  }
+  if(!state.test.active || state.test.locked) return;
+  state.test.locked=true;
+  const correct = fdi===state.test.target;
+  if(correct) state.test.correct++;
+  state.test.total++;
+  const host = document.querySelector('.fdi-feedback-host');
+  host.innerHTML = correct ? `<span class="ok">Correct — it is ${fdi}.</span>` : `<span class="no">Wrong — you picked ${fdi}; correct answer was <b>${state.test.target}</b>.</span>`;
+  if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights();
+  if(state.test.total>=10){
+    setTimeout(()=>{ const pct=Math.round(100*state.test.correct/state.test.total); host.innerHTML=`<span class="score">Score ${state.test.correct}/${state.test.total} (${pct}%)</span>`; state.test.active=false; state.test.locked=false; },1200);
+    return;
+  }
+  setTimeout(()=>{ state.test.locked=false; nextQuestion(); },1200);
+}
+function pickRandomVisible(){
+  const teeth = window.appAPI.getTeethMap();
+  const data = window.appAPI.getDentalData();
+  const age = window.appAPI.getCurrentAge();
+  const cand=[];
+  for(const fdi in teeth){
+    const d = data.deciduousTeeth?.[fdi] || data.permanentTeeth?.[fdi];
+    if(!d) continue;
+    if(age<d.eruption) continue;
+    if(d.fall && age>=d.fall) continue;
+    cand.push(fdi);
+  }
+  if(!cand.length) return null;
+  return cand[Math.floor(Math.random()*cand.length)];
+}
+function nextQuestion(){
+  const fdi = pickRandomVisible();
+  const host = document.querySelector('.fdi-feedback-host');
+  if(!fdi){ host.innerHTML=`<span class="no">No teeth visible at age ${window.appAPI.getCurrentAge().toFixed(1)}. Increase the slider.</span>`; state.test.active=false; return; }
+  state.test.target=fdi;
+  if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights();
+  if(window.appAPI&&window.appAPI.highlightTooth)window.appAPI.highlightTooth(fdi,0xf59e0b);
+  host.innerHTML = `Question ${state.test.total+1} of 10 · Score ${state.test.correct}/${state.test.total}`;
+}
+function startTest(){ state.test={active:true,target:null,total:0,correct:0,locked:false}; state.mode='test'; nextQuestion(); }
+function open(){ state.open=true; document.getElementById('fdi-panel').classList.remove('hidden'); }
+function close(){ state.open=false; document.getElementById('fdi-panel').classList.add('hidden'); if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights(); state.currentFDI=null; }
+function injectStyles(){
+  if(document.getElementById('fdi-styles')) return;
+  const s=document.createElement('style'); s.id='fdi-styles';
+  s.textContent=`
+    #fdi-open{position:fixed;right:12px;bottom:150px;background:rgba(10,10,10,0.9);color:#60a5fa;border:1px solid #2a2a2a;border-radius:10px;padding:10px 14px;font-family:system-ui,sans-serif;font-size:0.78em;font-weight:600;cursor:pointer;z-index:30;}
+    #fdi-open:active{background:rgba(96,165,250,0.15);}
+    #fdi-panel{position:fixed;left:10px;right:10px;bottom:84px;max-height:56vh;background:#0c0c0c;border:1px solid #2a2a2a;border-radius:14px;display:flex;flex-direction:column;z-index:50;font-family:system-ui,sans-serif;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,0.75);}
+    #fdi-panel.hidden{display:none;}
+    #fdi-panel>.fdi-head,#fdi-panel>.fdi-arc,#fdi-panel>.fdi-chart-host,#fdi-panel>.fdi-info-host,#fdi-panel>.fdi-feedback-host{background:#0c0c0c;}
+    #fdi-panel .fdi-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1a1a1a;}
+    #fdi-panel .fdi-head h3{margin:0;font-size:0.85em;color:#60a5fa;font-weight:600;letter-spacing:0.5px;}
+    #fdi-panel .fdi-modes{display:flex;gap:6px;}
+    #fdi-panel .fdi-modes button{background:#141414;color:#999;border:1px solid #262626;border-radius:6px;padding:6px 10px;font-size:0.72em;cursor:pointer;}
+    #fdi-panel .fdi-modes button.active{background:#1a2a3e;color:#60a5fa;border-color:#3b82f6;}
+    #fdi-panel .fdi-arc{display:flex;gap:4px;padding:0 12px 8px;}
+    #fdi-panel .fdi-arc button{background:#141414;color:#888;border:1px solid #262626;border-radius:20px;padding:4px 10px;font-size:0.68em;cursor:pointer;}
+    #fdi-panel .fdi-arc button.active{background:#1a2a1e;color:#4ade80;border-color:#4ade80;}
+    .fdi-chart{padding:4px 8px 8px;}
+    .fdi-axis{display:flex;justify-content:space-between;padding:0 4px 4px;font-size:0.65em;color:#555;}
+    .fdi-axis-mid{flex:1;}
+    .fdi-row{display:flex;align-items:center;gap:2px;}
+    .fdi-side{display:flex;gap:2px;flex:1;justify-content:center;}
+    .fdi-side:first-child{justify-content:flex-start;}
+    .fdi-side:last-child{justify-content:flex-end;}
+    .fdi-mid{width:2px;height:26px;background:#333;}
+    .fdi-hline{height:1px;background:#222;margin:4px 8px;}
+    .fdi-cell{background:#131313;color:#d0d0d0;border:1px solid #262626;border-radius:5px;min-width:26px;min-height:26px;padding:4px 5px;font-family:inherit;font-size:0.75em;cursor:pointer;}
+    .fdi-cell:active{background:#222;}
+    .fdi-cell.selected{background:#1a2a1e;border-color:#4ade80;color:#4ade80;}
+    .fdi-info-host,.fdi-feedback-host{padding:10px 14px;border-top:1px solid #1a1a1a;min-height:46px;font-size:0.78em;color:#ccc;}
+    .fdi-info{display:flex;align-items:center;gap:12px;}
+    .fdi-info-code{font-size:1.6em;font-weight:700;color:#4ade80;min-width:42px;text-align:center;}
+    .fdi-info-name{color:#e8e8e8;font-weight:500;}
+    .fdi-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;font-size:0.92em;color:#aaa;}
+    .fdi-info-grid b{color:#888;font-weight:500;}
+    .fdi-info-kind{grid-column:1/-1;font-size:0.7em;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+    .fdi-rule{margin-top:10px;padding:8px 10px;background:#101820;border-left:3px solid #60a5fa;border-radius:0 6px 6px 0;font-size:0.72em;color:#a8c8e8;line-height:1.4;}
+    .fdi-rule b{color:#60a5fa;font-weight:600;}
+    .fdi-rule i{color:#d0d0d0;font-style:italic;}
+    .fdi-feedback-host .ok{color:#4ade80;font-weight:600;}
+    .fdi-feedback-host .no{color:#f87171;}
+    .fdi-feedback-host .score{color:#60a5fa;font-weight:700;font-size:1.1em;}
+  `;
+  document.head.appendChild(s);
+}
+function init(){
+  injectStyles();
+  const openBtn=document.createElement('button'); openBtn.id='fdi-open'; openBtn.textContent='FDI Chart'; document.body.appendChild(openBtn);
+  const panel=document.createElement('div'); panel.id='fdi-panel';
+  panel.classList.add("hidden");
+  panel.innerHTML=`<div class="fdi-head"><h3>FDI TWO-DIGIT CHART</h3><div class="fdi-modes"><button data-mode="learn" class="active">Learn</button><button data-mode="test">Test</button><button data-mode="close">✕</button></div></div><div class="fdi-arc"><button data-arc="permanent" class="active">Permanent</button><button data-arc="deciduous">Deciduous</button></div><div class="fdi-chart-host"></div><div class="fdi-info-host"></div><div class="fdi-feedback-host"></div>`;
+  document.body.appendChild(panel);
+  const chartHost = panel.querySelector('.fdi-chart-host');
+  function rebuild(){
+    chartHost.innerHTML = buildGrid(state.arc);
+    chartHost.querySelectorAll('.fdi-cell').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        chartHost.querySelectorAll('.fdi-cell').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        handleClick(btn.dataset.fdi);
+      });
+    });
+    document.querySelector('.fdi-info-host').innerHTML='';
+    document.querySelector('.fdi-feedback-host').innerHTML='';
+    if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights(); state.currentFDI=null;
+  }
+  rebuild();
+  panel.querySelectorAll('.fdi-modes button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const m=b.dataset.mode;
+      if(m==='close'){ close(); return; }
+      if(m==='learn'){ state.mode='learn'; state.test.active=false; }
+      if(m==='test'){ startTest(); }
+      panel.querySelectorAll('.fdi-modes button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+    });
+  });
+  panel.querySelectorAll('.fdi-arc button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      state.arc=b.dataset.arc;
+      panel.querySelectorAll('.fdi-arc button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); rebuild();
+    });
+  });
+  openBtn.addEventListener('click',()=>{ state.open ? close() : open(); });
+    console.log('FDIChart ready');
+}
+return { init, open, close };
+})();
+window.FDIChart = FDIChart;
+
+========== END fdi_chart.js ==========
+
+========== BEGIN apstrc.js ==========
+// APSRTC — Age-related changes in teeth, interactive cross-section
+// Self-contained: builds its own DOM, SVG, styles, and logic.
+
+const APSRTC = (() => {
+
+const CRITERIA = [
+  { id: 'A', name: 'Attrition',           short: 'Occlusal wear' },
+  { id: 'P', name: 'Periodontosis',       short: 'Gum regression' },
+  { id: 'S', name: 'Secondary dentin',    short: 'Pulp shrinkage' },
+  { id: 'R', name: 'Root resorption',     short: 'Apex pits/grooves' },
+  { id: 'T', name: 'Transparency',        short: 'Root translucency' },
+  { id: 'C', name: 'Cementum apposition', short: 'Apex thickening' },
+];
+
+const DESCRIPTIONS = {
+  A: [
+    'Normal incisal edge. Enamel intact across the whole biting surface.',
+    'Slight flattening. Enamel begins to wear at the incisal edge.',
+    'Obvious wear. Enamel is thinned; small patches of dentin start to show.',
+    'Heavy attrition. Enamel is gone; dentin is exposed and the pulp is close to the surface.',
+  ],
+  P: [
+    'Gum line at the neck of the tooth. No root is exposed.',
+    'Early regression. About one quarter of the root is exposed.',
+    'Half of the root is exposed. Teeth may start to feel loose.',
+    'Marked regression. About three quarters of the root is exposed above the gum.',
+  ],
+  S: [
+    'Pulp chamber is full size. No secondary dentin laid down.',
+    'A thin layer of secondary dentin has narrowed the pulp chamber slightly.',
+    'Pulp cavity is markedly reduced. The chamber is half filled.',
+    'Pulp cavity is nearly obliterated. Only a thin line remains.',
+  ],
+  R: [
+    'Root apex is smooth and rounded.',
+    'Small pits appear on the apex surface.',
+    'Sharp grooves and irregular depressions on the apex.',
+    'The apex is shortened and largely resorbed.',
+  ],
+  T: [
+    'Root dentin is uniformly opaque. No translucency.',
+    'Lower third of the root has become translucent.',
+    'Lower two thirds of the root are translucent.',
+    'Nearly the whole root is translucent, reaching the cervical region.',
+  ],
+  C: [
+    'Normal cementum thickness at the apex.',
+    'Cementum has thickened slightly, especially near the apex.',
+    'Cementum is visibly thick at the apex.',
+    'Marked apposition. The apex has become bulbous.',
+  ],
+};
+
+// ---------- State ----------
+const state = {
+  active: 'A',
+  stages: { A: 0, P: 0, S: 0, R: 0, T: 0, C: 0 },
+  compare: false,
+};
+
+// ---------- SVG builders ----------
+// Geometry constants (viewBox 240 x 520)
+const SVG_W = 240, SVG_H = 520;
+const CX = 120;
+
+// Tooth outline (dentin), extends from crown top to root apex
+function toothOutlinePath(apexOffset = 0) {
+  // apexOffset: how much apex is lost due to resorption (0 at stage 0)
+  const apexY = 465 + apexOffset * 25;
+  return `M 78,50 Q 78,45 86,45 L 154,45 Q 162,45 162,50
+          L 162,140 Q 162,190 145,205
+          Q 148,300 145,400 Q 140,440 120,${apexY}
+          Q 100,440 95,400 Q 92,300 95,205
+          Q 78,190 78,140 Z`;
+}
+
+// Crown top variants for attrition
+function crownTopY(stage) {
+  // y of incisal surface, and how flat the top is
+  return [45, 48, 54, 62][stage];
+}
+
+function crownWithAttrition(stage) {
+  const y = crownTopY(stage);
+  const flat = stage >= 2;
+  if (!flat) {
+    return `M 78,55 Q 78,${y} 86,${y} L 154,${y} Q 162,${y} 162,55
+            L 162,140 Q 162,190 145,205 L 95,205 Q 78,190 78,140 Z`;
+  }
+  return `M 78,${y + 4} Q 78,${y} 82,${y} L 158,${y} Q 162,${y} 162,${y + 4}
+          L 162,140 Q 162,190 145,205 L 95,205 Q 78,190 78,140 Z`;
+}
+
+// Enamel shell (crown outer band)
+function enamelPath(stage) {
+  const y = crownTopY(stage);
+  const inner = 12;
+  return `M 78,55 Q 78,${y} 86,${y} L 154,${y} Q 162,${y} 162,55
+          L 162,140 Q 162,190 145,205 L ${145 - 6},200
+          Q ${150},180 ${150},140 L ${150},${y + inner}
+          L ${90},${y + inner} L ${90},140
+          Q 90,180 96,200 L 95,205
+          Q 78,190 78,140 Z`;
+}
+
+// Pulp chamber — stage controls how much is filled by secondary dentin
+function pulpPath(stage) {
+  const narrow = [0, 4, 12, 22][stage];  // how much the pulp shrinks at every edge
+  const xL = 100 + narrow, xR = 140 - narrow;
+  const yTop = 90 + narrow * 0.5;
+  const canalTop = 200;
+  const canalWidth = Math.max(1, 6 - narrow / 3);
+  const apexY = 430 - narrow * 3;
+  if (stage >= 3) {
+    // Nearly obliterated: just a thin line
+    return `M ${CX - 2},${yTop + 10} L ${CX + 2},${yTop + 10}
+            L ${CX + 1},${apexY} L ${CX - 1},${apexY} Z`;
+  }
+  return `M ${xL},${yTop + 20}
+          Q ${xL},${yTop} ${CX},${yTop}
+          Q ${xR},${yTop} ${xR},${yTop + 20}
+          L ${xR},${canalTop}
+          L ${CX + canalWidth},${apexY}
+          Q ${CX},${apexY + 8} ${CX - canalWidth},${apexY}
+          L ${xL},${canalTop} Z`;
+}
+
+// Gum triangles — height shrinks with periodontosis
+function gumPaths(stage) {
+  const regression = [0, 20, 45, 70][stage]; // mm of gum lost
+  const gumTopY = 205 + regression;
+  const gumBottomY = 300;
+  const leftGum  = `M 74,${gumTopY} L 100,${gumTopY} L 100,${gumBottomY}
+                    Q 88,${gumBottomY + 10} 74,${gumBottomY} Z`;
+  const rightGum = `M 140,${gumTopY} L 166,${gumTopY} L 166,${gumBottomY}
+                    Q 152,${gumBottomY + 10} 140,${gumBottomY} Z`;
+  return { leftGum, rightGum, gumTopY };
+}
+
+// Alveolar bone — top edge follows gum regression
+function bonePaths(stage) {
+  const regression = [0, 20, 45, 70][stage];
+  const boneTopY = 240 + regression;
+  const leftBone  = `M 60,${boneTopY} L 100,${boneTopY} L 100,500 L 60,500 Z`;
+  const rightBone = `M 140,${boneTopY} L 180,${boneTopY} L 180,500 L 140,500 Z`;
+  return { leftBone, rightBone, boneTopY };
+}
+
+// Root resorption: apex gets pitted then shortened
+function resorptionApexPath(stage) {
+  if (stage === 0) return '';
+  if (stage === 1) {
+    return `M 105,420 Q 115,430 120,432 Q 125,430 135,420`;
+  }
+  if (stage === 2) {
+    return `M 100,410 L 105,425 L 110,415 L 115,428 L 120,418
+            L 125,428 L 130,415 L 135,425 L 140,410`;
+  }
+  // stage 3: apex largely lost — short blunt end
+  return `M 95,395 Q 120,415 145,395`;
+}
+
+// Transparency: overlay lower root with a semi-transparent white
+function transparencyRect(stage) {
+  if (stage === 0) return { y: 0, h: 0, op: 0 };
+  const portions = [0, 0.33, 0.66, 1.0];
+  const yStart = 460 - (460 - 205) * portions[stage];
+  return { y: yStart, h: 460 - yStart, op: [0, 0.35, 0.55, 0.75][stage] };
+}
+
+// Cementum thickness at apex
+function cementumWidth(stage) {
+  return [2, 4, 7, 12][stage];
+}
+
+// ---------- Render ----------
+function buildSVG() {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', `0 0 ${SVG_W} ${SVG_H}`);
+  svg.classList.add('apstrc-svg');
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="g-dentin" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#f5e9c8"/>
+        <stop offset="60%"  stop-color="#e8d5a8"/>
+        <stop offset="100%" stop-color="#d8c18a"/>
+      </linearGradient>
+      <linearGradient id="g-enamel" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#fefcf6"/>
+        <stop offset="100%" stop-color="#eae2cc"/>
+      </linearGradient>
+      <linearGradient id="g-pulp" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#c9564b"/>
+        <stop offset="100%" stop-color="#8a3630"/>
+      </linearGradient>
+      <linearGradient id="g-gum" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#dc9b9b"/>
+        <stop offset="100%" stop-color="#b57373"/>
+      </linearGradient>
+      <linearGradient id="g-bone" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#d9c79a"/>
+        <stop offset="100%" stop-color="#b9a676"/>
+      </linearGradient>
+      <radialGradient id="g-highlight" cx="0.35" cy="0.3" r="0.5">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <g class="bone-layer">
+      <path class="bone-left"  fill="url(#g-bone)"/>
+      <path class="bone-right" fill="url(#g-bone)"/>
+    </g>
+
+    <g class="gum-layer">
+      <path class="gum-left"  fill="url(#g-gum)"/>
+      <path class="gum-right" fill="url(#g-gum)"/>
+    </g>
+
+    <g class="tooth-layer">
+      <path class="tooth-dentin" fill="url(#g-dentin)" stroke="#a89464" stroke-width="0.8"/>
+      <path class="tooth-enamel" fill="url(#g-enamel)" stroke="#c8bfa3" stroke-width="0.6"/>
+      <path class="tooth-cementum" fill="none" stroke="#a58b58" stroke-linecap="round"/>
+      <path class="tooth-pulp" fill="url(#g-pulp)"/>
+      <path class="tooth-resorption" fill="none" stroke="#8a3630" stroke-width="1.4"/>
+      <rect class="tooth-transparency" fill="#ffffff" opacity="0"/>
+      <ellipse class="tooth-highlight" fill="url(#g-highlight)" cx="100" cy="90" rx="40" ry="55"/>
+    </g>
+
+    <g class="labels-layer">
+      <text class="lbl" x="195" y="70">Enamel</text>
+      <line class="lbl-line" x1="165" y1="66" x2="192" y2="66"/>
+      <text class="lbl" x="195" y="130">Dentin</text>
+      <line class="lbl-line" x1="155" y1="126" x2="192" y2="126"/>
+      <text class="lbl" x="195" y="175">Pulp</text>
+      <line class="lbl-line" x1="135" y1="171" x2="192" y2="171"/>
+      <text class="lbl" x="195" y="240">Cementum</text>
+      <line class="lbl-line" x1="152" y1="236" x2="192" y2="236"/>
+      <text class="lbl" x="195" y="290">Gum</text>
+      <line class="lbl-line" x1="160" y1="286" x2="192" y2="286"/>
+      <text class="lbl" x="195" y="340">Alveolar bone</text>
+      <line class="lbl-line" x1="170" y1="336" x2="192" y2="336"/>
+    </g>
+  `;
+  return svg;
+}
+
+// ---------- Update visuals ----------
+function render(svg) {
+  const A = state.stages.A, P = state.stages.P, S = state.stages.S,
+        R = state.stages.R, T = state.stages.T, C = state.stages.C;
+
+  // tooth outline with resorption apex
+  const apexOffset = [0, 0, 0, 1][R];
+  svg.querySelector('.tooth-dentin').setAttribute('d', toothOutlinePath(apexOffset));
+  svg.querySelector('.tooth-enamel').setAttribute('d', enamelPath(A));
+  svg.querySelector('.tooth-pulp').setAttribute('d', pulpPath(S));
+
+  // cementum: overlay along root outline, thickness varies
+  const cw = cementumWidth(C);
+  svg.querySelector('.tooth-cementum').setAttribute(
+    'd', `M 96,205 Q 94,300 96,400 Q 100,440 120,${465 + apexOffset * 25}
+          Q 140,440 144,400 Q 146,300 144,205`
+  );
+  svg.querySelector('.tooth-cementum').setAttribute('stroke-width', cw);
+
+  // resorption apex outline
+  const rpath = resorptionApexPath(R);
+  svg.querySelector('.tooth-resorption').setAttribute('d', rpath);
+
+  // transparency rect
+  const tp = transparencyRect(T);
+  const tRect = svg.querySelector('.tooth-transparency');
+  tRect.setAttribute('y', tp.y);
+  tRect.setAttribute('height', tp.h);
+  tRect.setAttribute('opacity', tp.op);
+
+  // gum + bone follow P
+  const gum = gumPaths(P);
+  svg.querySelector('.gum-left').setAttribute('d', gum.leftGum);
+  svg.querySelector('.gum-right').setAttribute('d', gum.rightGum);
+  const bone = bonePaths(P);
+  svg.querySelector('.bone-left').setAttribute('d', bone.leftBone);
+  svg.querySelector('.bone-right').setAttribute('d', bone.rightBone);
+}
+
+// ---------- UI ----------
+function buildUI() {
+  const root = document.createElement('div');
+  root.id = 'apstrc-modal';
+  root.className = 'apstrc-modal hidden';
+
+  root.innerHTML = `
+    <div class="apstrc-card">
+      <div class="apstrc-head">
+        <h2>Age changes in teeth — APSRTC</h2>
+        <button class="apstrc-close" aria-label="close">✕</button>
+      </div>
+
+      <div class="apstrc-body">
+        <div class="apstrc-left">
+          <div class="apstrc-svg-host"></div>
+        </div>
+        <div class="apstrc-right">
+          <div class="apstrc-tabs">
+            ${CRITERIA.map(c => `
+              <button class="apstrc-tab" data-c="${c.id}">
+                <span class="ltr">${c.id}</span>
+                <span class="full">${c.name}</span>
+              </button>
+            `).join('')}
+          </div>
+
+          <div class="apstrc-stage">
+            <div class="apstrc-stage-head">
+              <span class="apstrc-stage-name" id="apstrc-stage-name"></span>
+              <span class="apstrc-stage-num" id="apstrc-stage-num">0</span>
+            </div>
+            <input type="range" min="0" max="3" step="1" value="0" class="apstrc-slider" id="apstrc-slider">
+            <div class="apstrc-ticks"><span>0</span><span>1</span><span>2</span><span>3</span></div>
+          </div>
+
+          <div class="apstrc-desc" id="apstrc-desc"></div>
+
+          <label class="apstrc-compare">
+            <input type="checkbox" id="apstrc-compare">
+            <span>Compare with normal (stage 0)</span>
+          </label>
+
+          <div class="apstrc-hint">
+            A · P · S · R · T · C — the six criteria from Gustafson's method.
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(root);
+  return root;
+}
+
+// ---------- Init ----------
+function init() {
+  // Inject styles once
+  if (!document.getElementById('apstrc-styles')) {
+    const s = document.createElement('style');
+    s.id = 'apstrc-styles';
+    s.textContent = `
+      #apstrc-open {
+        position: fixed; right: 12px; bottom: 96px;
+        background: rgba(10,10,10,0.9);
+        color: #4ade80; border: 1px solid #2a2a2a;
+        border-radius: 10px; padding: 10px 16px;
+        font-family: system-ui, sans-serif; font-size: 0.8em; font-weight: 600;
+        cursor: pointer; z-index: 30;
+      }
+      #apstrc-open:active { background: rgba(74,222,128,0.15); }
+
+      .apstrc-modal {
+        position: fixed; inset: 0; z-index: 100;
+        background: rgba(0,0,0,0.75);
+        display: flex; align-items: center; justify-content: center;
+        padding: 12px; backdrop-filter: blur(6px);
+      }
+      .apstrc-modal.hidden { display: none; }
+
+      .apstrc-card {
+        background: #0e0e0e; border: 1px solid #2a2a2a;
+        border-radius: 14px;
+        width: 100%; max-width: 720px;
+        max-height: 96vh; overflow: auto;
+        font-family: system-ui, sans-serif; color: #e8e8e8;
+      }
+      .apstrc-head {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 14px 18px; border-bottom: 1px solid #1f1f1f;
+        position: sticky; top: 0; background: #0e0e0e; z-index: 2;
+      }
+      .apstrc-head h2 { margin: 0; font-size: 1em; color: #4ade80; font-weight: 600; }
+      .apstrc-close {
+        background: none; border: none; color: #888;
+        font-size: 1.4em; cursor: pointer; padding: 0 6px;
+      }
+
+      .apstrc-body {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 14px;
+      }
+      @media (min-width: 620px) {
+        .apstrc-body { grid-template-columns: 260px 1fr; }
+      }
+      .apstrc-svg-host {
+        background: #060606;
+        border: 1px solid #1a1a1a;
+        border-radius: 10px;
+        padding: 6px;
+        display: flex; justify-content: center;
+      }
+      .apstrc-svg { width: 100%; max-width: 260px; height: auto; display: block; }
+
+      .lbl { font-size: 9px; fill: #888; }
+      .lbl-line { stroke: #444; stroke-width: 0.6; }
+
+      .apstrc-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+      .apstrc-tab {
+        flex: 1 1 30%;
+        background: #141414; color: #ccc;
+        border: 1px solid #262626; border-radius: 8px;
+        padding: 8px 6px; cursor: pointer;
+        display: flex; flex-direction: column; align-items: center; gap: 2px;
+        font-family: inherit;
+      }
+      .apstrc-tab .ltr { font-size: 1.1em; font-weight: 700; color: #4ade80; }
+      .apstrc-tab .full { font-size: 0.66em; color: #888; text-align: center; }
+      .apstrc-tab.active { background: #1a2a1e; border-color: #4ade80; }
+      .apstrc-tab.active .full { color: #a8e8ba; }
+
+      .apstrc-stage-head {
+        display: flex; justify-content: space-between; align-items: baseline;
+        margin-bottom: 4px;
+      }
+      .apstrc-stage-name { font-size: 0.9em; color: #aaa; }
+      .apstrc-stage-num  { font-size: 1.3em; font-weight: 700; color: #4ade80; }
+      .apstrc-slider {
+        width: 100%; appearance: none; height: 6px;
+        background: #262626; border-radius: 3px; outline: none;
+      }
+      .apstrc-slider::-webkit-slider-thumb {
+        appearance: none; width: 22px; height: 22px;
+        background: #4ade80; border-radius: 50%; cursor: pointer;
+        box-shadow: 0 0 10px rgba(74,222,128,0.5);
+      }
+      .apstrc-ticks {
+        display: flex; justify-content: space-between;
+        font-size: 0.7em; color: #666; padding: 0 8px; margin-top: 4px;
+      }
+
+      .apstrc-desc {
+        margin-top: 14px; font-size: 0.86em; line-height: 1.45;
+        color: #d8d8d8; min-height: 3.6em;
+        padding: 12px; border-left: 3px solid #4ade80;
+        background: #131313; border-radius: 0 8px 8px 0;
+      }
+
+      .apstrc-compare {
+        display: flex; align-items: center; gap: 8px;
+        margin-top: 12px; font-size: 0.8em; color: #999; cursor: pointer;
+      }
+      .apstrc-hint {
+        margin-top: 12px; font-size: 0.72em; color: #666;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  // Open button in the corner
+  const openBtn = document.createElement('button');
+  openBtn.id = 'apstrc-open';
+  openBtn.textContent = 'APSRTC';
+  document.body.appendChild(openBtn);
+
+  // Modal
+  const modal = buildUI();
+  const svgHost = modal.querySelector('.apstrc-svg-host');
+  const svg = buildSVG();
+  svgHost.appendChild(svg);
+
+  const slider = modal.querySelector('#apstrc-slider');
+  const stageName = modal.querySelector('#apstrc-stage-name');
+  const stageNum = modal.querySelector('#apstrc-stage-num');
+  const desc = modal.querySelector('#apstrc-desc');
+  const tabs = modal.querySelectorAll('.apstrc-tab');
+
+  function syncUI() {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.c === state.active));
+    const c = CRITERIA.find(x => x.id === state.active);
+    stageName.textContent = c.name;
+    const s = state.stages[state.active];
+    stageNum.textContent = s;
+    slider.value = s;
+    desc.textContent = DESCRIPTIONS[state.active][s];
+    render(svg);
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => {
+    state.active = t.dataset.c;
+    syncUI();
+  }));
+
+  slider.addEventListener('input', () => {
+    state.stages[state.active] = parseInt(slider.value, 10);
+    syncUI();
+  });
+
+  openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+  modal.querySelector('.apstrc-close').addEventListener('click',
+    () => modal.classList.add('hidden'));
+  modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.add('hidden');
+  });
+
+  syncUI();
+  console.log('APSRTC ready');
+}
+
+return { init };
+})();
+
+window.APSRTC = APSRTC;
+
+========== END apstrc.js ==========
+
+========== BEGIN data.json ==========
+{
+  "deciduousTeeth": {
+    "51": {
+      "name": "Upper Right Deciduous Central Incisor",
+      "eruption": 0.7,
+      "fall": 6.5,
+      "eruptionRange": [
+        0.58,
+        0.75
+      ]
+    },
+    "61": {
+      "name": "Upper Left Deciduous Central Incisor",
+      "eruption": 0.7,
+      "fall": 6.5,
+      "eruptionRange": [
+        0.58,
+        0.75
+      ]
+    },
+    "71": {
+      "name": "Lower Left Deciduous Central Incisor",
+      "eruption": 0.6,
+      "fall": 6.5,
+      "eruptionRange": [
+        0.5,
+        0.67
+      ]
+    },
+    "81": {
+      "name": "Lower Right Deciduous Central Incisor",
+      "eruption": 0.6,
+      "fall": 6.5,
+      "eruptionRange": [
+        0.5,
+        0.67
+      ]
+    },
+    "52": {
+      "name": "Upper Right Deciduous Lateral Incisor",
+      "eruption": 0.8,
+      "fall": 7.5,
+      "eruptionRange": [
+        0.58,
+        0.75
+      ]
+    },
+    "62": {
+      "name": "Upper Left Deciduous Lateral Incisor",
+      "eruption": 0.8,
+      "fall": 7.5,
+      "eruptionRange": [
+        0.58,
+        0.75
+      ]
+    },
+    "72": {
+      "name": "Lower Left Deciduous Lateral Incisor",
+      "eruption": 0.9,
+      "fall": 7.5,
+      "eruptionRange": [
+        0.83,
+        1.0
+      ]
+    },
+    "82": {
+      "name": "Lower Right Deciduous Lateral Incisor",
+      "eruption": 0.9,
+      "fall": 7.5,
+      "eruptionRange": [
+        0.83,
+        1.0
+      ]
+    },
+    "53": {
+      "name": "Upper Right Deciduous Canine",
+      "eruption": 1.5,
+      "fall": 11.5,
+      "eruptionRange": [
+        1.42,
+        1.5
+      ]
+    },
+    "63": {
+      "name": "Upper Left Deciduous Canine",
+      "eruption": 1.5,
+      "fall": 11.5,
+      "eruptionRange": [
+        1.42,
+        1.5
+      ]
+    },
+    "73": {
+      "name": "Lower Left Deciduous Canine",
+      "eruption": 1.5,
+      "fall": 10.5,
+      "eruptionRange": [
+        1.42,
+        1.5
+      ]
+    },
+    "83": {
+      "name": "Lower Right Deciduous Canine",
+      "eruption": 1.5,
+      "fall": 10.5,
+      "eruptionRange": [
+        1.42,
+        1.5
+      ]
+    },
+    "54": {
+      "name": "Upper Right Deciduous First Molar",
+      "eruption": 1.2,
+      "fall": 10.5,
+      "eruptionRange": [
+        1.0,
+        1.17
+      ]
+    },
+    "64": {
+      "name": "Upper Left Deciduous First Molar",
+      "eruption": 1.2,
+      "fall": 10.5,
+      "eruptionRange": [
+        1.0,
+        1.17
+      ]
+    },
+    "74": {
+      "name": "Lower Left Deciduous First Molar",
+      "eruption": 1.1,
+      "fall": 10.0,
+      "eruptionRange": [
+        1.0,
+        1.17
+      ]
+    },
+    "84": {
+      "name": "Lower Right Deciduous First Molar",
+      "eruption": 1.1,
+      "fall": 10.0,
+      "eruptionRange": [
+        1.0,
+        1.17
+      ]
+    },
+    "55": {
+      "name": "Upper Right Deciduous Second Molar",
+      "eruption": 2.0,
+      "fall": 11.0,
+      "eruptionRange": [
+        1.67,
+        2.5
+      ]
+    },
+    "65": {
+      "name": "Upper Left Deciduous Second Molar",
+      "eruption": 2.0,
+      "fall": 11.0,
+      "eruptionRange": [
+        1.67,
+        2.5
+      ]
+    },
+    "75": {
+      "name": "Lower Left Deciduous Second Molar",
+      "eruption": 2.0,
+      "fall": 11.0,
+      "eruptionRange": [
+        1.67,
+        2.5
+      ]
+    },
+    "85": {
+      "name": "Lower Right Deciduous Second Molar",
+      "eruption": 2.0,
+      "fall": 11.0,
+      "eruptionRange": [
+        1.67,
+        2.5
+      ]
+    }
+  },
+  "permanentTeeth": {
+    "36": {
+      "name": "Lower Left First Molar",
+      "eruption": 6.0,
+      "eruptionRange": [
+        6,
+        7
+      ]
+    },
+    "46": {
+      "name": "Lower Right First Molar",
+      "eruption": 6.0,
+      "eruptionRange": [
+        6,
+        7
+      ]
+    },
+    "16": {
+      "name": "Upper Right First Molar",
+      "eruption": 6.5,
+      "eruptionRange": [
+        6,
+        7
+      ]
+    },
+    "26": {
+      "name": "Upper Left First Molar",
+      "eruption": 6.5,
+      "eruptionRange": [
+        6,
+        7
+      ]
+    },
+    "31": {
+      "name": "Lower Left Central Incisor",
+      "eruption": 6.5,
+      "eruptionRange": [
+        6,
+        8
+      ]
+    },
+    "41": {
+      "name": "Lower Right Central Incisor",
+      "eruption": 6.5,
+      "eruptionRange": [
+        6,
+        8
+      ]
+    },
+    "11": {
+      "name": "Upper Right Central Incisor",
+      "eruption": 7.0,
+      "eruptionRange": [
+        6,
+        8
+      ]
+    },
+    "21": {
+      "name": "Upper Left Central Incisor",
+      "eruption": 7.0,
+      "eruptionRange": [
+        6,
+        8
+      ]
+    },
+    "12": {
+      "name": "Upper Right Lateral Incisor",
+      "eruption": 7.5,
+      "eruptionRange": [
+        7,
+        9
+      ]
+    },
+    "22": {
+      "name": "Upper Left Lateral Incisor",
+      "eruption": 7.5,
+      "eruptionRange": [
+        7,
+        9
+      ]
+    },
+    "32": {
+      "name": "Lower Left Lateral Incisor",
+      "eruption": 8.0,
+      "eruptionRange": [
+        7,
+        9
+      ]
+    },
+    "42": {
+      "name": "Lower Right Lateral Incisor",
+      "eruption": 8.0,
+      "eruptionRange": [
+        7,
+        9
+      ]
+    },
+    "33": {
+      "name": "Lower Left Canine",
+      "eruption": 9.5,
+      "eruptionRange": [
+        9,
+        10
+      ]
+    },
+    "43": {
+      "name": "Lower Right Canine",
+      "eruption": 9.5,
+      "eruptionRange": [
+        9,
+        10
+      ]
+    },
+    "34": {
+      "name": "Lower Left First Premolar",
+      "eruption": 10.0,
+      "eruptionRange": [
+        9,
+        11
+      ]
+    },
+    "44": {
+      "name": "Lower Right First Premolar",
+      "eruption": 10.0,
+      "eruptionRange": [
+        9,
+        11
+      ]
+    },
+    "35": {
+      "name": "Lower Left Second Premolar",
+      "eruption": 10.5,
+      "eruptionRange": [
+        10,
+        12
+      ]
+    },
+    "45": {
+      "name": "Lower Right Second Premolar",
+      "eruption": 10.5,
+      "eruptionRange": [
+        10,
+        12
+      ]
+    },
+    "14": {
+      "name": "Upper Right First Premolar",
+      "eruption": 10.5,
+      "eruptionRange": [
+        9,
+        11
+      ]
+    },
+    "24": {
+      "name": "Upper Left First Premolar",
+      "eruption": 10.5,
+      "eruptionRange": [
+        9,
+        11
+      ]
+    },
+    "15": {
+      "name": "Upper Right Second Premolar",
+      "eruption": 11.0,
+      "eruptionRange": [
+        10,
+        12
+      ]
+    },
+    "25": {
+      "name": "Upper Left Second Premolar",
+      "eruption": 11.0,
+      "eruptionRange": [
+        10,
+        12
+      ]
+    },
+    "37": {
+      "name": "Lower Left Second Molar",
+      "eruption": 11.0,
+      "eruptionRange": [
+        11,
+        13
+      ]
+    },
+    "47": {
+      "name": "Lower Right Second Molar",
+      "eruption": 11.0,
+      "eruptionRange": [
+        11,
+        13
+      ]
+    },
+    "13": {
+      "name": "Upper Right Canine",
+      "eruption": 11.5,
+      "eruptionRange": [
+        11,
+        12
+      ]
+    },
+    "23": {
+      "name": "Upper Left Canine",
+      "eruption": 11.5,
+      "eruptionRange": [
+        11,
+        12
+      ]
+    },
+    "17": {
+      "name": "Upper Right Second Molar",
+      "eruption": 12.0,
+      "eruptionRange": [
+        12,
+        14
+      ]
+    },
+    "27": {
+      "name": "Upper Left Second Molar",
+      "eruption": 12.0,
+      "eruptionRange": [
+        12,
+        14
+      ]
+    },
+    "38": {
+      "name": "Lower Left Third Molar",
+      "eruption": 17.0,
+      "eruptionRange": [
+        17,
+        21
+      ]
+    },
+    "48": {
+      "name": "Lower Right Third Molar",
+      "eruption": 18.0,
+      "eruptionRange": [
+        17,
+        21
+      ]
+    },
+    "18": {
+      "name": "Upper Right Third Molar",
+      "eruption": 18.0,
+      "eruptionRange": [
+        17,
+        25
+      ]
+    },
+    "28": {
+      "name": "Upper Left Third Molar",
+      "eruption": 20.0,
+      "eruptionRange": [
+        17,
+        25
+      ]
+    }
+  },
+  "thirdMolars": {
+    "38": {
+      "name": "Lower Left Third Molar",
+      "eruption": 17.0
+    },
+    "48": {
+      "name": "Lower Right Third Molar",
+      "eruption": 18.0
+    },
+    "18": {
+      "name": "Upper Right Third Molar",
+      "eruption": 18.0
+    },
+    "28": {
+      "name": "Upper Left Third Molar",
+      "eruption": 20.0
+    }
+  }
+}
+========== END data.json ==========
