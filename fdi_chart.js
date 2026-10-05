@@ -42,9 +42,9 @@ function renderInfo(fdi){
 }
 function handleClick(fdi){
   if(state.mode==='learn'){
-    if(state.currentFDI) window.appAPI.clearHighlight(state.currentFDI);
+    if(state.currentFDI) if(window.appAPI&&window.appAPI.clearHighlight)window.appAPI.clearHighlight(state.currentFDI);
     state.currentFDI=fdi;
-    window.appAPI.highlightTooth(fdi,0x4ade80);
+    if(window.appAPI&&window.appAPI.highlightTooth)window.appAPI.highlightTooth(fdi,0x4ade80);
     document.querySelector('.fdi-info-host').innerHTML = renderInfo(fdi);
     return;
   }
@@ -55,7 +55,7 @@ function handleClick(fdi){
   state.test.total++;
   const host = document.querySelector('.fdi-feedback-host');
   host.innerHTML = correct ? `<span class="ok">Correct — it is ${fdi}.</span>` : `<span class="no">Wrong — you picked ${fdi}; correct answer was <b>${state.test.target}</b>.</span>`;
-  window.appAPI.clearAllHighlights();
+  if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights();
   if(state.test.total>=10){
     setTimeout(()=>{ const pct=Math.round(100*state.test.correct/state.test.total); host.innerHTML=`<span class="score">Score ${state.test.correct}/${state.test.total} (${pct}%)</span>`; state.test.active=false; state.test.locked=false; },1200);
     return;
@@ -82,21 +82,22 @@ function nextQuestion(){
   const host = document.querySelector('.fdi-feedback-host');
   if(!fdi){ host.innerHTML=`<span class="no">No teeth visible at age ${window.appAPI.getCurrentAge().toFixed(1)}. Increase the slider.</span>`; state.test.active=false; return; }
   state.test.target=fdi;
-  window.appAPI.clearAllHighlights();
-  window.appAPI.highlightTooth(fdi,0xf59e0b);
+  if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights();
+  if(window.appAPI&&window.appAPI.highlightTooth)window.appAPI.highlightTooth(fdi,0xf59e0b);
   host.innerHTML = `Question ${state.test.total+1} of 10 · Score ${state.test.correct}/${state.test.total}`;
 }
 function startTest(){ state.test={active:true,target:null,total:0,correct:0,locked:false}; state.mode='test'; nextQuestion(); }
-function open(){ state.open=true; document.getElementById('fdi-panel').classList.add('open'); const s=document.querySelector('#bottom-panel'); if(s)s.style.display='none'; }
-function close(){ state.open=false; document.getElementById('fdi-panel').classList.remove('open'); const s=document.querySelector('#bottom-panel'); if(s)s.style.display=''; window.appAPI.clearAllHighlights(); state.currentFDI=null; }
+function open(){ state.open=true; document.getElementById('fdi-panel').classList.add('open'); }
+function close(){ state.open=false; document.getElementById('fdi-panel').classList.remove('open'); if(window.appAPI&&window.appAPI.clearAllHighlights)if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights(); state.currentFDI=null; }
 function injectStyles(){
   if(document.getElementById('fdi-styles')) return;
   const s=document.createElement('style'); s.id='fdi-styles';
   s.textContent=`
     #fdi-open{position:fixed;right:12px;bottom:150px;background:rgba(10,10,10,0.9);color:#60a5fa;border:1px solid #2a2a2a;border-radius:10px;padding:10px 14px;font-family:system-ui,sans-serif;font-size:0.78em;font-weight:600;cursor:pointer;z-index:30;}
     #fdi-open:active{background:rgba(96,165,250,0.15);}
-    #fdi-panel{position:fixed;left:0;right:0;bottom:0;max-height:62vh;background:#0c0c0c;border-top:2px solid #1f2937;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.22s ease;z-index:40;font-family:system-ui,sans-serif;}
-    #fdi-panel.open{transform:translateY(0);}
+    #fdi-panel{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;flex-direction:column;justify-content:flex-end;z-index:50;font-family:system-ui,sans-serif;}
+    #fdi-panel.open{display:flex;}
+    #fdi-panel>.fdi-head,#fdi-panel>.fdi-arc,#fdi-panel>.fdi-chart-host,#fdi-panel>.fdi-info-host,#fdi-panel>.fdi-feedback-host{background:#0c0c0c;}
     #fdi-panel .fdi-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1a1a1a;}
     #fdi-panel .fdi-head h3{margin:0;font-size:0.85em;color:#60a5fa;font-weight:600;letter-spacing:0.5px;}
     #fdi-panel .fdi-modes{display:flex;gap:6px;}
@@ -151,7 +152,7 @@ function init(){
     });
     document.querySelector('.fdi-info-host').innerHTML='';
     document.querySelector('.fdi-feedback-host').innerHTML='';
-    window.appAPI.clearAllHighlights(); state.currentFDI=null;
+    if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights(); state.currentFDI=null;
   }
   rebuild();
   panel.querySelectorAll('.fdi-modes button').forEach(b=>{
@@ -172,6 +173,7 @@ function init(){
     });
   });
   openBtn.addEventListener('click',()=>{ state.open ? close() : open(); });
+  panel.addEventListener('click', e => { if (e.target === panel) close(); });
   console.log('FDIChart ready');
 }
 return { init, open, close };
