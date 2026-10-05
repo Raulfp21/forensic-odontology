@@ -1,0 +1,202 @@
+/usr/share/blender/scripts/addons/io_scene_gltf2/io/exp/gltf2_io_image_data.py:25: SyntaxWarning: invalid escape sequence '\.'
+  regex_dot = re.compile("\.")
+/usr/share/blender/scripts/addons/io_scene_gltf2/io/exp/gltf2_io_image_data.py:27: SyntaxWarning: invalid escape sequence '\]'
+  new_name = "".join([char for char in adjusted_name if char not in "!#$&'()*+,/:;<>?@[\]^`{|}~"])
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.23s
+tooth_21 ctr=(0.0045,-0.0869,1.5392) sz=0.0258
+tooth_22 ctr=(0.0112,-0.0846,1.5397) sz=0.0282
+tooth_23 ctr=(0.0171,-0.0814,1.5424) sz=0.0306
+tooth_24 ctr=(0.0201,-0.0738,1.5426) sz=0.0277
+tooth_25 ctr=(0.0231,-0.0678,1.5423) sz=0.0253
+tooth_31 ctr=(0.0032,-0.0796,1.5151) sz=0.0247
+tooth_32 ctr=(0.0081,-0.0796,1.5152) sz=0.0245
+tooth_33 ctr=(0.0128,-0.0763,1.5147) sz=0.0262
+tooth_34 ctr=(0.0169,-0.0709,1.5175) sz=0.0220
+tooth_35 ctr=(0.0199,-0.0646,1.5184) sz=0.0228
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.11s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.02s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.09s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.03s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.10s
+
+--- Fresh diagnostic ---
+  Mandible                            Z[1.496,1.579]  center=1.537
+  Maxilla.l                           Z[1.537,1.605]  center=1.571
+  Maxilla.r                           Z[1.537,1.605]  center=1.571
+  tooth_11                            Z[1.526,1.552]  center=1.539
+  tooth_12                            Z[1.526,1.554]  center=1.540
+  tooth_13                            Z[1.527,1.558]  center=1.542
+  tooth_14                            Z[1.529,1.556]  center=1.543
+  tooth_15                            Z[1.530,1.555]  center=1.542
+  tooth_16                            Z[1.532,1.556]  center=1.544
+  tooth_17                            Z[1.535,1.557]  center=1.546
+  tooth_21                            Z[1.526,1.552]  center=1.539
+  tooth_22                            Z[1.526,1.554]  center=1.540
+  tooth_23                            Z[1.527,1.558]  center=1.542
+  tooth_24                            Z[1.529,1.556]  center=1.543
+  tooth_25                            Z[1.530,1.555]  center=1.542
+  tooth_26                            Z[1.532,1.556]  center=1.544
+  tooth_27                            Z[1.535,1.557]  center=1.546
+  tooth_31                            Z[1.503,1.527]  center=1.515
+  tooth_32                            Z[1.503,1.527]  center=1.515
+  tooth_33                            Z[1.502,1.528]  center=1.515
+  tooth_34                            Z[1.506,1.528]  center=1.517
+  tooth_35                            Z[1.507,1.530]  center=1.518
+  tooth_36                            Z[1.513,1.533]  center=1.523
+  tooth_37                            Z[1.519,1.537]  center=1.528
+  tooth_41                            Z[1.503,1.527]  center=1.515
+  tooth_42                            Z[1.503,1.527]  center=1.515
+  tooth_43                            Z[1.502,1.528]  center=1.515
+  tooth_44                            Z[1.506,1.528]  center=1.517
+  tooth_45                            Z[1.507,1.530]  center=1.518
+  tooth_46                            Z[1.513,1.533]  center=1.523
+  tooth_47                            Z[1.519,1.537]  center=1.528
+  tooth_51_mesh                       Z[1.530,1.549]  center=1.539
+  tooth_52_mesh                       Z[1.529,1.550]  center=1.540
+  tooth_53_mesh                       Z[1.531,1.554]  center=1.542
+  tooth_54_mesh                       Z[1.532,1.553]  center=1.543
+  tooth_55_mesh                       Z[1.533,1.552]  center=1.542
+  tooth_61_mesh                       Z[1.530,1.549]  center=1.539
+  tooth_62_mesh                       Z[1.529,1.550]  center=1.540
+  tooth_63_mesh                       Z[1.531,1.554]  center=1.542
+  tooth_64_mesh                       Z[1.532,1.553]  center=1.543
+  tooth_65_mesh                       Z[1.533,1.552]  center=1.542
+  tooth_71_mesh                       Z[1.506,1.524]  center=1.515
+  tooth_72_mesh                       Z[1.506,1.524]  center=1.515
+  tooth_73_mesh                       Z[1.505,1.525]  center=1.515
+  tooth_74_mesh                       Z[1.509,1.526]  center=1.517
+  tooth_75_mesh                       Z[1.510,1.527]  center=1.518
+  tooth_81_mesh                       Z[1.506,1.524]  center=1.515
+  tooth_82_mesh                       Z[1.506,1.524]  center=1.515
+  tooth_83_mesh                       Z[1.505,1.525]  center=1.515
+  tooth_84_mesh                       Z[1.509,1.526]  center=1.517
+  tooth_85_mesh                       Z[1.510,1.527]  center=1.518
+
+Final bbox: X[-0.052,0.052]  Y[-0.094,-0.002]  Z[1.496,1.605]
+Total tooth containers: 20
+03:06:58 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+03:06:58 | INFO: Starting glTF 2.0 export
+03:06:58 | INFO: Extracting primitive: Maxilla.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Maxilla.002
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Mandible.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper medial incisor.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper lateral incisor.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper canine.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower medial incisor.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower lateral incisor.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower canine.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper medial incisor.002
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper lateral incisor.002
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper canine.002
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower medial incisor.002
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower lateral incisor.002
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower canine.002
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper first premolar.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper second premolar.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper first molar tooth.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper second molar tooth.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower first premolar.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower second premolar.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower first molar tooth.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Lower second molar tooth.001
+03:06:58 | INFO: Primitives created: 1
+03:06:58 | INFO: Extracting primitive: Upper first premolar.002
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Upper second premolar.002
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Upper first molar tooth.002
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Upper second molar tooth.002
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Lower first premolar.002
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Lower second premolar.002
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Lower first molar tooth.002
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Lower second molar tooth.002
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.001
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.002
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.003
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.004
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.005
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.006
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.007
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.008
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.009
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.010
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.011
+03:06:59 | INFO: Primitives created: 1
+03:06:59 | INFO: Extracting primitive: Object_0.012
+03:07:00 | INFO: Primitives created: 1
+03:07:00 | INFO: Extracting primitive: Object_0.013
+03:07:00 | INFO: Primitives created: 1
+03:07:00 | INFO: Extracting primitive: Object_0.014
+03:07:00 | INFO: Primitives created: 1
+03:07:00 | INFO: Extracting primitive: Object_0.015
+03:07:00 | INFO: Primitives created: 1
+03:07:00 | INFO: Extracting primitive: Object_0.016
+03:07:00 | INFO: Primitives created: 1
+03:07:00 | INFO: Extracting primitive: Object_0.017
+03:07:00 | INFO: Primitives created: 1
+03:07:00 | INFO: Extracting primitive: Object_0.018
+03:07:00 | INFO: Primitives created: 1
+03:07:00 | INFO: Extracting primitive: Object_0.019
+03:07:00 | INFO: Primitives created: 1
+03:07:00 | INFO: Finished glTF 2.0 export in 2.078911066055298 s
+
+Exported: /workspaces/forensic-odontology/models/anatomy.glb
+Blender 4.0.2
+
+Blender quit
