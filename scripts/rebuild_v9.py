@@ -271,13 +271,14 @@ for fdi, srcfile in THIRD_MOLARS.items():
     # Target position: one tooth-width posterior (behind) and slightly inward
     is_upper = fdi[0] in '12'
     is_left = fdi in ('28', '38')
-    posterior = src_size * 1.05
-    inward = src_size * 0.10
+    posterior = src_size * 0.75
+    inward = src_size * 0.04
     side_dir = 1 if is_left else -1
+    # Arch is in X-Y plane. Posterior direction = -Y. Inward = -X for left teeth.
     tgt_center = Vector((
-        src_center.x + side_dir * inward,
-        src_center.y,
-        src_center.z - posterior,
+        src_center.x - side_dir * inward,
+        src_center.y - posterior,
+        src_center.z,
     ))
 
     bpy.ops.object.select_all(action='DESELECT')
