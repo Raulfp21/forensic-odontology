@@ -87,7 +87,7 @@ function nextQuestion(){
   host.innerHTML = `Question ${state.test.total+1} of 10 · Score ${state.test.correct}/${state.test.total}`;
 }
 function startTest(){ state.test={active:true,target:null,total:0,correct:0,locked:false}; state.mode='test'; nextQuestion(); }
-function open(){ state.open=true; if(window.__diagShow) window.__diagShow('[FDI] open'); document.getElementById('fdi-panel').classList.remove('hidden'); }
+function open(){ state.open=true; document.getElementById('fdi-panel').classList.remove('hidden'); }
 function close(){ state.open=false; document.getElementById('fdi-panel').classList.add('hidden'); if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights(); state.currentFDI=null; }
 function injectStyles(){
   if(document.getElementById('fdi-styles')) return;
@@ -175,8 +175,7 @@ function init(){
   });
   openBtn.addEventListener('click',()=>{ state.open ? close() : open(); });
   panel.addEventListener('click', e => { if (e.target === panel) close(); });
-  if(window.__diagShow) window.__diagShow('[FDI] init done, button attached');
-  console.log('FDIChart ready');
+    console.log('FDIChart ready');
 }
 return { init, open, close };
 })();
