@@ -9,7 +9,8 @@ PERM_DIR = "/workspaces/forensic-odontology/deciduous_raw/models"
 MOLAR_SIZE_FACTOR = 0.85
 DECIDUOUS_TOTAL_RATIO = 0.85
 ROOT_FRACTION = 0.45
-ROOT_COMPRESS = 0.35
+ROOT_COMPRESS = 0.20
+SOCKET_BURY = 0.012   # shift entire tooth into the socket (fraction of model height)
 
 # Which molar FDI codes need mirroring. Source GLBs from Dundee are
 # side-agnostic; we assume the imported shape is anatomically "left"
@@ -208,6 +209,11 @@ for fname in sorted(os.listdir(DEC_DIR)):
 
     is_upper = fdi[0] in '56'
     compress_root(meshes, is_upper)
+    bury = SOCKET_BURY * tgt["size"]
+    for m in meshes:
+        for v in m.data.vertices:
+            v.co.z += (1 if is_upper else -1) * bury
+        m.data.update()
 
     bpy.ops.object.select_all(action='DESELECT')
     for m in meshes: m.select_set(True)
