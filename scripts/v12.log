@@ -1,0 +1,222 @@
+/usr/share/blender/scripts/addons/io_scene_gltf2/io/exp/gltf2_io_image_data.py:25: SyntaxWarning: invalid escape sequence '\.'
+  regex_dot = re.compile("\.")
+/usr/share/blender/scripts/addons/io_scene_gltf2/io/exp/gltf2_io_image_data.py:27: SyntaxWarning: invalid escape sequence '\]'
+  new_name = "".join([char for char in adjusted_name if char not in "!#$&'()*+,/:;<>?@[\]^`{|}~"])
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.23s
+Sanity: tooth_11 Z[1.5263,1.5520]  tooth_31 Z[1.5027,1.5274]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.25s
+swapped tooth_16 (scale 0.0260)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.25s
+  mirrored molar 26 around x=0.0242
+swapped tooth_26 (scale 0.0260)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.16s
+swapped tooth_36 (scale 0.0089)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.16s
+  mirrored molar 46 around x=-0.0228
+swapped tooth_46 (scale 0.0089)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.09s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.08s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.03s
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.09s
+V10 18: c6=(-0.0242, -0.0591, 1.5437) c7=(-0.0237, -0.0507, 1.5463) tgt=(-0.0233, -0.0431, 1.5486)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.14s
+added tooth_18 (scale 0.0136)
+V10 28: c6=(0.0242, -0.0591, 1.5437) c7=(0.0237, -0.0507, 1.5463) tgt=(0.0233, -0.0431, 1.5486)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.13s
+added tooth_28 (scale 0.0136)
+V10 38: c6=(0.0228, -0.0573, 1.5231) c7=(0.0262, -0.0457, 1.5277) tgt=(0.0293, -0.0353, 1.5319)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.13s
+added tooth_38 (scale 0.0113)
+V10 48: c6=(-0.0228, -0.0573, 1.5231) c7=(-0.0262, -0.0457, 1.5277) tgt=(-0.0293, -0.0353, 1.5319)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.13s
+added tooth_48 (scale 0.0113)
+
+Final bbox: X[-0.0517,0.0517]  Y[-0.0939,-0.0018]  Z[1.4963,1.6052]
+V11 old teeth found: 32/32
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.18s
+V11 new meshes: 32 (upper 16, lower 16)
+V11 upper: scale=0.02719 yaw=1.78deg fitRMS=0.00265 (10.3% of tooth size) zmode=occ
+V11 lower: scale=0.02778 yaw=1.82deg fitRMS=0.00144 (6.5% of tooth size) zmode=occ
+V11 fdi  src_mesh                              size_ratio  dx%   dy%   dz%  occ%
+V11 18   polySurface12_blinn20_0                0.68   -14.9  -1.9 -17.8  -1.6
+V11 17   polySurface10_blinn19_0                0.70     0.0   0.0 -15.0   0.0
+V11 16   polySurface8_blinn18_0                 0.90     0.0  -0.0  -5.0   0.0
+V11 15   ZBrushPolyMesh3D9_blinn17_0            0.71     0.0   0.0 -14.3   0.0
+V11 14   ZBrushPolyMesh3D8_blinn16_0            0.73     0.0   0.0 -13.3   0.0
+V11 13   polySurface6_blinn15_0                 0.65     0.0   0.0 -17.6   0.0
+V11 12   polySurface4_blinn14_0                 0.69     0.0   0.0 -15.4   0.0
+V11 11   polySurface2_UL1_0                     0.83    -0.0   0.0  -8.6   0.0
+V11 21   polySurface1_UL1_0                     0.83     0.0   0.0  -8.6   0.0
+V11 22   ZBrushPolyMesh3D1_blinn14_0            0.69     0.0   0.0 -15.7   0.0
+V11 23   ZBrushPolyMesh3D2_blinn15_0            0.67     0.0   0.0 -16.6   0.0
+V11 24   ZBrushPolyMesh3D3_blinn16_0            0.73     0.0   0.0 -13.3   0.0
+V11 25   ZBrushPolyMesh3D4_blinn17_0            0.72     0.0   0.0 -14.2   0.0
+V11 26   ZBrushPolyMesh3D5_blinn18_0            0.90     0.0   0.0  -5.0   0.0
+V11 27   polySurface9_blinn19_0                 0.70     0.0   0.0 -15.2   0.0
+V11 28   ZBrushPolyMesh3D7_blinn20_0            0.66     7.5  -2.3 -20.0  -3.3
+V11 48   ZBrushPolyMesh3D_Mandible_ll8_0        0.87    -5.1 -15.4  -3.2  -9.5
+V11 47   ZBrushPolyMesh3D1_Mandible_ll7_0       0.98     0.0   0.0   1.0   0.0
+V11 46   ZBrushPolyMesh3D2_Mandible_blinn10_0   1.14     0.0   0.0  -6.9   0.0
+V11 45   ZBrushPolyMesh3D4_Mandible_ll5_0       0.91     0.0  -0.0   4.7   0.0
+V11 44   ZBrushPolyMesh3D3_Mandible_ll4_0       0.92     0.0   0.0   4.0   0.0
+V11 43   ZBrushPolyMesh3D5_Mandible_ll3_0       0.83     0.0   0.0   8.6   0.0
+V11 42   ZBrushPolyMesh3D6_Mandible_l2_0        0.77     0.0   0.0  11.3   0.0
+V11 41   ZBrushPolyMesh3D7_Mandible_ll1_0       0.82    -0.0   0.0   8.8   0.0
+V11 31   LL1seam_2:ZBrushPolyMesh3D_Mandible_   0.82    -0.0   0.0   8.8   0.0
+V11 32   LL2seam_2:ZBrushPolyMesh3D_Mandible_   0.77    -0.0   0.0  11.3   0.0
+V11 33   LL3seam_2:ZBrushPolyMesh3D_Mandible_   0.85     0.0   0.0   7.6   0.0
+V11 34   LL4seam_2:ZBrushPolyMesh3D_Mandible_   0.92     0.0   0.0   4.0   0.0
+V11 35   LL5seam_3:ZBrushPolyMesh3D_Mandible_   0.89     0.0   0.0   5.3   0.0
+V11 36   LL6seam_2:ZBrushPolyMesh3D_Mandible_   1.14     0.0  -0.0  -7.0   0.0
+V11 37   LL7seam_2:ZBrushPolyMesh3D_Mandible_   0.99     0.0   0.0   0.5   0.0
+V11 38   LL8seam_2:ZBrushPolyMesh3D_Mandible_   0.86    -0.4 -14.9  -8.3 -15.0
+V11 done: 32 permanent teeth replaced
+V12 bones: [('mand', 'Mandible'), ('max', 'Maxilla.l'), ('max', 'Maxilla.r')]
+V12 maxilla: back end y=-40.1mm, 8s rear y=-39.5mm -> extended 6.5mm
+V12 mandible: ramus moved back 8.5mm (per side: [8.0, 9.0])
+V12 sockets: pass1 moved 2835 verts (max 2.88mm), pass2 299 (max 0.89mm), pass3 232 left to fix
+V12 done
+08:49:26 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+08:49:26 | INFO: Starting glTF 2.0 export
+08:49:26 | INFO: Extracting primitive: Maxilla.001
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Maxilla.002
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Mandible.001
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.004
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.005
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.006
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.007
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.008
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.009
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.010
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.011
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.012
+08:49:26 | INFO: Primitives created: 1
+08:49:26 | INFO: Extracting primitive: Object_0.013
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.014
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.015
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.016
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.017
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.018
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.019
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.020
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.021
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.022
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: Object_0.023
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: polySurface12_blinn20_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: polySurface10_blinn19_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: polySurface8_blinn18_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D9_blinn17_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D8_blinn16_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: polySurface6_blinn15_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: polySurface4_blinn14_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: polySurface2_UL1_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: polySurface1_UL1_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D1_blinn14_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D2_blinn15_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D3_blinn16_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D4_blinn17_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D5_blinn18_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: polySurface9_blinn19_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D7_blinn20_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D_Mandible_ll8_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D1_Mandible_ll7_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D2_Mandible_blinn10_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D4_Mandible_ll5_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D3_Mandible_ll4_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D5_Mandible_ll3_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D6_Mandible_l2_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: ZBrushPolyMesh3D7_Mandible_ll1_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: LL1seam_2:ZBrushPolyMesh3D_Mandible_ll1_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: LL2seam_2:ZBrushPolyMesh3D_Mandible_l2_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: LL3seam_2:ZBrushPolyMesh3D_Mandible_ll3_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: LL4seam_2:ZBrushPolyMesh3D_Mandible_ll4_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: LL5seam_3:ZBrushPolyMesh3D_Mandible_ll5_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: LL6seam_2:ZBrushPolyMesh3D_Mandible_blinn10_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: LL7seam_2:ZBrushPolyMesh3D_Mandible_ll7_0
+08:49:27 | INFO: Primitives created: 1
+08:49:27 | INFO: Extracting primitive: LL8seam_2:ZBrushPolyMesh3D_Mandible_ll8_0
+08:49:27 | INFO: Primitives created: 1
+08:49:28 | INFO: Finished glTF 2.0 export in 1.7377285957336426 s
+
+Exported: /workspaces/forensic-odontology/models/anatomy_v12.glb
+Blender 4.0.2
+
+Blender quit
