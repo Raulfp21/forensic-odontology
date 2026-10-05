@@ -88,7 +88,7 @@ function nextQuestion(){
 }
 function startTest(){ state.test={active:true,target:null,total:0,correct:0,locked:false}; state.mode='test'; nextQuestion(); }
 function open(){ state.open=true; document.getElementById('fdi-panel').classList.add('open'); }
-function close(){ state.open=false; document.getElementById('fdi-panel').classList.remove('open'); if(window.appAPI&&window.appAPI.clearAllHighlights)if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights(); state.currentFDI=null; }
+function close(){ state.open=false; document.getElementById('fdi-panel').classList.remove('open'); if(window.appAPI&&window.appAPI.clearAllHighlights)window.appAPI.clearAllHighlights(); state.currentFDI=null; }
 function injectStyles(){
   if(document.getElementById('fdi-styles')) return;
   const s=document.createElement('style'); s.id='fdi-styles';
