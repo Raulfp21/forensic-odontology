@@ -30,47 +30,82 @@ let dentalData = null;
 let frontView = null;
 let maxDim = 0.15;
 
-// Per-tooth Y offset (in model units) to sink deciduous roots into the socket
-// Positive = push up (into maxilla for upper, into mandible for lower)
-// Tune these after viewing
-const DECIDUOUS_SOCKET_OFFSET = {
-  // upper
-  '51': 0, '61': 0, '52': 0, '62': 0, '53': 0, '63': 0,
-  '54': 0, '64': 0, '55': 0, '65': 0,
-  // lower — push down slightly so roots stay inside mandible
-  '71': 0, '81': 0, '72': 0, '82': 0, '73': 0, '83': 0,
-  '74': 0, '84': 0, '75': 0, '85': 0,
-};
+// Per-tooth socket offset (multiples of maxDim) to sink deciduous roots into bone.
+// Positive value pushes the tooth INTO its socket.
+const DECIDUOUS_SOCKET_OFFSET = {};
 
-const loader = new GLTFLoader();
-Promise.all([
-  fetch('./data.json').then(r => r.json()),
-  new Promise((res, rej) => loader.load('./models/anatomy.glb', res, rej))
-]).then(([d, gltf]) => {
-  dentalData = d;
+function setStatus(msg) {
+  const el = document.getElementById('loading');
+  el.classList.remove('hidden');
+  el.textContent = msg;
+  console.log('[status]', msg);
+}
+
+// ---- Load data first ----
+fetch('./data.json')
+  .then(r => {
+    if (!r.ok) throw new Error('data.json HTTP ' + r.status);
+    return r.json();
+  })
+  .then(d => {
+    dentalData = d;
+    setStatus('Data loaded. Loading anatomy.glb (12 MB)...');
+    return loadGLB('./models/anatomy.glb');
+  })
+  .then(gltf => {
+    setStatus('Model loaded. Processing...');
+    try {
+      buildScene(gltf);
+      document.getElementById('loading').classList.add('hidden');
+      updateAge(0);
+    } catch (err) {
+      console.error('buildScene failed:', err);
+      setStatus('buildScene error: ' + (err && err.message ? err.message : String(err)));
+    }
+  })
+  .catch(err => {
+    console.error('Fatal load error:', err);
+    setStatus('Error: ' + (err && err.message ? err.message : String(err)));
+  });
+
+function loadGLB(url) {
+  return new Promise((resolve, reject) => {
+    const loader = new GLTFLoader();
+    loader.load(
+      url,
+      g => resolve(g),
+      evt => {
+        // progress
+        if (evt.total) {
+          const pct = Math.round(100 * evt.loaded / evt.total);
+          setStatus(`Loading model ${pct}%`);
+        }
+      },
+      err => reject(err instanceof Error ? err : new Error('GLB load failed'))
+    );
+  });
+}
+
+function buildScene(gltf) {
   const model = gltf.scene;
   scene.add(model);
 
-  // ----- ROBUST molar-shell fix -----
-  // Find any object whose name starts with tooth_36 or tooth_46 and hide extra children
+  // ---- Hide extra shells on tooth_36 / tooth_46 ----
   ['36', '46'].forEach(fdi => {
-    let parent = null;
+    const target = `tooth_${fdi}`;
+    let parentGroup = null;
     model.traverse(o => {
-      if (!parent && o.name === `tooth_${fdi}`) parent = o;
+      if (!parentGroup && o.name === target) parentGroup = o;
     });
-    if (!parent) {
-      console.warn(`Could not find tooth_${fdi} group`);
+    if (!parentGroup) {
+      console.warn('tooth_' + fdi + ' group not found');
       return;
     }
     const meshes = [];
-    parent.traverse(o => { if (o.isMesh) meshes.push(o); });
-    // Keep the largest mesh, hide the rest
-    meshes.sort((a, b) =>
-      (b.geometry.attributes.position.count) - (a.geometry.attributes.position.count));
-    for (let i = 1; i < meshes.length; i++) {
-      meshes[i].visible = false;
-    }
-    console.log(`tooth_${fdi}: hid ${Math.max(0, meshes.length - 1)} extra shells`);
+    parentGroup.traverse(o => { if (o.isMesh) meshes.push(o); });
+    meshes.sort((a, b) => b.geometry.attributes.position.count - a.geometry.attributes.position.count);
+    for (let i = 1; i < meshes.length; i++) meshes[i].visible = false;
+    console.log('tooth_' + fdi + ': hid ' + (meshes.length - 1) + ' extra shells');
   });
 
   const box = new THREE.Box3().setFromObject(model);
@@ -87,71 +122,50 @@ Promise.all([
   controls.target.copy(frontView.target);
   controls.update();
 
-  // ----- Textbook colours -----
-  // Deciduous: chalky opaque white (bluish)
-  // Permanent: warmer ivory
-  // Bone: yellow-ivory
+  // ---- Textbook colours ----
   model.traverse(o => {
     if (!o.isMesh || o.visible === false) return;
 
-    let ancestor = o, groupName = '';
-    while (ancestor) {
-      if (/^tooth_[5-8]\d$/.test(ancestor.name)) { groupName = ancestor.name; break; }
-      if (/^tooth_\d{2}$/.test(ancestor.name)) { groupName = ancestor.name; break; }
-      if (['Mandible','Maxilla','Maxilla.l','Maxilla.r'].includes(ancestor.name)) {
-        groupName = ancestor.name; break;
+    let a = o, group = '';
+    while (a) {
+      if (/^tooth_[5-8]\d$/.test(a.name)) { group = a.name; break; }
+      if (/^tooth_\d{2}$/.test(a.name)) { group = a.name; break; }
+      if (a.name === 'Mandible' || a.name === 'Maxilla' ||
+          a.name === 'Maxilla.l' || a.name === 'Maxilla.r') {
+        group = a.name; break;
       }
-      ancestor = ancestor.parent;
+      a = a.parent;
     }
 
-    const isDeciduous = /^tooth_[5-8]\d$/.test(groupName);
-    const isPermanent = /^tooth_\d{2}$/.test(groupName);
-    const isBone = ['Mandible','Maxilla','Maxilla.l','Maxilla.r'].includes(groupName);
+    const isDecid = /^tooth_[5-8]\d$/.test(group);
+    const isPerm = /^tooth_\d{2}$/.test(group);
+    const isBone = /^(Mandible|Maxilla)/.test(group);
 
     let color, roughness, emissive;
-    if (isDeciduous) {
-      color = 0xffffff;       // chalky pure white
-      roughness = 0.55;
-      emissive = 0x0a0a0a;
-    } else if (isPermanent) {
-      color = 0xf0e8cc;       // warm ivory / yellowish
-      roughness = 0.30;
-      emissive = 0x050505;
-    } else if (isBone) {
-      color = 0xc9b478;       // deeper bone tan
-      roughness = 0.85;
-      emissive = 0x000000;
-    } else {
-      color = 0xaaaaaa; roughness = 0.6; emissive = 0x000000;
-    }
+    if (isDecid)      { color = 0xffffff; roughness = 0.55; emissive = 0x0a0a0a; }
+    else if (isPerm)  { color = 0xf0e8cc; roughness = 0.30; emissive = 0x050505; }
+    else if (isBone)  { color = 0xc9b478; roughness = 0.85; emissive = 0x000000; }
+    else              { color = 0xaaaaaa; roughness = 0.6;  emissive = 0x000000; }
 
     o.material = new THREE.MeshStandardMaterial({
       color, roughness, metalness: 0.02, emissive,
     });
   });
 
-  // ----- Register all teeth -----
+  // ---- Register teeth ----
   model.traverse(o => {
     const m = o.name.match(/^tooth_(\d{2})$/);
     if (!m) return;
     const fdi = m[1];
 
     if (dentalData.deciduousTeeth[fdi]) {
-      deciduous[fdi] = {
-        group: o,
-        data: dentalData.deciduousTeeth[fdi],
-        baseY: o.position.y,
-      };
+      deciduous[fdi] = { group: o, data: dentalData.deciduousTeeth[fdi], baseY: o.position.y };
     } else if (dentalData.permanentTeeth[fdi]) {
-      permanent[fdi] = {
-        group: o,
-        data: dentalData.permanentTeeth[fdi],
-        baseY: o.position.y,
-      };
+      permanent[fdi] = { group: o, data: dentalData.permanentTeeth[fdi], baseY: o.position.y };
     }
   });
 
-  // Wisdom clones
+  // ---- Wisdom clones ----
   const wisdomSources = { '38': '37', '48': '47', '18': '17', '28': '27' };
   for (const fdi in dentalData.thirdMolars) {
     const src = permanent[wisdomSources[fdi]];
@@ -170,13 +184,8 @@ Promise.all([
   for (const fdi in permanent) permanent[fdi].group.visible = false;
   for (const fdi in wisdom) wisdom[fdi].group.visible = false;
 
-  console.log(`Loaded ${Object.keys(deciduous).length} deciduous, ${Object.keys(permanent).length} permanent, ${Object.keys(wisdom).length} wisdom`);
-  document.getElementById('loading').classList.add('hidden');
-  updateAge(0);
-}).catch(e => {
-  console.error(e);
-  document.getElementById('loading').textContent = 'Error: ' + e.message;
-});
+  console.log(`Loaded: ${Object.keys(deciduous).length} deciduous, ${Object.keys(permanent).length} permanent, ${Object.keys(wisdom).length} wisdom`);
+}
 
 function updateAge(age) {
   document.getElementById('age-value').textContent = age.toFixed(1);
@@ -196,11 +205,10 @@ function updateAge(age) {
     else if (age > end - 1.0) s = Math.max(0.1, 1.0 - (age - (end - 1.0)));
     t.group.visible = true;
     t.group.scale.setScalar(s);
-    // Socket offset — for now zero; tune per tooth if needed
-    const off = DECIDUOUS_SOCKET_OFFSET[fdi] || 0;
-    // Push up for upper (into maxilla), down for lower (into mandible)
+
     const isUpper = /^[56]/.test(fdi);
-    t.group.position.y = t.baseY + (isUpper ? 1 : -1) * off * maxDim;
+    const off = (DECIDUOUS_SOCKET_OFFSET[fdi] || 0) * maxDim;
+    t.group.position.y = t.baseY + (isUpper ? 1 : -1) * off;
     d++;
   }
 
