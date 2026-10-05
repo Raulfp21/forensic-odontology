@@ -56,7 +56,7 @@ fetch('./data.json')
   .then(d => {
     dentalData = d;
     setStatus('Data loaded. Loading anatomy.glb (12 MB)...');
-    return loadGLB('./models/anatomy.glb');
+    return loadGLB('./models/' + (new URLSearchParams(location.search).get('model') === 'v10' ? 'anatomy_v10.glb' : 'anatomy.glb'));
   })
   .then(gltf => {
     setStatus('Model loaded. Processing...');
