@@ -250,6 +250,35 @@ addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 
+
+// ----- External API for FDI chart module -----
+window.appAPI = {
+  getTeethMap() { return teeth; },
+  getDentalData() { return dentalData; },
+  getCurrentAge() { const s = document.getElementById('ageSlider'); return s ? parseFloat(s.value) : 0; },
+  highlightTooth(fdi, hex = 0x4ade80) {
+    const t = teeth[fdi]; if (!t) return false;
+    t.group.traverse(o => {
+      if (!o.isMesh) return;
+      if (!o.userData._origEmissive) o.userData._origEmissive = o.material.emissive.clone();
+      if (!o.userData._highlightMat) {
+        o.userData._highlightMat = o.material.clone();
+        o.userData._highlightMat.emissive = new THREE.Color(hex);
+        o.userData._highlightMat.emissiveIntensity = 1.4;
+      }
+      o.material = o.userData._highlightMat;
+    });
+    return true;
+  },
+  clearHighlight(fdi) {
+    const t = teeth[fdi]; if (!t) return;
+    t.group.traverse(o => {
+      if (o.isMesh && o.userData._origEmissive) o.material.emissive.copy(o.userData._origEmissive);
+    });
+  },
+  clearAllHighlights() { for (const fdi in teeth) window.appAPI.clearHighlight(fdi); }
+};
+
 (function loop() {
   requestAnimationFrame(loop);
   controls.update();
