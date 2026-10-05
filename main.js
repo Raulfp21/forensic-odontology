@@ -39,21 +39,6 @@ const wisdom = {};
 let dentalData = null;
 let frontView = null;
 let maxDim = 0.15;
-
-// Socket offset per deciduous FDI (fraction of model height).
-// Positive value sinks the tooth INTO its socket (hides root, keeps crown visible).
-const DECIDUOUS_SOCKET_OFFSET = {
-  '51': 0.020, '61': 0.020,
-  '52': 0.020, '62': 0.020,
-  '53': 0.018, '63': 0.018,
-  '54': 0.015, '64': 0.015,
-  '55': 0.015, '65': 0.015,
-  '71': 0.020, '81': 0.020,
-  '72': 0.020, '82': 0.020,
-  '73': 0.018, '83': 0.018,
-  '74': 0.015, '84': 0.015,
-  '75': 0.015, '85': 0.015,
-};
 let worldGroup = null;    // wraps the entire model so we can scale it
 
 function setStatus(msg) {
