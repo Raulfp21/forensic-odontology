@@ -5,7 +5,7 @@
 Data are loaded, start creating Blender stuff
 glTF import finished in 0.23s
 Data are loaded, start creating Blender stuff
-glTF import finished in 0.30s
+glTF import finished in 0.28s
 swapped tooth_16 with maxillary_first_molar_with_cusp_of_carabelli.glb (scale 0.0260)
 Data are loaded, start creating Blender stuff
 glTF import finished in 0.27s
@@ -14,7 +14,7 @@ Data are loaded, start creating Blender stuff
 glTF import finished in 0.16s
 swapped tooth_36 with mandibular_first_molar.glb (scale 0.0089)
 Data are loaded, start creating Blender stuff
-glTF import finished in 0.17s
+glTF import finished in 0.15s
 swapped tooth_46 with mandibular_first_molar.glb (scale 0.0089)
 target tooth_21 ctr=(0.0045,-0.0869,1.5392)
 target tooth_22 ctr=(0.0112,-0.0846,1.5397)
@@ -31,7 +31,7 @@ glTF import finished in 0.01s
 Data are loaded, start creating Blender stuff
 glTF import finished in 0.01s
 Data are loaded, start creating Blender stuff
-glTF import finished in 0.10s
+glTF import finished in 0.09s
 Data are loaded, start creating Blender stuff
 glTF import finished in 0.01s
 Data are loaded, start creating Blender stuff
@@ -45,114 +45,114 @@ glTF import finished in 0.09s
 Data are loaded, start creating Blender stuff
 glTF import finished in 0.04s
 Data are loaded, start creating Blender stuff
-glTF import finished in 0.13s
+glTF import finished in 0.10s
 
 Final bbox: X[-0.052,0.052]  Y[-0.094,-0.002]  Z[1.496,1.605]
-05:14:38 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
-05:14:39 | INFO: Starting glTF 2.0 export
-05:14:39 | INFO: Extracting primitive: Maxilla.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Maxilla.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Mandible.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper medial incisor.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper lateral incisor.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper canine.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower medial incisor.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower lateral incisor.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower canine.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper medial incisor.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper lateral incisor.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper canine.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower medial incisor.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower lateral incisor.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower canine.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper first premolar.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper second premolar.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper second molar tooth.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower first premolar.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower second premolar.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower second molar tooth.001
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper first premolar.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper second premolar.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Upper second molar tooth.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower first premolar.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower second premolar.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Lower second molar tooth.002
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Object_0
-05:14:39 | INFO: Primitives created: 1
-05:14:39 | INFO: Extracting primitive: Object_0.001
-05:14:40 | INFO: Primitives created: 1
-05:14:40 | INFO: Extracting primitive: Object_0.002
-05:14:40 | INFO: Primitives created: 1
-05:14:40 | INFO: Extracting primitive: Object_0.003
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.004
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.005
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.006
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.007
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.008
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.009
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.010
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.011
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.012
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.013
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.014
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.015
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.016
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.017
-05:14:41 | INFO: Primitives created: 1
-05:14:41 | INFO: Extracting primitive: Object_0.018
-05:14:42 | INFO: Primitives created: 1
-05:14:42 | INFO: Extracting primitive: Object_0.019
-05:14:42 | INFO: Primitives created: 1
-05:14:42 | INFO: Extracting primitive: Object_0.020
-05:14:42 | INFO: Primitives created: 1
-05:14:42 | INFO: Extracting primitive: Object_0.021
-05:14:42 | INFO: Primitives created: 1
-05:14:42 | INFO: Extracting primitive: Object_0.022
-05:14:42 | INFO: Primitives created: 1
-05:14:42 | INFO: Extracting primitive: Object_0.023
-05:14:42 | INFO: Primitives created: 1
-05:14:42 | INFO: Finished glTF 2.0 export in 3.543829917907715 s
+05:19:25 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+05:19:25 | INFO: Starting glTF 2.0 export
+05:19:25 | INFO: Extracting primitive: Maxilla.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Maxilla.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Mandible.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper medial incisor.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper lateral incisor.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper canine.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower medial incisor.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower lateral incisor.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower canine.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper medial incisor.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper lateral incisor.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper canine.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower medial incisor.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower lateral incisor.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower canine.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper first premolar.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper second premolar.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper second molar tooth.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower first premolar.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower second premolar.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower second molar tooth.001
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper first premolar.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper second premolar.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Upper second molar tooth.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower first premolar.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower second premolar.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Lower second molar tooth.002
+05:19:25 | INFO: Primitives created: 1
+05:19:25 | INFO: Extracting primitive: Object_0
+05:19:26 | INFO: Primitives created: 1
+05:19:26 | INFO: Extracting primitive: Object_0.001
+05:19:26 | INFO: Primitives created: 1
+05:19:26 | INFO: Extracting primitive: Object_0.002
+05:19:26 | INFO: Primitives created: 1
+05:19:26 | INFO: Extracting primitive: Object_0.003
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.004
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.005
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.006
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.007
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.008
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.009
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.010
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.011
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.012
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.013
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.014
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.015
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.016
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.017
+05:19:27 | INFO: Primitives created: 1
+05:19:27 | INFO: Extracting primitive: Object_0.018
+05:19:28 | INFO: Primitives created: 1
+05:19:28 | INFO: Extracting primitive: Object_0.019
+05:19:28 | INFO: Primitives created: 1
+05:19:28 | INFO: Extracting primitive: Object_0.020
+05:19:28 | INFO: Primitives created: 1
+05:19:28 | INFO: Extracting primitive: Object_0.021
+05:19:28 | INFO: Primitives created: 1
+05:19:28 | INFO: Extracting primitive: Object_0.022
+05:19:28 | INFO: Primitives created: 1
+05:19:28 | INFO: Extracting primitive: Object_0.023
+05:19:28 | INFO: Primitives created: 1
+05:19:28 | INFO: Finished glTF 2.0 export in 3.303208112716675 s
 
 Exported: /workspaces/forensic-odontology/models/anatomy.glb
 Blender 4.0.2

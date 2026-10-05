@@ -6,7 +6,7 @@ bpy.ops.import_scene.gltf(filepath="/workspaces/forensic-odontology/models/anato
 
 DEC_DIR = "/workspaces/forensic-odontology/deciduous_clean"
 PERM_DIR = "/workspaces/forensic-odontology/deciduous_raw/models"
-DECIDUOUS_RATIO = 0.60
+DECIDUOUS_RATIO = 0.65
 MOLAR_SIZE_FACTOR = 0.85
 
 MOLAR_SWAPS = {

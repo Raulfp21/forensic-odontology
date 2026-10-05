@@ -225,9 +225,7 @@ function updateAge(age) {
     else if (age > end - 1.0) s = Math.max(0.1, 1.0 - (age - (end - 1.0)));
     t.group.visible = true;
     t.group.scale.setScalar(s);
-    const isUpper = /^[56]/.test(fdi);
-    const offset = (DECIDUOUS_SOCKET_OFFSET[fdi] || 0) * maxDim;
-    t.group.position.y = t.baseY + (isUpper ? 1 : -1) * offset;
+    t.group.position.y = t.baseY;
     d++;
   }
 
