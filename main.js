@@ -23,17 +23,11 @@ const k = new THREE.DirectionalLight(0xffffff, 2); k.position.set(0.3, 0.5, 0.5)
 const f = new THREE.DirectionalLight(0xffe0b0, 1.0); f.position.set(-0.5, 0.1, 0.3); scene.add(f);
 const r = new THREE.DirectionalLight(0xffffff, 0.8); r.position.set(0, -0.5, -0.3); scene.add(r);
 
-const teeth = {};
+const deciduous = {};
+const permanent = {};
+const wisdom = {};
 let dentalData = null;
-let model = null;
 let frontView = null;
-
-const thirdMolarData = {
-  '38': { name: 'Lower Left Third Molar',  eruption: 17.0, upper: false, source: '37', side: 'left'  },
-  '48': { name: 'Lower Right Third Molar', eruption: 18.0, upper: false, source: '47', side: 'right' },
-  '18': { name: 'Upper Right Third Molar', eruption: 18.0, upper: true,  source: '17', side: 'right' },
-  '28': { name: 'Upper Left Third Molar',  eruption: 20.0, upper: true,  source: '27', side: 'left'  },
-};
 
 const loader = new GLTFLoader();
 Promise.all([
@@ -41,20 +35,16 @@ Promise.all([
   new Promise((res, rej) => loader.load('./models/anatomy.glb', res, undefined, rej))
 ]).then(([d, gltf]) => {
   dentalData = d;
-  model = gltf.scene;
+  const model = gltf.scene;
+  scene.add(model);
 
-  // ----- FIX: hide extra overlapping shells on tooth_36 & tooth_46 -----
+  // Hide extra shells on molar glitch
   ['tooth_36', 'tooth_46'].forEach(name => {
     const g = model.getObjectByName(name);
     if (!g) return;
     const meshes = g.children.filter(c => c.isMesh);
-    for (let i = 1; i < meshes.length; i++) {
-      meshes[i].visible = false;
-    }
-    console.log(`Hid ${Math.max(0, meshes.length - 1)} extra shell(s) on ${name}`);
+    for (let i = 1; i < meshes.length; i++) meshes[i].visible = false;
   });
-
-  scene.add(model);
 
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
@@ -70,6 +60,7 @@ Promise.all([
   controls.target.copy(frontView.target);
   controls.update();
 
+  // Materials
   model.traverse(o => {
     if (!o.isMesh) return;
     let ancestor = o, groupName = '';
@@ -81,61 +72,62 @@ Promise.all([
       ancestor = ancestor.parent;
     }
     const isTooth = /^tooth_\d{2}$/.test(groupName);
+    const isDeciduous = isTooth && /^tooth_[5-8]\d$/.test(groupName);
+    // Deciduous slightly creamier to differentiate
+    const color = isDeciduous ? 0xf5efd8 : (isTooth ? 0xfafaf5 : 0xd9c79a);
     o.material = new THREE.MeshStandardMaterial({
-      color: isTooth ? 0xfafaf5 : 0xd9c79a,
-      roughness: isTooth ? 0.35 : 0.85,
+      color,
+      roughness: isTooth ? 0.4 : 0.85,
       metalness: 0.02,
       emissive: isTooth ? 0x101010 : 0x000000,
     });
   });
 
+  // Register teeth
   model.traverse(o => {
     const m = o.name.match(/^tooth_(\d{2})$/);
     if (!m) return;
     const fdi = m[1];
-    if (!dentalData.permanentTeeth[fdi]) return;
-    teeth[fdi] = {
-      group: o,
-      data: dentalData.permanentTeeth[fdi],
-      upper: fdi.startsWith('1') || fdi.startsWith('2'),
-      baseScale: 1,
-    };
+
+    if (dentalData.deciduousTeeth[fdi]) {
+      deciduous[fdi] = { group: o, data: dentalData.deciduousTeeth[fdi] };
+    } else if (dentalData.permanentTeeth[fdi]) {
+      permanent[fdi] = { group: o, data: dentalData.permanentTeeth[fdi] };
+    }
   });
 
-  // ----- Wisdom molars: tucked in behind 2nd molars, inside ramus -----
-  for (const fdi in thirdMolarData) {
-    const info = thirdMolarData[fdi];
-    const src = teeth[info.source];
+  // Create wisdom teeth from clones of 2nd molars
+  const wisdomSources = { '38':'37', '48':'47', '18':'17', '28':'27' };
+  for (const fdi in dentalData.thirdMolars) {
+    const srcFdi = wisdomSources[fdi];
+    const src = permanent[srcFdi];
     if (!src) continue;
-
     const clone = src.group.clone(true);
     clone.name = `tooth_${fdi}`;
-
-    const posterior  = maxDim * 0.13;   // close — inside ramus, not past bone
-    const sideInward = maxDim * 0.008;  // slightly inward toward arch
-    const sideDir = info.side === 'left' ? +1 : -1;
-    const upDir = info.upper ? -1 : +1;
-
-    clone.position.x += sideDir * sideInward;
-    clone.position.y += upDir * maxDim * 0.005;   // sink into bone
+    const posterior = maxDim * 0.13;
+    const sideDir = (fdi === '28' || fdi === '38') ? 1 : -1;
+    const upDir = (fdi === '18' || fdi === '28') ? -1 : 1;
+    clone.position.x += sideDir * maxDim * 0.008;
+    clone.position.y += upDir * maxDim * 0.005;
     clone.position.z -= posterior;
-
-    // Smaller — impacted teeth are often smaller
     clone.scale.multiplyScalar(0.75);
-
     src.group.parent.add(clone);
-
-    teeth[fdi] = {
+    wisdom[fdi] = {
       group: clone,
-      data: { name: info.name, eruption: info.eruption },
-      upper: info.upper,
+      data: dentalData.thirdMolars[fdi],
       baseScale: 0.75,
     };
   }
 
-  for (const fdi in teeth) teeth[fdi].group.visible = false;
+  // Hide all initially
+  for (const fdi in deciduous) deciduous[fdi].group.visible = false;
+  for (const fdi in permanent) permanent[fdi].group.visible = false;
+  for (const fdi in wisdom) wisdom[fdi].group.visible = false;
 
-  console.log(`Registered ${Object.keys(teeth).length} teeth`);
+  console.log(`Deciduous: ${Object.keys(deciduous).length}`);
+  console.log(`Permanent: ${Object.keys(permanent).length}`);
+  console.log(`Wisdom: ${Object.keys(wisdom).length}`);
+
   document.getElementById('loading').classList.add('hidden');
   updateAge(0);
 }).catch(e => {
@@ -144,25 +136,59 @@ Promise.all([
 
 function updateAge(age) {
   document.getElementById('age-value').textContent = age.toFixed(1);
-  let visible = 0;
-  for (const fdi in teeth) {
-    const t = teeth[fdi];
+  let dCount = 0, pCount = 0, wCount = 0;
+
+  // Deciduous: appear, exist, resorb, vanish
+  for (const fdi in deciduous) {
+    const t = deciduous[fdi];
+    const start = t.data.eruption;
+    const end = t.data.fall;
+    if (age < start || age >= end + 0.5) {
+      t.group.visible = false;
+      t.group.scale.setScalar(1);
+      continue;
+    }
+    // Scale: grow in over 0.5y, resorb in last 1y
+    let s = 1;
+    if (age < start + 0.5) s = 0.4 + 1.2 * (age - start);
+    else if (age > end - 1.0) s = Math.max(0.1, 1.0 - (age - (end - 1.0)));
+    t.group.visible = true;
+    t.group.scale.setScalar(s);
+    dCount++;
+  }
+
+  // Permanent: appear, stay
+  for (const fdi in permanent) {
+    const t = permanent[fdi];
     if (age < t.data.eruption) {
       t.group.visible = false;
-      t.group.scale.setScalar(t.baseScale || 1);
+      t.group.scale.setScalar(1);
       continue;
     }
     const p = THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
-    const base = t.baseScale || 1;
     t.group.visible = true;
-    t.group.scale.setScalar(base * (0.4 + 0.6 * p));
-    visible++;
+    t.group.scale.setScalar(0.4 + 0.6 * p);
+    pCount++;
   }
-  const total = Object.keys(teeth).length;
+
+  // Wisdom
+  for (const fdi in wisdom) {
+    const t = wisdom[fdi];
+    if (age < t.data.eruption) {
+      t.group.visible = false;
+      t.group.scale.setScalar(t.baseScale);
+      continue;
+    }
+    const p = THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
+    t.group.visible = true;
+    t.group.scale.setScalar(t.baseScale * (0.4 + 0.6 * p));
+    wCount++;
+  }
+
+  const total = dCount + pCount + wCount;
   const info = document.getElementById('tooth-info');
-  if (visible === 0) info.textContent = 'No teeth erupted';
-  else if (visible === total) info.textContent = `All ${total} teeth present`;
-  else info.textContent = `${visible} / ${total} teeth present`;
+  if (age < 0.5) info.textContent = 'No teeth';
+  else info.textContent = `${dCount} deciduous · ${pCount} permanent · ${wCount} wisdom`;
 }
 
 document.getElementById('ageSlider')
