@@ -318,3 +318,16 @@ window.appAPI = {
     setTimeout(() => hint.remove(), 500);
   }, { once: true });
 })();
+
+// Debug: show which teeth are currently visible
+window.__teethDbg = function() {
+  const data = dentalData;
+  const age = parseFloat(document.getElementById('ageSlider').value);
+  const vis = [];
+  for (const fdi in teeth) {
+    const t = teeth[fdi];
+    if (t.group.visible) vis.push(fdi);
+  }
+  console.log('Age', age, '| visible:', vis.sort().join(','));
+  if (window.__diagShow) window.__diagShow('Age ' + age + ' | ' + vis.sort().join(','));
+};
