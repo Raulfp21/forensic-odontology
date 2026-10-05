@@ -6,7 +6,6 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a0a);
 
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.0001, 100);
-camera.position.set(0, 0, 0.25);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(innerWidth, innerHeight);
@@ -23,16 +22,24 @@ const k = new THREE.DirectionalLight(0xffffff, 2); k.position.set(0.3, 0.5, 0.5)
 const f = new THREE.DirectionalLight(0xffe0b0, 1.0); f.position.set(-0.5, 0.1, 0.3); scene.add(f);
 const r = new THREE.DirectionalLight(0xffffff, 0.8); r.position.set(0, -0.5, -0.3); scene.add(r);
 
+// ---- Growth model ----
+// Child's jaw at birth is ~72% of adult size; reaches 100% around age 16.
+// (Simplified uniform scale — not anatomically precise but visually clear.)
+const GROWTH_MIN = 0.72;
+const GROWTH_MAX_AGE = 16;
+function growthScale(age) {
+  if (age >= GROWTH_MAX_AGE) return 1.0;
+  if (age < 0) age = 0;
+  return GROWTH_MIN + (1.0 - GROWTH_MIN) * (age / GROWTH_MAX_AGE);
+}
+
 const deciduous = {};
 const permanent = {};
 const wisdom = {};
 let dentalData = null;
 let frontView = null;
 let maxDim = 0.15;
-
-// Per-tooth socket offset (multiples of maxDim) to sink deciduous roots into bone.
-// Positive value pushes the tooth INTO its socket.
-const DECIDUOUS_SOCKET_OFFSET = {};
+let worldGroup = null;    // wraps the entire model so we can scale it
 
 function setStatus(msg) {
   const el = document.getElementById('loading');
@@ -41,7 +48,6 @@ function setStatus(msg) {
   console.log('[status]', msg);
 }
 
-// ---- Load data first ----
 fetch('./data.json')
   .then(r => {
     if (!r.ok) throw new Error('data.json HTTP ' + r.status);
@@ -75,7 +81,6 @@ function loadGLB(url) {
       url,
       g => resolve(g),
       evt => {
-        // progress
         if (evt.total) {
           const pct = Math.round(100 * evt.loaded / evt.total);
           setStatus(`Loading model ${pct}%`);
@@ -87,20 +92,21 @@ function loadGLB(url) {
 }
 
 function buildScene(gltf) {
-  const model = gltf.scene;
-  scene.add(model);
+  // Wrap model in a group so we can scale for growth
+  worldGroup = new THREE.Group();
+  scene.add(worldGroup);
 
-  // ---- Hide extra shells on tooth_36 / tooth_46 ----
+  const model = gltf.scene;
+  worldGroup.add(model);
+
+  // ---- Hide extra shells on molar glitch teeth ----
   ['36', '46'].forEach(fdi => {
     const target = `tooth_${fdi}`;
     let parentGroup = null;
     model.traverse(o => {
       if (!parentGroup && o.name === target) parentGroup = o;
     });
-    if (!parentGroup) {
-      console.warn('tooth_' + fdi + ' group not found');
-      return;
-    }
+    if (!parentGroup) return;
     const meshes = [];
     parentGroup.traverse(o => { if (o.isMesh) meshes.push(o); });
     meshes.sort((a, b) => b.geometry.attributes.position.count - a.geometry.attributes.position.count);
@@ -108,6 +114,7 @@ function buildScene(gltf) {
     console.log('tooth_' + fdi + ': hid ' + (meshes.length - 1) + ' extra shells');
   });
 
+  // Center model at origin, capture adult size for camera
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
@@ -122,30 +129,29 @@ function buildScene(gltf) {
   controls.target.copy(frontView.target);
   controls.update();
 
-  // ---- Textbook colours ----
+  // ---- Materials: fix bone colour mismatch ----
+  // Z-Anatomy names: "Mandible", "Maxillar", "Maxillal", "Maxilla.l", "Maxilla.r"
+  // Any name starting with Maxill OR Mandib is bone.
   model.traverse(o => {
     if (!o.isMesh || o.visible === false) return;
 
     let a = o, group = '';
     while (a) {
       if (/^tooth_[5-8]\d$/.test(a.name)) { group = a.name; break; }
-      if (/^tooth_\d{2}$/.test(a.name)) { group = a.name; break; }
-      if (a.name === 'Mandible' || a.name === 'Maxilla' ||
-          a.name === 'Maxilla.l' || a.name === 'Maxilla.r') {
-        group = a.name; break;
-      }
+      if (/^tooth_\d{2}$/.test(a.name))   { group = a.name; break; }
+      if (/^(Maxill|Mandib)/.test(a.name)) { group = a.name; break; }
       a = a.parent;
     }
 
     const isDecid = /^tooth_[5-8]\d$/.test(group);
-    const isPerm = /^tooth_\d{2}$/.test(group);
-    const isBone = /^(Mandible|Maxilla)/.test(group);
+    const isPerm  = /^tooth_\d{2}$/.test(group) && !isDecid;
+    const isBone  = /^(Maxill|Mandib)/.test(group);
 
     let color, roughness, emissive;
     if (isDecid)      { color = 0xffffff; roughness = 0.55; emissive = 0x0a0a0a; }
     else if (isPerm)  { color = 0xf0e8cc; roughness = 0.30; emissive = 0x050505; }
-    else if (isBone)  { color = 0xc9b478; roughness = 0.85; emissive = 0x000000; }
-    else              { color = 0xaaaaaa; roughness = 0.6;  emissive = 0x000000; }
+    else if (isBone)  { color = 0xd9c79a; roughness = 0.85; emissive = 0x000000; }
+    else              { color = 0xd9c79a; roughness = 0.85; emissive = 0x000000; }
 
     o.material = new THREE.MeshStandardMaterial({
       color, roughness, metalness: 0.02, emissive,
@@ -184,11 +190,16 @@ function buildScene(gltf) {
   for (const fdi in permanent) permanent[fdi].group.visible = false;
   for (const fdi in wisdom) wisdom[fdi].group.visible = false;
 
-  console.log(`Loaded: ${Object.keys(deciduous).length} deciduous, ${Object.keys(permanent).length} permanent, ${Object.keys(wisdom).length} wisdom`);
+  console.log(`Loaded: ${Object.keys(deciduous).length}D / ${Object.keys(permanent).length}P / ${Object.keys(wisdom).length}W`);
 }
 
 function updateAge(age) {
   document.getElementById('age-value').textContent = age.toFixed(1);
+
+  // ---- Jaw growth: scale the whole model ----
+  const growth = growthScale(age);
+  if (worldGroup) worldGroup.scale.setScalar(growth);
+
   let d = 0, p = 0, w = 0;
 
   for (const fdi in deciduous) {
@@ -205,10 +216,6 @@ function updateAge(age) {
     else if (age > end - 1.0) s = Math.max(0.1, 1.0 - (age - (end - 1.0)));
     t.group.visible = true;
     t.group.scale.setScalar(s);
-
-    const isUpper = /^[56]/.test(fdi);
-    const off = (DECIDUOUS_SOCKET_OFFSET[fdi] || 0) * maxDim;
-    t.group.position.y = t.baseY + (isUpper ? 1 : -1) * off;
     d++;
   }
 
@@ -232,7 +239,7 @@ function updateAge(age) {
 
   const info = document.getElementById('tooth-info');
   if (age < 0.5) info.textContent = 'No teeth';
-  else info.textContent = `${d} deciduous · ${p} permanent · ${w} wisdom`;
+  else info.textContent = `${d}D · ${p}P · ${w}W · jaw ${Math.round(growth * 100)}%`;
 }
 
 document.getElementById('ageSlider')
