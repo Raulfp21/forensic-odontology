@@ -83,7 +83,7 @@
     "53": {
       "name": "Upper Right Deciduous Canine",
       "eruption": 1.5,
-      "fall": 11.5,
+      "fall": 10.5,
       "eruptionRange": [
         1.42,
         1.5
@@ -93,7 +93,7 @@
     "63": {
       "name": "Upper Left Deciduous Canine",
       "eruption": 1.5,
-      "fall": 11.5,
+      "fall": 10.5,
       "eruptionRange": [
         1.42,
         1.5
@@ -123,7 +123,7 @@
     "54": {
       "name": "Upper Right Deciduous First Molar",
       "eruption": 1.2,
-      "fall": 10.5,
+      "fall": 9.5,
       "eruptionRange": [
         1.0,
         1.17
@@ -133,7 +133,7 @@
     "64": {
       "name": "Upper Left Deciduous First Molar",
       "eruption": 1.2,
-      "fall": 10.5,
+      "fall": 9.5,
       "eruptionRange": [
         1.0,
         1.17
@@ -300,7 +300,7 @@
     },
     "33": {
       "name": "Lower Left Canine",
-      "eruption": 11.5,
+      "eruption": 11.0,
       "eruptionRange": [
         11,
         12
@@ -308,7 +308,7 @@
     },
     "43": {
       "name": "Lower Right Canine",
-      "eruption": 11.5,
+      "eruption": 11.0,
       "eruptionRange": [
         11,
         12
@@ -348,7 +348,7 @@
     },
     "14": {
       "name": "Upper Right First Premolar",
-      "eruption": 10.5,
+      "eruption": 10.0,
       "eruptionRange": [
         9,
         11
@@ -356,7 +356,7 @@
     },
     "24": {
       "name": "Upper Left First Premolar",
-      "eruption": 10.5,
+      "eruption": 10.0,
       "eruptionRange": [
         9,
         11
@@ -380,18 +380,18 @@
     },
     "37": {
       "name": "Lower Left Second Molar",
-      "eruption": 13.0,
+      "eruption": 11.5,
       "eruptionRange": [
-        12,
-        14
+        11,
+        13
       ]
     },
     "47": {
       "name": "Lower Right Second Molar",
-      "eruption": 13.0,
+      "eruption": 11.5,
       "eruptionRange": [
-        12,
-        14
+        11,
+        13
       ]
     },
     "13": {
@@ -412,7 +412,7 @@
     },
     "17": {
       "name": "Upper Right Second Molar",
-      "eruption": 12.0,
+      "eruption": 12.5,
       "eruptionRange": [
         12,
         14
@@ -420,7 +420,7 @@
     },
     "27": {
       "name": "Upper Left Second Molar",
-      "eruption": 12.0,
+      "eruption": 12.5,
       "eruptionRange": [
         12,
         14
@@ -431,7 +431,7 @@
       "eruption": 17.0,
       "eruptionRange": [
         17,
-        21
+        25
       ]
     },
     "48": {
@@ -439,7 +439,7 @@
       "eruption": 18.0,
       "eruptionRange": [
         17,
-        21
+        25
       ]
     },
     "18": {
