@@ -39,7 +39,7 @@ function renderInfo(fdi){
   const d = data.deciduousTeeth?.[fdi] || data.permanentTeeth?.[fdi] || {};
   const resorpLine = d.resorptionBegins ? `<div><b>Resorption begins:</b> year ${d.resorptionBegins}</div>` : '';
   const gotoBtn = (d.eruption != null) ? `<button class="fdi-goto" data-age="${d.eruption}">Set age to ${d.eruption} yr</button>` : '';
-  return `<div class="fdi-info"><div class="fdi-info-code">${fdi}</div><div class="fdi-info-name">${info.label}</div><div class="fdi-info-grid"><div><b>Eruption:</b> ${formatRange(d)}</div>${resorpLine}<div class="fdi-info-kind">${info.isDeciduous?'Deciduous':'Permanent'}</div></div></div>${gotoBtn}<div class="fdi-rule"><b>Exam logic:</b> find the tooth that has <i>just erupted</i>. If the next tooth in the eruption order has <i>not</i> erupted, the age lies between their two ranges. Take the lower bound if the previous tooth recently erupted; the upper bound if the next is about to erupt.<br><br><b>Why a range?</b> Eruption varies between people: girls tend to be earlier, and nutrition, climate, ethnicity and endocrine disease all shift it. So report an age <i>range</i>, never a single age.</div>`;
+  return `<div class="fdi-info"><div class="fdi-info-code">${fdi}</div><div class="fdi-info-name">${info.label}</div><div class="fdi-info-grid"><div><b>Emergence (book range):</b> ${formatRange(d)}</div>${resorpLine}<div class="fdi-info-kind">${info.isDeciduous?'Deciduous':'Permanent'}</div></div></div>${gotoBtn}<div class="fdi-rule"><b>Exam logic:</b> find the tooth that has <i>just come through</i>. If the next tooth in the emergence order has <i>not</i>, the age lies between their two ranges: lower bound from the last tooth through, upper bound from the next one due.<br><br><b>Why a range?</b> A tooth is either through the gum or not, but <i>when</i> it comes through differs between children: girls tend to be earlier, and nutrition, climate, ethnicity and endocrine disease all shift it. The book range shows how children differ, not how long one tooth takes. These tables are Western-derived; one large South Indian study (Gupta et al., Indian J Dent Res 2007) found first molars and central incisors 1-2 years later. Always report an age <i>range</i>.</div>`;
 }
 function handleClick(fdi){
   if(state.mode==='learn'){
@@ -71,8 +71,7 @@ function pickRandomVisible(){
   for(const fdi in teeth){
     const d = data.deciduousTeeth?.[fdi] || data.permanentTeeth?.[fdi];
     if(!d) continue;
-    if(age<(d.eruptionRange?d.eruptionRange[0]:d.eruption)) continue;
-    if(d.fall && age>=d.fall) continue;
+    if(!(teeth[fdi].group && teeth[fdi].group.visible)) continue;   // exactly what the jaw shows
     cand.push(fdi);
   }
   if(!cand.length) return null;
