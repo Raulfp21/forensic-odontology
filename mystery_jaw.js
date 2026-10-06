@@ -90,12 +90,19 @@ const MysteryJaw = (() => {
     s.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
+  // Hide the answer even if an older main.js is cached: overwrite the labels directly.
+  function maskLabels() {
+    const a = $('age-value'); if (a) a.textContent = '?';
+    const i = $('tooth-info'); if (i) i.textContent = i.textContent.replace(/\s*·\s*jaw\s*\d+%/, '');
+  }
+
   function startNewRound() {
     state.targetAge = pickAge();
     state.active = true;
     state.revealed = false;
     setSlider(true);                    // mask first so labels show "?"
     pushAgeToApp(state.targetAge);
+    maskLabels();
     renderPanel();
   }
 
@@ -108,7 +115,7 @@ const MysteryJaw = (() => {
         <div><button id="mj-reset" title="Reset view">⟲</button><button id="mj-close">✕</button></div>
       </div>
       <div class="mj-body">
-        <div class="mj-question">Which teeth have erupted, which haven't? Report the age range you would put in a certificate.</div>
+        <div class="mj-question"><b style="color:#f59e0b">Report a RANGE, never a single age.</b> Which teeth have erupted, which haven't? Give the narrowest range the teeth can honestly support.</div>
         <div class="mj-row">
           <label>Between</label><input type="number" inputmode="decimal" step="0.5" min="0" max="30" id="mj-lo">
           <label>and</label><input type="number" inputmode="decimal" step="0.5" min="0" max="30" id="mj-hi">
@@ -122,8 +129,8 @@ const MysteryJaw = (() => {
     $('mj-next').onclick = startNewRound;
     $('mj-reveal').onclick = () => {
       const lo = parseFloat($('mj-lo').value), hi = parseFloat($('mj-hi').value);
-      if (isNaN(lo) || isNaN(hi) || lo > hi) {
-        $('mj-output').innerHTML = '<div class="mj-result"><span class="no">Enter a valid range (lower ≤ upper).</span></div>';
+      if (isNaN(lo) || isNaN(hi) || lo >= hi) {
+        $('mj-output').innerHTML = '<div class="mj-result"><span class="no">Give a range: the upper age must be higher than the lower. A single age is not a defensible answer.</span></div>';
         return;
       }
       reveal(lo, hi);
@@ -183,6 +190,7 @@ const MysteryJaw = (() => {
   }
 
   function init() {
+    if (document.getElementById('mj-btn')) return;   // never create a second button
     injectStyles();
     const btn = document.createElement('button');
     btn.id = 'mj-btn';

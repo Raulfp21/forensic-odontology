@@ -50,7 +50,7 @@ function setStatus(msg) {
   console.log('[status]', msg);
 }
 
-fetch('./data.json')
+fetch('./data.json?v=20261006b')
   .then(r => {
     if (!r.ok) throw new Error('data.json HTTP ' + r.status);
     return r.json();
@@ -310,7 +310,8 @@ window.appAPI = {
   if (!slider) return;
   const hint = document.createElement('div');
   hint.id = 'first-hint';
-  hint.textContent = 'Drag the age slider to watch teeth erupt';
+  hint.textContent = 'Teeth erupt across a RANGE of ages, not one date. Drag the slider.';
+  Object.assign(hint.style, { top: '92px', bottom: 'auto', left: '12px', transform: 'none', maxWidth: 'calc(100vw - 150px)', whiteSpace: 'normal', textAlign: 'left' });
   document.body.appendChild(hint);
   const style = document.createElement('style');
   style.textContent = `
