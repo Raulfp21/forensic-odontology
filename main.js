@@ -50,7 +50,7 @@ function setStatus(msg) {
   console.log('[status]', msg);
 }
 
-fetch('./data.json?v=20261006b')
+fetch('./data.json?v=20261006c')
   .then(r => {
     if (!r.ok) throw new Error('data.json HTTP ' + r.status);
     return r.json();
@@ -199,8 +199,49 @@ function eruptWindow(data, fallbackWidth) {
   return [data.eruption, data.eruption + fallbackWidth];
 }
 
+// ---- Simulated child -------------------------------------------------------
+// Book ranges describe how CHILDREN differ in the age a tooth breaks through (emergence).
+// They are not how long one tooth takes: in one child a tooth is through or it is not.
+// A "person" fixes ONE emergence age per tooth: range midpoint = mean, range width = 4 SD,
+// plus an early/late shift shared by all of that child's teeth.
+// (Teaching model: the 4-SD width and the 50% shared shift are assumptions, not published values.)
+let person = null;   // null = typical child: every tooth at the middle of its book range
+function bookRange(data) {
+  const r = data.eruptionRange;
+  return (r && r.length === 2) ? r : [data.eruption - 0.3, data.eruption + 0.3];
+}
+function emergenceAge(fdi, data) {
+  const [lo, hi] = bookRange(data);
+  const z = person && person.z[fdi] !== undefined ? person.z[fdi] : 0;
+  return (lo + hi) / 2 + z * (hi - lo) / 4;
+}
+function inEmergenceWindow(data, age) {
+  const [lo, hi] = bookRange(data);
+  return age >= lo && age < hi;
+}
+function makePerson(seed) {
+  let a = (seed >>> 0) || 1;
+  const rnd = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const gauss = () => Math.sqrt(-2 * Math.log(rnd() || 1e-9)) * Math.cos(2 * Math.PI * rnd());
+  const zp = gauss(), z = {};
+  let sum = 0, n = 0;
+  for (const reg of [deciduous, permanent]) for (const fdi in reg) {
+    z[fdi] = THREE.MathUtils.clamp(Math.sqrt(0.5) * zp + Math.sqrt(0.5) * gauss(), -2.5, 2.5);
+    sum += z[fdi]; n++;
+  }
+  person = { seed, zp, z, meanZ: n ? sum / n : 0 };
+  return person;
+}
+function describePerson() {
+  if (!person) return { seed: null, meanZ: 0, label: 'typical child (every tooth at the middle of its book range)' };
+  const m = person.meanZ;
+  const label = m < -0.5 ? 'an early developer (teeth tend to come through before the book average)'
+              : m >  0.5 ? 'a late developer (teeth tend to come through after the book average)'
+              : 'close to the book average, with some teeth a little early or late';
+  return { seed: person.seed, meanZ: m, label };
+}
+
 function updateAge(age) {
-  const bin = document.body.classList.contains('mj-active'); // exams show teeth as out or not, never half-erupted
   const masked = document.body.classList.contains('mj-active');
   document.getElementById('age-value').textContent = masked ? '?' : age.toFixed(1);
 
@@ -208,22 +249,21 @@ function updateAge(age) {
   const growth = growthScale(age);
   if (worldGroup) worldGroup.scale.setScalar(growth);
 
-  let d = 0, p = 0, w = 0, er = 0;
+  let d = 0, p = 0, w = 0, inWin = 0;
 
   for (const fdi in deciduous) {
     const t = deciduous[fdi];
-    const [start, hiE] = eruptWindow(t.data, 0.5), end = t.data.fall;
+    const start = emergenceAge(fdi, t.data), end = t.data.fall;
     if (age < start || age >= end) {
       t.group.visible = false;
       t.group.position.y = t.baseY;
       t.group.scale.setScalar(1);
       continue;
     }
-    let ep = THREE.MathUtils.clamp((age - start) / (hiE - start), 0, 1);
-    if (bin) ep = age >= start ? 1 : 0;
-    let s = 0.4 + 0.6 * ep;
-    if (ep < 1) er++;
-    if (age > end - 1.0) s = Math.min(s, Math.max(0.1, 1.0 - (age - (end - 1.0))));
+    // Binary emergence: a tooth is either through or not.
+    // Small fade in the final year before shedding, so the jaw does not pop.
+    let s = 1;
+    if (age > end - 1.0) s = Math.max(0.1, 1.0 - (age - (end - 1.0)));
     t.group.visible = true;
     t.group.scale.setScalar(s);
     t.group.position.y = t.baseY;
@@ -232,27 +272,24 @@ function updateAge(age) {
 
   for (const fdi in permanent) {
     const t = permanent[fdi];
-    const [lo, hi] = eruptWindow(t.data, 0.6);
-    if (age < lo) { t.group.visible = false; t.group.scale.setScalar(1); continue; }
-    const pp = bin ? 1 : THREE.MathUtils.clamp((age - lo) / (hi - lo), 0, 1);
+    if (age < emergenceAge(fdi, t.data)) { t.group.visible = false; t.group.scale.setScalar(1); continue; }
     t.group.visible = true;
-    t.group.scale.setScalar(0.4 + 0.6 * pp);
-    if (pp < 1) er++;
+    t.group.scale.setScalar(1);
     p++;
   }
 
   for (const fdi in wisdom) {
     const t = wisdom[fdi];
     if (age < t.data.eruption) { t.group.visible = false; t.group.scale.setScalar(t.baseScale); continue; }
-    const pp = bin ? 1 : THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
     t.group.visible = true;
-    t.group.scale.setScalar(t.baseScale * (0.4 + 0.6 * pp));
+    t.group.scale.setScalar(t.baseScale);
     w++;
   }
 
+  for (const reg of [deciduous, permanent]) for (const k in reg) if (inEmergenceWindow(reg[k].data, age)) inWin++;
   const info = document.getElementById('tooth-info');
   if (age < 0.5) info.textContent = 'No teeth';
-  else { const eTxt = er ? ` (${er} still erupting)` : ''; info.textContent = `${d} deciduous · ${p} permanent${eTxt}` + (masked ? '' : ` · jaw ${Math.round(growth * 100)}%`); }
+  else info.textContent = `${d} deciduous · ${p} permanent` + (masked ? '' : `${inWin ? ` · ${inWin} in emergence range` : ''} · jaw ${Math.round(growth * 100)}%`);
 }
 
 document.getElementById('ageSlider')
@@ -276,6 +313,10 @@ addEventListener('resize', () => {
 window.appAPI = {
   getTeethMap() { return teeth; },
   getDentalData() { return dentalData; },
+  newPerson(seed) { return makePerson(seed); },
+  resetPerson() { person = null; },
+  describePerson() { return describePerson(); },
+  getEmergence(fdi) { const t = teeth[fdi]; return t ? emergenceAge(fdi, t.data) : null; },
   getCurrentAge() { const s = document.getElementById('ageSlider'); return s ? parseFloat(s.value) : 0; },
   highlightTooth(fdi, hex = 0x4ade80) {
     const t = teeth[fdi]; if (!t) return false;
@@ -312,7 +353,7 @@ window.appAPI = {
   if (!slider) return;
   const hint = document.createElement('div');
   hint.id = 'first-hint';
-  hint.textContent = 'Teeth erupt across a RANGE of ages, not one date. Drag the slider.';
+  hint.textContent = 'Children differ: each tooth has a RANGE of ages, not one date. Drag the slider.';
   Object.assign(hint.style, { top: '92px', bottom: 'auto', left: '12px', transform: 'none', maxWidth: 'calc(100vw - 150px)', whiteSpace: 'normal', textAlign: 'left' });
   document.body.appendChild(hint);
   const style = document.createElement('style');
