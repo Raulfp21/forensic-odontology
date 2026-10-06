@@ -39,7 +39,7 @@ function renderInfo(fdi){
   const d = data.deciduousTeeth?.[fdi] || data.permanentTeeth?.[fdi] || {};
   const resorpLine = d.resorptionBegins ? `<div><b>Resorption begins:</b> year ${d.resorptionBegins}</div>` : '';
   const gotoBtn = (d.eruption != null) ? `<button class="fdi-goto" data-age="${d.eruption}">Set age to ${d.eruption} yr</button>` : '';
-  return `<div class="fdi-info"><div class="fdi-info-code">${fdi}</div><div class="fdi-info-name">${info.label}</div><div class="fdi-info-grid"><div><b>Eruption:</b> ${formatRange(d)}</div>${resorpLine}<div class="fdi-info-kind">${info.isDeciduous?'Deciduous':'Permanent'}</div></div></div>${gotoBtn}<div class="fdi-rule"><b>Exam logic:</b> find the tooth that has <i>just erupted</i>. If the next tooth in the eruption order has <i>not</i> erupted, the age lies between their two ranges. Take the lower bound if the previous tooth recently erupted; the upper bound if the next is about to erupt.</div>`;
+  return `<div class="fdi-info"><div class="fdi-info-code">${fdi}</div><div class="fdi-info-name">${info.label}</div><div class="fdi-info-grid"><div><b>Eruption:</b> ${formatRange(d)}</div>${resorpLine}<div class="fdi-info-kind">${info.isDeciduous?'Deciduous':'Permanent'}</div></div></div>${gotoBtn}<div class="fdi-rule"><b>Exam logic:</b> find the tooth that has <i>just erupted</i>. If the next tooth in the eruption order has <i>not</i> erupted, the age lies between their two ranges. Take the lower bound if the previous tooth recently erupted; the upper bound if the next is about to erupt.<br><br><b>Why a range?</b> Eruption varies between people: girls tend to be earlier, and nutrition, climate, ethnicity and endocrine disease all shift it. So report an age <i>range</i>, never a single age.</div>`;
 }
 function handleClick(fdi){
   if(state.mode==='learn'){
@@ -71,7 +71,7 @@ function pickRandomVisible(){
   for(const fdi in teeth){
     const d = data.deciduousTeeth?.[fdi] || data.permanentTeeth?.[fdi];
     if(!d) continue;
-    if(age<d.eruption) continue;
+    if(age<(d.eruptionRange?d.eruptionRange[0]:d.eruption)) continue;
     if(d.fall && age>=d.fall) continue;
     cand.push(fdi);
   }
@@ -180,6 +180,7 @@ function init(){
   panel.addEventListener('click', e => {
     const b = e.target.closest('.fdi-goto');
     if (!b) return;
+    if (document.body.classList.contains('mj-active')) return;
     const a = parseFloat(b.dataset.age);
     if (isNaN(a)) return;
     const s = document.getElementById('ageSlider');

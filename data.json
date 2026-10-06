@@ -42,7 +42,7 @@
     },
     "52": {
       "name": "Upper Right Deciduous Lateral Incisor",
-      "eruption": 0.8,
+      "eruption": 0.75,
       "fall": 7.5,
       "eruptionRange": [
         0.58,
@@ -52,7 +52,7 @@
     },
     "62": {
       "name": "Upper Left Deciduous Lateral Incisor",
-      "eruption": 0.8,
+      "eruption": 0.75,
       "fall": 7.5,
       "eruptionRange": [
         0.58,
@@ -122,7 +122,7 @@
     },
     "54": {
       "name": "Upper Right Deciduous First Molar",
-      "eruption": 1.2,
+      "eruption": 1.15,
       "fall": 9.5,
       "eruptionRange": [
         1.0,
@@ -132,7 +132,7 @@
     },
     "64": {
       "name": "Upper Left Deciduous First Molar",
-      "eruption": 1.2,
+      "eruption": 1.15,
       "fall": 9.5,
       "eruptionRange": [
         1.0,

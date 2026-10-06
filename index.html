@@ -106,5 +106,9 @@
   import "./mystery_jaw.js";
   (function readyMJ(){ if (window.appAPI && window.MysteryJaw) { window.MysteryJaw.init(); } else setTimeout(readyMJ, 100); })();
 </script>
+<script type="module">
+  import "./mystery_jaw.js";
+  window.MysteryJaw.init();
+</script>
 </body>
 </html>

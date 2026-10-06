@@ -190,27 +190,38 @@ function buildScene(gltf) {
   console.log(`Loaded: ${Object.keys(deciduous).length}D / ${Object.keys(permanent).length}P / ${Object.keys(wisdom).length}W`);
 }
 
+// Textbook gives eruption as a RANGE (people vary). A tooth first appears at the
+// range start and finishes erupting at the range end. Min width keeps very narrow
+// ranges (e.g. deciduous canine, ~1 month) visible as a short animation.
+function eruptWindow(data, fallbackWidth) {
+  const r = data.eruptionRange;
+  if (r && r.length === 2) return [r[0], Math.max(r[1], r[0] + 0.25)];
+  return [data.eruption, data.eruption + fallbackWidth];
+}
+
 function updateAge(age) {
-  document.getElementById('age-value').textContent = age.toFixed(1);
+  const masked = document.body.classList.contains('mj-active');
+  document.getElementById('age-value').textContent = masked ? '?' : age.toFixed(1);
 
   // ---- Jaw growth: scale the whole model ----
   const growth = growthScale(age);
   if (worldGroup) worldGroup.scale.setScalar(growth);
 
-  let d = 0, p = 0, w = 0;
+  let d = 0, p = 0, w = 0, er = 0;
 
   for (const fdi in deciduous) {
     const t = deciduous[fdi];
-    const start = t.data.eruption, end = t.data.fall;
+    const [start, hiE] = eruptWindow(t.data, 0.5), end = t.data.fall;
     if (age < start || age >= end + 0.5) {
       t.group.visible = false;
       t.group.position.y = t.baseY;
       t.group.scale.setScalar(1);
       continue;
     }
-    let s = 1;
-    if (age < start + 0.5) s = 0.4 + 1.2 * (age - start);
-    else if (age > end - 1.0) s = Math.max(0.1, 1.0 - (age - (end - 1.0)));
+    const ep = THREE.MathUtils.clamp((age - start) / (hiE - start), 0, 1);
+    let s = 0.4 + 0.6 * ep;
+    if (ep < 1) er++;
+    if (age > end - 1.0) s = Math.min(s, Math.max(0.1, 1.0 - (age - (end - 1.0))));
     t.group.visible = true;
     t.group.scale.setScalar(s);
     t.group.position.y = t.baseY;
@@ -219,10 +230,12 @@ function updateAge(age) {
 
   for (const fdi in permanent) {
     const t = permanent[fdi];
-    if (age < t.data.eruption) { t.group.visible = false; t.group.scale.setScalar(1); continue; }
-    const pp = THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
+    const [lo, hi] = eruptWindow(t.data, 0.6);
+    if (age < lo) { t.group.visible = false; t.group.scale.setScalar(1); continue; }
+    const pp = THREE.MathUtils.clamp((age - lo) / (hi - lo), 0, 1);
     t.group.visible = true;
     t.group.scale.setScalar(0.4 + 0.6 * pp);
+    if (pp < 1) er++;
     p++;
   }
 
@@ -237,7 +250,7 @@ function updateAge(age) {
 
   const info = document.getElementById('tooth-info');
   if (age < 0.5) info.textContent = 'No teeth';
-  else info.textContent = `${d} deciduous · ${p} permanent · jaw ${Math.round(growth * 100)}%`;
+  else { const eTxt = er ? ` (${er} still erupting)` : ''; info.textContent = `${d} deciduous · ${p} permanent${eTxt}` + (masked ? '' : ` · jaw ${Math.round(growth * 100)}%`); }
 }
 
 document.getElementById('ageSlider')
