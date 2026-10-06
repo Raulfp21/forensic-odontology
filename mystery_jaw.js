@@ -97,7 +97,7 @@ const MysteryJaw = (() => {
     const i = $('tooth-info');
     if (i) {
       i.dataset._saved = i.textContent;
-      i.textContent = 'Study the jaw — count teeth, spot the erupting ones';
+      i.textContent = 'Study the jaw — count which teeth have erupted and which have not';
     }
   }
   function unmaskLabels() {
@@ -162,11 +162,9 @@ const MysteryJaw = (() => {
     pushAgeToApp(age);
 
     // count exactly what is drawn on the jaw
-    let dec = 0, perm = 0, erupting = 0;
+    let dec = 0, perm = 0;
     for (const fdi in map) if (map[fdi].group.visible) {
       ('5678'.includes(fdi[0]) ? dec++ : perm++);
-      const d = data.deciduousTeeth[fdi] || data.permanentTeeth[fdi];
-      if (d && d.eruptionRange && age < d.eruptionRange[1]) erupting++;
     }
 
     const b = bracket(data, age);
@@ -180,7 +178,7 @@ const MysteryJaw = (() => {
       <div class="mj-result">
         <div>True age: <span class="true-age">${age.toFixed(1)} yr</span> · you said ${fmtRange(lo, hi)}</div>
         <div>${verdict}</div>
-        <div class="section"><b>On the jaw:</b> ${dec} deciduous · ${perm} permanent${erupting ? ` (${erupting} still erupting)` : ''}</div>
+        <div class="section"><b>On the jaw:</b> ${dec} deciduous · ${perm} permanent</div>
         <div class="section"><b>Last erupted:</b> ${nm(b.last)} &nbsp; <b>Next due:</b> ${nm(b.next)}</div>
         <div class="section"><b>Defensible report:</b> ${fmtRange(b.lo, b.hi)}
           <div class="muted">Lower bound from the last tooth to erupt, upper bound from the next one due (Tables 4.8/4.9). These are population ranges, not rules: sex, nutrition, climate, ethnicity and endocrine disease shift eruption, which is why you report a range. Slider is unlocked: drag to see the neighbouring ages.</div></div>

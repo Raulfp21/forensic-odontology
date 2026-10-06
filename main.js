@@ -200,6 +200,7 @@ function eruptWindow(data, fallbackWidth) {
 }
 
 function updateAge(age) {
+  const bin = document.body.classList.contains('mj-active'); // exams show teeth as out or not, never half-erupted
   const masked = document.body.classList.contains('mj-active');
   document.getElementById('age-value').textContent = masked ? '?' : age.toFixed(1);
 
@@ -218,7 +219,8 @@ function updateAge(age) {
       t.group.scale.setScalar(1);
       continue;
     }
-    const ep = THREE.MathUtils.clamp((age - start) / (hiE - start), 0, 1);
+    let ep = THREE.MathUtils.clamp((age - start) / (hiE - start), 0, 1);
+    if (bin) ep = age >= start ? 1 : 0;
     let s = 0.4 + 0.6 * ep;
     if (ep < 1) er++;
     if (age > end - 1.0) s = Math.min(s, Math.max(0.1, 1.0 - (age - (end - 1.0))));
@@ -232,7 +234,7 @@ function updateAge(age) {
     const t = permanent[fdi];
     const [lo, hi] = eruptWindow(t.data, 0.6);
     if (age < lo) { t.group.visible = false; t.group.scale.setScalar(1); continue; }
-    const pp = THREE.MathUtils.clamp((age - lo) / (hi - lo), 0, 1);
+    const pp = bin ? 1 : THREE.MathUtils.clamp((age - lo) / (hi - lo), 0, 1);
     t.group.visible = true;
     t.group.scale.setScalar(0.4 + 0.6 * pp);
     if (pp < 1) er++;
@@ -242,7 +244,7 @@ function updateAge(age) {
   for (const fdi in wisdom) {
     const t = wisdom[fdi];
     if (age < t.data.eruption) { t.group.visible = false; t.group.scale.setScalar(t.baseScale); continue; }
-    const pp = THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
+    const pp = bin ? 1 : THREE.MathUtils.clamp((age - t.data.eruption) / 0.6, 0, 1);
     t.group.visible = true;
     t.group.scale.setScalar(t.baseScale * (0.4 + 0.6 * pp));
     w++;
