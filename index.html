@@ -52,11 +52,10 @@ canvas { display: block; position: fixed; inset: 0; transition: opacity 0.2s; }
 #age-label { font-size: 1.15em; font-weight: 700; color: #4ade80;
   min-width: 44px; text-align: right; }
 
-.fdi-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 3px;
-  flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
-.fdi-cell { min-width: 30px; height: 30px; background: #0f0f0f; color: #666;
+.fdi-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; }
+.fdi-cell { flex: 1 1 0; min-width: 0; height: 38px; background: #0f0f0f; color: #666;
   border: 1px solid #262626; border-radius: 6px; font: inherit;
-  font-size: 0.72em; font-weight: 600; cursor: pointer; padding: 0 4px; flex-shrink: 0; }
+  font-size: 0.78em; font-weight: 600; cursor: pointer; padding: 0 4px; }
 .fdi-cell.present { background: #1a3a24; color: #4ade80; border-color: #4ade80; }
 .fdi-cell:active { background: #222; }
 
@@ -106,11 +105,11 @@ canvas { display: block; position: fixed; inset: 0; transition: opacity 0.2s; }
 /* Test chart */
 .chart { padding: 10px 4px; }
 .chart .row { display: flex; justify-content: center; gap: 3px;
-  margin-bottom: 3px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
-.chart .cell { min-width: 34px; height: 34px; display: flex;
-  align-items: center; justify-content: center; font-size: 0.68em;
+  margin-bottom: 3px; }
+.chart .cell { flex: 1 1 0; min-width: 0; height: 38px; display: flex;
+  align-items: center; justify-content: center; font-size: 0.75em;
   font-weight: 600; border-radius: 6px; border: 1px solid #262626;
-  background: #0f0f0f; color: #333; flex-shrink: 0; }
+  background: #0f0f0f; color: #333; }
 .chart .cell.present { background: #1a3a24; color: #4ade80;
   border-color: #4ade80; }
 </style>
@@ -171,7 +170,6 @@ canvas { display: block; position: fixed; inset: 0; transition: opacity 0.2s; }
   }
 }
 </script>
-<script src="https://www.gstatic.com/draco/versioned/decoders/1.5.7/draco_decoder.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>
