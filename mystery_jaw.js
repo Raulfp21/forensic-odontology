@@ -93,7 +93,10 @@ const MysteryJaw = (() => {
   // Hide the answer even if an older main.js is cached: overwrite the labels directly.
   function maskLabels() {
     const a = $('age-value'); if (a) a.textContent = '?';
-    const i = $('tooth-info'); if (i) i.textContent = i.textContent.replace(/\s*·\s*jaw\s*\d+%/, '');
+    const i = $('tooth-info'); if (i) { i.dataset._saved = i.textContent; i.textContent = ''; }
+  }
+  function unmaskLabels() {
+    const i = $('tooth-info'); if (i && i.dataset._saved !== undefined) { i.textContent = i.dataset._saved; delete i.dataset._saved; }
   }
 
   function startNewRound() {
@@ -138,6 +141,7 @@ const MysteryJaw = (() => {
   }
 
   function reveal(lo, hi) {
+    unmaskLabels();
     const age = state.targetAge;
     const data = window.appAPI.getDentalData();
     const map = window.appAPI.getTeethMap();
