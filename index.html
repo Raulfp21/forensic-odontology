@@ -8,7 +8,7 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; background: #0a0a0a; color: #e8e8e8;
   font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
-canvas { display: block; position: fixed; inset: 0; }
+canvas { display: block; position: fixed; inset: 0; transition: opacity 0.2s; }
 
 #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 10;
   background: rgba(10,10,10,0.92); border-bottom: 1px solid #1e1e1e;
@@ -24,13 +24,22 @@ canvas { display: block; position: fixed; inset: 0; }
 #tabs button.active { background: #14261a; color: #4ade80; border-color: #4ade80; }
 
 .panel { position: fixed; left: 10px; right: 10px; bottom: 10px; z-index: 20;
-  background: rgba(10,10,10,0.94); border: 1px solid #262626;
+  background: rgba(10,10,10,0.96); border: 1px solid #262626;
   border-radius: 14px; padding: 12px; backdrop-filter: blur(12px);
-  max-height: 62vh; overflow: auto; }
+  max-height: 66vh; overflow: auto; }
 .panel.hidden { display: none; }
 
 /* Learn */
-.age-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.learn-range { padding: 10px 12px; background: #0f1a12;
+  border: 1px solid #2a4a32; border-radius: 10px; margin-bottom: 10px; }
+.learn-range .label { font-size: 0.72em; color: #8ba894;
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+.learn-range .range-value { font-size: 1.35em; font-weight: 700;
+  color: #4ade80; margin-bottom: 4px; }
+.learn-range .range-explain { font-size: 0.78em; color: #a8c8b0; line-height: 1.4; }
+.learn-range .range-explain b { color: #d8e8d8; font-weight: 600; }
+
+.age-row { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
 .age-btn { width: 42px; height: 42px; background: #141414; color: #4ade80;
   border: 1px solid #262626; border-radius: 10px; font-size: 1.3em;
   font-weight: 700; cursor: pointer; }
@@ -40,28 +49,31 @@ canvas { display: block; position: fixed; inset: 0; }
 #age-slider::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px;
   background: #4ade80; border-radius: 50%; cursor: pointer;
   box-shadow: 0 0 10px rgba(74,222,128,0.5); }
-#age-label { font-size: 1.25em; font-weight: 700; color: #4ade80;
-  min-width: 48px; text-align: right; }
+#age-label { font-size: 1.15em; font-weight: 700; color: #4ade80;
+  min-width: 44px; text-align: right; }
 
-/* FDI button grid */
-.fdi-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 3px; }
-.fdi-cell { min-width: 30px; height: 30px; background: #141414; color: #d0d0d0;
+.fdi-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 3px;
+  flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
+.fdi-cell { min-width: 30px; height: 30px; background: #0f0f0f; color: #666;
   border: 1px solid #262626; border-radius: 6px; font: inherit;
-  font-size: 0.75em; font-weight: 600; cursor: pointer; padding: 0 4px; }
-.fdi-cell.decid { color: #f0e8cc; }
-.fdi-cell.selected { background: #14261a; color: #4ade80; border-color: #4ade80; }
+  font-size: 0.72em; font-weight: 600; cursor: pointer; padding: 0 4px; flex-shrink: 0; }
 .fdi-cell.present { background: #1a3a24; color: #4ade80; border-color: #4ade80; }
-.fdi-cell.absent { color: #555; }
-.fdi-cell.midline { margin-right: 12px; }
+.fdi-cell:active { background: #222; }
 
-#info { margin-top: 10px; padding: 12px; background: #131313;
+.learn-actions { display: flex; gap: 4px; margin: 8px 0; flex-wrap: wrap; }
+.learn-actions button { background: #141414; color: #999;
+  border: 1px solid #262626; border-radius: 6px;
+  padding: 6px 10px; font: inherit; font-size: 0.72em; cursor: pointer; }
+.learn-actions button:active { background: #1a1a1a; }
+
+#info { margin-top: 8px; padding: 10px 12px; background: #131313;
   border-left: 3px solid #4ade80; border-radius: 0 8px 8px 0;
-  font-size: 0.85em; line-height: 1.5; min-height: 60px; }
-#info .code { font-size: 1.5em; font-weight: 700; color: #4ade80; }
+  font-size: 0.82em; line-height: 1.5; }
+#info .code { font-size: 1.4em; font-weight: 700; color: #4ade80; }
 #info .name { color: #e8e8e8; font-weight: 500; }
-#info .row  { color: #aaa; font-size: 0.92em; }
+#info .row  { color: #aaa; font-size: 0.92em; margin-top: 3px; }
 #info .row b { color: #888; font-weight: 500; }
-#info .rule { margin-top: 8px; color: #a8c8e8; font-size: 0.9em;
+#info .rule { margin-top: 8px; color: #a8c8e8; font-size: 0.88em;
   padding-top: 8px; border-top: 1px solid #1f1f1f; }
 
 /* Practice & Test */
@@ -69,21 +81,19 @@ canvas { display: block; position: fixed; inset: 0; }
 .step:last-child { border-bottom: none; }
 .step h3 { margin: 0 0 6px; font-size: 0.85em; color: #4ade80;
   font-weight: 600; }
-.step h3.locked { color: #555; }
-.step p { margin: 4px 0; font-size: 0.82em; color: #bbb; line-height: 1.45; }
+.step p { margin: 4px 0; font-size: 0.8em; color: #bbb; line-height: 1.45; }
 .step .fdi-pick { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .step .fdi-pick button { min-width: 40px; padding: 6px 8px; background: #141414;
   color: #ccc; border: 1px solid #262626; border-radius: 6px; font: inherit;
   font-size: 0.78em; cursor: pointer; }
 .step .fdi-pick button.picked { background: #14261a; color: #4ade80;
   border-color: #4ade80; }
-.step input[type=number] { width: 70px; padding: 8px; background: #131313;
+.step input[type=number] { width: 90px; padding: 8px; background: #131313;
   color: #e8e8e8; border: 1px solid #262626; border-radius: 6px;
-  font: inherit; text-align: center; }
+  font: inherit; text-align: center; margin-top: 6px; }
 .step button.primary { padding: 10px 16px; background: #1a3a24; color: #4ade80;
   border: 1px solid #4ade80; border-radius: 8px; font: inherit;
   font-size: 0.85em; font-weight: 600; cursor: pointer; margin-top: 8px; }
-.step button.primary:disabled { opacity: 0.4; cursor: default; }
 
 .result { padding: 12px; margin-top: 10px; background: #131313;
   border-left: 3px solid #f59e0b; border-radius: 0 8px 8px 0;
@@ -96,14 +106,13 @@ canvas { display: block; position: fixed; inset: 0; }
 /* Test chart */
 .chart { padding: 10px 4px; }
 .chart .row { display: flex; justify-content: center; gap: 3px;
-  margin-bottom: 3px; }
-.chart .cell { min-width: 32px; height: 32px; display: flex;
-  align-items: center; justify-content: center; font-size: 0.72em;
+  margin-bottom: 3px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
+.chart .cell { min-width: 34px; height: 34px; display: flex;
+  align-items: center; justify-content: center; font-size: 0.68em;
   font-weight: 600; border-radius: 6px; border: 1px solid #262626;
-  background: #0f0f0f; color: #333; }
+  background: #0f0f0f; color: #333; flex-shrink: 0; }
 .chart .cell.present { background: #1a3a24; color: #4ade80;
   border-color: #4ade80; }
-.chart .midline { margin-right: 14px; }
 </style>
 </head>
 <body>
@@ -122,14 +131,28 @@ canvas { display: block; position: fixed; inset: 0; }
 </header>
 
 <section id="learn-panel" class="panel">
+  <div class="learn-range">
+    <div class="label">Defensible age range</div>
+    <div class="range-value" id="learn-range-value">—</div>
+    <div class="range-explain" id="learn-range-explain">Mark teeth on the grid, or scrub to an age, to compute the range.</div>
+  </div>
+  <div id="fdi-grid"></div>
+  <div class="learn-actions">
+    <button data-clear>Clear</button>
+    <button data-age="2">2 yr</button>
+    <button data-age="6">6 yr</button>
+    <button data-age="9">9 yr</button>
+    <button data-age="12">12 yr</button>
+    <button data-age="18">18 yr</button>
+    <button data-age="22">22 yr</button>
+  </div>
   <div class="age-row">
     <button class="age-btn" id="age-minus">−</button>
     <input type="range" id="age-slider" min="0" max="25" step="0.5" value="0">
     <button class="age-btn" id="age-plus">+</button>
     <span id="age-label">0.0</span>
   </div>
-  <div id="fdi-grid"></div>
-  <div id="info"><span style="color:#666">Tap an FDI number to see the tooth on the jaw.</span></div>
+  <div id="info"><span style="color:#666">Tap a tooth on the jaw to see its details.</span></div>
 </section>
 
 <section id="practice-panel" class="panel hidden">

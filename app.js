@@ -5,9 +5,6 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 /* ============================================================
    DATA — book values only (Fig 4.21 / Table 4.9 / Table 4.8).
-   The book gives ONE range per tooth type, not per jaw.
-   Rule 2 (lower erupts earlier) is a teaching note, not a
-   shift to apply to the table.
    ============================================================ */
 const PERMANENT = {
   '18': { name: 'Upper Right Third Molar',    range: [17, 25] },
@@ -45,64 +42,77 @@ const PERMANENT = {
 };
 
 const DECIDUOUS = {
-  '55': { name: 'Upper Right Deciduous Second Molar', range: [1.67, 2.5], fall: 11.0, replaces: null },
-  '54': { name: 'Upper Right Deciduous First Molar',  range: [1.0, 1.17], fall: 9.5,  replaces: '14' },
-  '53': { name: 'Upper Right Deciduous Canine',       range: [1.42, 1.5],  fall: 11.0, replaces: '13' },
-  '52': { name: 'Upper Right Deciduous Lateral Incisor', range: [0.58, 0.75], fall: 7.0, replaces: '12' },
-  '51': { name: 'Upper Right Deciduous Central Incisor', range: [0.58, 0.75], fall: 6.5, replaces: '11' },
-  '61': { name: 'Upper Left Deciduous Central Incisor',  range: [0.58, 0.75], fall: 6.5, replaces: '21' },
-  '62': { name: 'Upper Left Deciduous Lateral Incisor',  range: [0.58, 0.75], fall: 7.0, replaces: '22' },
-  '63': { name: 'Upper Left Deciduous Canine',           range: [1.42, 1.5],  fall: 11.0, replaces: '23' },
-  '64': { name: 'Upper Left Deciduous First Molar',      range: [1.0, 1.17], fall: 9.5, replaces: '24' },
-  '65': { name: 'Upper Left Deciduous Second Molar',     range: [1.67, 2.5], fall: 11.0, replaces: null },
-  '85': { name: 'Lower Right Deciduous Second Molar',    range: [1.67, 2.5], fall: 11.0, replaces: null },
-  '84': { name: 'Lower Right Deciduous First Molar',     range: [1.0, 1.17], fall: 9.5, replaces: '44' },
-  '83': { name: 'Lower Right Deciduous Canine',          range: [1.42, 1.5],  fall: 10.0, replaces: '43' },
-  '82': { name: 'Lower Right Deciduous Lateral Incisor', range: [0.83, 1.0],  fall: 6.5, replaces: '42' },
-  '81': { name: 'Lower Right Deciduous Central Incisor', range: [0.5, 0.67],  fall: 6.0, replaces: '41' },
-  '71': { name: 'Lower Left Deciduous Central Incisor',  range: [0.5, 0.67],  fall: 6.0, replaces: '31' },
-  '72': { name: 'Lower Left Deciduous Lateral Incisor',  range: [0.83, 1.0],  fall: 6.5, replaces: '32' },
-  '73': { name: 'Lower Left Deciduous Canine',           range: [1.42, 1.5],  fall: 10.0, replaces: '33' },
-  '74': { name: 'Lower Left Deciduous First Molar',      range: [1.0, 1.17], fall: 9.5, replaces: '34' },
-  '75': { name: 'Lower Left Deciduous Second Molar',     range: [1.67, 2.5], fall: 11.0, replaces: null },
+  '55': { name: 'Upper Right Deciduous Second Molar', range: [1.67, 2.5], fall: 11.0, perm: null },
+  '54': { name: 'Upper Right Deciduous First Molar',  range: [1.0, 1.17], fall: 9.5,  perm: '14' },
+  '53': { name: 'Upper Right Deciduous Canine',       range: [1.42, 1.5],  fall: 11.0, perm: '13' },
+  '52': { name: 'Upper Right Deciduous Lateral Incisor', range: [0.58, 0.75], fall: 7.0, perm: '12' },
+  '51': { name: 'Upper Right Deciduous Central Incisor', range: [0.58, 0.75], fall: 6.5, perm: '11' },
+  '61': { name: 'Upper Left Deciduous Central Incisor',  range: [0.58, 0.75], fall: 6.5, perm: '21' },
+  '62': { name: 'Upper Left Deciduous Lateral Incisor',  range: [0.58, 0.75], fall: 7.0, perm: '22' },
+  '63': { name: 'Upper Left Deciduous Canine',           range: [1.42, 1.5],  fall: 11.0, perm: '23' },
+  '64': { name: 'Upper Left Deciduous First Molar',      range: [1.0, 1.17], fall: 9.5, perm: '24' },
+  '65': { name: 'Upper Left Deciduous Second Molar',     range: [1.67, 2.5], fall: 11.0, perm: null },
+  '85': { name: 'Lower Right Deciduous Second Molar',    range: [1.67, 2.5], fall: 11.0, perm: null },
+  '84': { name: 'Lower Right Deciduous First Molar',     range: [1.0, 1.17], fall: 9.5, perm: '44' },
+  '83': { name: 'Lower Right Deciduous Canine',          range: [1.42, 1.5],  fall: 10.0, perm: '43' },
+  '82': { name: 'Lower Right Deciduous Lateral Incisor', range: [0.83, 1.0],  fall: 6.5, perm: '42' },
+  '81': { name: 'Lower Right Deciduous Central Incisor', range: [0.5, 0.67],  fall: 6.0, perm: '41' },
+  '71': { name: 'Lower Left Deciduous Central Incisor',  range: [0.5, 0.67],  fall: 6.0, perm: '31' },
+  '72': { name: 'Lower Left Deciduous Lateral Incisor',  range: [0.83, 1.0],  fall: 6.5, perm: '32' },
+  '73': { name: 'Lower Left Deciduous Canine',           range: [1.42, 1.5],  fall: 10.0, perm: '33' },
+  '74': { name: 'Lower Left Deciduous First Molar',      range: [1.0, 1.17], fall: 9.5, perm: '34' },
+  '75': { name: 'Lower Left Deciduous Second Molar',     range: [1.67, 2.5], fall: 11.0, perm: null },
 };
 
 const ALL = { ...PERMANENT, ...DECIDUOUS };
 const isDeciduous = fdi => '5678'.includes(fdi[0]);
 const isUpper = fdi => '1256'.includes(fdi[0]);
-const mid = r => (r[0] + r[1]) / 2;
 const fmtYr = v => v < 2 ? `${Math.round(v * 12)} mo` : `${(+v.toFixed(1))} yr`;
 const fmtRange = (lo, hi) => `${fmtYr(lo)} – ${fmtYr(hi)}`;
 
-// Eruption is a point at the midpoint of the book range.
-const emergence = fdi => mid(ALL[fdi].range);
+// Eruption is a POINT at the start of the book range.
+// Present  ⟺  age >= range[0] and (deciduous: age < fall).
 function isPresent(fdi, age) {
-  if (age < emergence(fdi)) return false;
+  if (age < ALL[fdi].range[0]) return false;
   if (isDeciduous(fdi) && age >= ALL[fdi].fall) return false;
   return true;
 }
 
-/* Chart slots: each position holds deciduous + permanent (molar slots
-   have no deciduous counterpart). The slot shows whichever is present. */
-const SLOTS = {
-  upperR: [['18'],['17'],['16'],['55','15'],['54','14'],['53','13'],['52','12'],['51','11']],
-  upperL: [['61','21'],['62','22'],['63','23'],['64','24'],['65','25'],['26'],['27'],['28']],
-  lowerL: [['71','31'],['72','32'],['73','33'],['74','34'],['75','35'],['36'],['37'],['38']],
-  lowerR: [['48'],['47'],['46'],['85','45'],['84','44'],['83','43'],['82','42'],['81','41']],
+// Slot-level mirror: left/right pairs erupt together.
+const MIRROR = {
+  '1':'2','2':'1','3':'4','4':'3','5':'6','6':'5','7':'8','8':'7',
 };
-function slotPresent(slot, age) {
-  // deciduous first (so a child's tooth is named by its deciduous code)
-  for (const f of slot) if (isPresent(f, age)) return f;
-  return null;
-}
+const mirror = fdi => MIRROR[fdi[0]] + fdi[1];
+const PERM_TO_DECID = {};
+for (const d in DECIDUOUS) if (DECIDUOUS[d].perm) PERM_TO_DECID[DECIDUOUS[d].perm] = d;
 
 function bookRule(fdi) {
   if (isDeciduous(fdi)) return 'Deciduous teeth erupt in a more regular sequence than the permanent set.';
   const n = fdi[1];
   if (n === '2') return 'Rule 1 exception: lateral incisors erupt earlier in the upper jaw.';
   if (n === '8') return 'Rule 3: wisdom teeth erupt first in the lower jaw, left before right.';
-  if (isUpper(fdi)) return 'Rule 2: the corresponding lower tooth erupts about 1 year earlier, so this range is the upper limit of the pair.';
+  if (isUpper(fdi)) return 'Rule 2: the corresponding lower tooth erupts about 1 year earlier.';
   return 'Rule 2: lower teeth erupt about 1 year before their upper counterparts.';
+}
+
+/* Compute the defensible age band from a set of marked-present FDI codes. */
+function computeBand(marked) {
+  const present = Array.from(marked);
+  const pending = Object.keys(ALL).filter(f => !marked.has(f));
+  if (!present.length) {
+    if (!pending.length) return { lo: 0, hi: null, last: [], next: [], open: true };
+    const minE = Math.min(...pending.map(f => ALL[f].range[0]));
+    const next = pending.filter(f => ALL[f].range[0] === minE);
+    return { lo: 0, hi: Math.max(...next.map(f => ALL[f].range[1])), last: [], next, open: false };
+  }
+  const maxE = Math.max(...present.map(f => ALL[f].range[0]));
+  const last = present.filter(f => ALL[f].range[0] === maxE);
+  const lo = Math.min(...last.map(f => ALL[f].range[0]));
+  if (!pending.length) return { lo, hi: null, last, next: [], open: true };
+  const minE = Math.min(...pending.map(f => ALL[f].range[0]));
+  const next = pending.filter(f => ALL[f].range[0] === minE);
+  const hi = Math.max(...next.map(f => ALL[f].range[1]));
+  return { lo, hi, last, next, open: false };
 }
 
 /* ============================================================
@@ -125,7 +135,6 @@ const rl = new THREE.DirectionalLight(0xffffff, 0.8); rl.position.set(0, -0.5, -
 
 const teeth = {};
 let maxDim = 0.15;
-let model3D = null;
 
 function loadModel() {
   return new Promise((resolve, reject) => {
@@ -134,18 +143,18 @@ function loadModel() {
     draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
     loader.setDRACOLoader(draco);
     loader.load('models/anatomy_v12_draco.glb', gltf => {
-      model3D = gltf.scene;
-      scene.add(model3D);
-      const box = new THREE.Box3().setFromObject(model3D);
+      const model = gltf.scene;
+      scene.add(model);
+      const box = new THREE.Box3().setFromObject(model);
       const size = box.getSize(new THREE.Vector3());
       const centre = box.getCenter(new THREE.Vector3());
-      model3D.position.sub(centre);
+      model.position.sub(centre);
       maxDim = Math.max(size.x, size.y, size.z);
       camera.position.set(0, maxDim * 0.1, maxDim * 1.6);
       controls.target.set(0, 0, 0);
       controls.update();
 
-      model3D.traverse(o => {
+      model.traverse(o => {
         if (!o.isMesh) return;
         let a = o, group = '';
         while (a) {
@@ -163,64 +172,16 @@ function loadModel() {
           emissive: 0x000000,
         });
       });
-      model3D.traverse(o => {
+      model.traverse(o => {
         const m = o.name.match(/^tooth_(\d{2})$/);
         if (!m) return;
-        const fdi = m[1];
-        if (!ALL[fdi]) return;
-        teeth[fdi] = { group: o, data: ALL[fdi] };
+        if (!ALL[m[1]]) return;
+        teeth[m[1]] = { group: o };
       });
       resolve();
     }, undefined, reject);
   });
 }
-
-/* ============================================================
-   AGE
-   ============================================================ */
-let currentAge = 0;
-const ageLabel = document.getElementById('age-label');
-const ageSlider = document.getElementById('age-slider');
-function renderAge(age) {
-  currentAge = Math.max(0, Math.min(25, +(+age).toFixed(1)));
-  ageLabel.textContent = currentAge.toFixed(1);
-  ageSlider.value = currentAge;
-  for (const fdi in teeth) {
-    const p = isPresent(fdi, currentAge);
-    teeth[fdi].group.visible = p;
-    teeth[fdi].group.scale.setScalar(1);
-  }
-  // refresh fdi grid dim/present classes
-  document.querySelectorAll('.fdi-cell').forEach(c => {
-    const fdi = c.dataset.fdi;
-    c.classList.toggle('present', isPresent(fdi, currentAge));
-    c.classList.toggle('absent', !isPresent(fdi, currentAge));
-  });
-  // if info is showing, refresh the "on the jaw at" line
-  const shownFdi = document.getElementById('info').dataset.fdi;
-  if (shownFdi) showInfo(shownFdi);
-}
-
-/* ============================================================
-   HIGHLIGHT
-   ============================================================ */
-function highlight(fdi) {
-  const t = teeth[fdi];
-  if (!t) return;
-  t.group.traverse(o => {
-    if (!o.isMesh) return;
-    o.material.emissive = new THREE.Color(0x4ade80);
-    o.material.emissiveIntensity = 1.2;
-  });
-}
-function clearHighlight(fdi) {
-  const t = teeth[fdi];
-  if (!t) return;
-  t.group.traverse(o => {
-    if (o.isMesh) { o.material.emissive = new THREE.Color(0x000000); o.material.emissiveIntensity = 1; }
-  });
-}
-function clearAllHighlights() { for (const fdi in teeth) clearHighlight(fdi); }
 
 /* ============================================================
    TABS
@@ -236,9 +197,8 @@ function switchTab(name) {
   for (const k in panels) panels[k].classList.toggle('hidden', k !== name);
   document.querySelectorAll('#tabs button').forEach(b =>
     b.classList.toggle('active', b.dataset.tab === name));
-  clearAllHighlights();
   canvas.style.opacity = (name === 'test') ? '0.12' : '1';
-  if (name === 'learn') document.getElementById('info').dataset.fdi = '';
+  if (name === 'learn')    renderLearn();
   if (name === 'practice') startPractice();
   if (name === 'test')     startTest();
 }
@@ -246,8 +206,48 @@ document.querySelectorAll('#tabs button').forEach(b =>
   b.addEventListener('click', () => switchTab(b.dataset.tab)));
 
 /* ============================================================
-   LEARN
+   LEARN — the FDI grid drives the jaw
    ============================================================ */
+const learn = {
+  marked: new Set(),
+  auto: true,
+  scrubAge: 0,
+};
+
+function autoFill() {
+  learn.marked.clear();
+  for (const fdi in ALL) if (isPresent(fdi, learn.scrubAge)) learn.marked.add(fdi);
+}
+
+function toggleFdi(fdi) {
+  if (learn.auto) { learn.auto = false; }
+  const has = learn.marked.has(fdi);
+  if (has) {
+    learn.marked.delete(fdi);
+  } else {
+    // deciduous predecessor in the same slot: replace it
+    const dec = PERM_TO_DECID[fdi];
+    if (dec) learn.marked.delete(dec);
+    learn.marked.add(fdi);
+    // mirror on the other side
+    const m = mirror(fdi);
+    if (m !== fdi && !learn.marked.has(m)) {
+      const dm = PERM_TO_DECID[m];
+      if (dm) learn.marked.delete(dm);
+      learn.marked.add(m);
+    }
+  }
+  renderLearn();
+}
+
+function applyMarkedToJaw() {
+  for (const fdi in teeth) {
+    const show = learn.marked.has(fdi);
+    teeth[fdi].group.visible = show;
+    teeth[fdi].group.scale.setScalar(1);
+  }
+}
+
 function buildFdiGrid() {
   const host = document.getElementById('fdi-grid');
   host.innerHTML = '';
@@ -259,52 +259,82 @@ function buildFdiGrid() {
     const row = document.createElement('div');
     row.className = 'fdi-row';
     list.forEach(fdi => {
-      if (fdi === null) { const g = document.createElement('div'); g.style.width='12px'; row.appendChild(g); return; }
+      if (fdi === null) { const g = document.createElement('div'); g.style.width = '12px'; row.appendChild(g); return; }
       const b = document.createElement('button');
       b.className = 'fdi-cell';
       b.dataset.fdi = fdi;
       b.textContent = fdi;
-      b.addEventListener('click', () => onFdiPick(fdi, b));
+      b.addEventListener('click', () => toggleFdi(fdi));
       row.appendChild(b);
     });
     host.appendChild(row);
   });
 }
 
-function onFdiPick(fdi, btn) {
-  document.querySelectorAll('.fdi-cell').forEach(x => x.classList.remove('selected'));
-  if (btn) btn.classList.add('selected');
-  clearAllHighlights();
-  // if the tooth is not yet erupted, advance the slider to its range start
-  if (!isPresent(fdi, currentAge) && !isDeciduous(fdi)) {
-    renderAge(ALL[fdi].range[0]);
+function renderLearn() {
+  // update cells
+  document.querySelectorAll('.fdi-cell').forEach(c => {
+    const fdi = c.dataset.fdi;
+    c.classList.toggle('present', learn.marked.has(fdi));
+  });
+  applyMarkedToJaw();
+
+  // compute band
+  const b = computeBand(learn.marked);
+  const rangeEl = document.getElementById('learn-range-value');
+  const explainEl = document.getElementById('learn-range-explain');
+  if (!learn.marked.size) {
+    rangeEl.textContent = '—';
+    explainEl.textContent = 'Mark teeth on the grid, or scrub to an age, to compute the range.';
+  } else if (b.open) {
+    rangeEl.textContent = `≥ ${fmtYr(b.lo)}`;
+    explainEl.innerHTML = `Last erupted: <b>${b.last.join(', ')}</b>. No tooth is next due — only a minimum can be given.`;
+  } else if (!b.last.length) {
+    rangeEl.textContent = `below ${fmtYr(b.hi)}`;
+    explainEl.innerHTML = `No tooth has erupted yet. Next due: <b>${b.next.join(', ')}</b>.`;
+  } else {
+    rangeEl.textContent = fmtRange(b.lo, b.hi);
+    explainEl.innerHTML = `Last erupted: <b>${b.last.join(', ')}</b> (lower bound ${fmtYr(b.lo)}). Next due: <b>${b.next.join(', ')}</b> (upper bound ${fmtYr(b.hi)}).`;
   }
-  highlight(fdi);
-  showInfo(fdi);
+  document.getElementById('age-label').textContent = learn.scrubAge.toFixed(1);
+  document.getElementById('age-slider').value = learn.scrubAge;
 }
 
-function showInfo(fdi) {
-  const d = ALL[fdi];
-  const present = isPresent(fdi, currentAge);
-  const presentTxt = present ? 'present on the jaw'
-    : (isDeciduous(fdi)
-      ? `shed (before ${fmtYr(d.fall)})`
-      : `not yet erupted (expect from ${fmtYr(d.range[0])})`);
-  document.getElementById('info').dataset.fdi = fdi;
-  document.getElementById('info').innerHTML = `
-    <div><span class="code">${fdi}</span> <span class="name">${d.name}</span></div>
-    <div class="row"><b>Eruption range:</b> ${fmtRange(d.range[0], d.range[1])}</div>
-    ${isDeciduous(fdi) ? `<div class="row"><b>Sheds around:</b> ${fmtYr(d.fall)}</div>` : ''}
-    <div class="row"><b>At age ${currentAge.toFixed(1)}:</b> ${presentTxt}</div>
-    <div class="rule">${bookRule(fdi)}</div>`;
-}
+/* quick-jump buttons */
+document.querySelectorAll('.learn-actions button').forEach(b => {
+  b.addEventListener('click', () => {
+    if (b.dataset.clear !== undefined) {
+      learn.marked.clear();
+      learn.auto = false;
+      renderLearn();
+      return;
+    }
+    const age = parseFloat(b.dataset.age);
+    if (isNaN(age)) return;
+    learn.scrubAge = age;
+    learn.auto = true;
+    autoFill();
+    renderLearn();
+  });
+});
 
-function stepAge(delta) { renderAge(currentAge + delta); }
-document.getElementById('age-minus').addEventListener('click', () => stepAge(-0.5));
-document.getElementById('age-plus').addEventListener('click',  () => stepAge(0.5));
-ageSlider.addEventListener('input', e => renderAge(parseFloat(e.target.value)));
+/* slider — same effect as quick-jump */
+document.getElementById('age-slider').addEventListener('input', e => {
+  learn.scrubAge = parseFloat(e.target.value);
+  learn.auto = true;
+  autoFill();
+  renderLearn();
+});
+document.getElementById('age-minus').addEventListener('click', () => {
+  learn.scrubAge = Math.max(0, learn.scrubAge - 0.5);
+  learn.auto = true; autoFill(); renderLearn();
+});
+document.getElementById('age-plus').addEventListener('click', () => {
+  learn.scrubAge = Math.min(25, learn.scrubAge + 0.5);
+  learn.auto = true; autoFill(); renderLearn();
+});
 
-// ---- Tap the 3D jaw ----
+/* tap the 3D jaw → show info about whichever tooth was hit */
 const raycaster = new THREE.Raycaster();
 const ndc = new THREE.Vector2();
 canvas.addEventListener('pointerdown', e => {
@@ -313,187 +343,189 @@ canvas.addEventListener('pointerdown', e => {
   ndc.y = -(e.clientY / innerHeight) * 2 + 1;
   raycaster.setFromCamera(ndc, camera);
   const hits = raycaster.intersectObjects(scene.children, true);
-  for (const hit of hits) {
-    let a = hit.object;
+  for (const h of hits) {
+    let a = h.object;
     while (a) {
       const m = a.name.match(/^tooth_(\d{2})$/);
-      if (m && teeth[m[1]]) {
-        onFdiPick(m[1], document.querySelector(`.fdi-cell[data-fdi="${m[1]}"]`));
-        return;
-      }
+      if (m && ALL[m[1]]) { showInfo(m[1]); return; }
       a = a.parent;
     }
   }
 });
 
+function showInfo(fdi) {
+  const d = ALL[fdi];
+  const isDec = isDeciduous(fdi);
+  const present = learn.marked.has(fdi);
+  document.getElementById('info').innerHTML = `
+    <div><span class="code">${fdi}</span> <span class="name">${d.name}</span></div>
+    <div class="row"><b>Eruption range:</b> ${fmtRange(d.range[0], d.range[1])}</div>
+    ${isDec ? `<div class="row"><b>Sheds around:</b> ${fmtYr(d.fall)}</div>` : ''}
+    <div class="row"><b>Marked:</b> ${present ? 'present' : 'absent'}</div>
+    <div class="rule">${bookRule(fdi)}</div>`;
+}
+
 /* ============================================================
-   PRACTICE
+   PRACTICE — 5 steps, no hints until reveal
    ============================================================ */
 let P = null;
 function startPractice() {
   const age = pickRandomAge();
-  renderAge(age);
-  P = { age, last: null, next: null };
+  applyAutoForPractice(age);
+  P = { age, last: null, loTyped: '', next: null, hiTyped: '' };
   renderPractice();
 }
 function pickRandomAge() {
-  const w = [[0.5, 2.5], [5, 9], [9, 13], [16, 22]];
-  const [lo, hi] = w[Math.floor(Math.random() * w.length)];
-  return +(lo + Math.random() * (hi - lo)).toFixed(1);
+  const r = Math.random();
+  if (r < 0.65) return +(6 + Math.random() * 8).toFixed(1);      // 6–14
+  if (r < 0.85) return +(3 + Math.random() * 3).toFixed(1);      // 3–6
+  if (r < 0.95) return +(14 + Math.random() * 8).toFixed(1);     // 14–22
+  return +(Math.random() * 22).toFixed(1);                        // anywhere
 }
-function presentTeeth(age) { return Object.keys(ALL).filter(f => isPresent(f, age)); }
-function pendingTeeth(age) { return Object.keys(ALL).filter(f => emergence(f) > age); }
-
-function defensibleBand(age) {
-  const present = presentTeeth(age);
-  const pending = pendingTeeth(age);
-  if (!present.length) {
-    const p = pending.sort((a,b) => emergence(a) - emergence(b))[0];
-    return { lo: 0, hi: ALL[p].range[1], last: [], next: [p], open: false };
+function applyAutoForPractice(age) {
+  for (const fdi in teeth) {
+    const p = isPresent(fdi, age);
+    teeth[fdi].group.visible = p;
+    teeth[fdi].group.scale.setScalar(1);
   }
-  const maxE = Math.max(...present.map(emergence));
-  const last = present.filter(f => Math.abs(emergence(f) - maxE) < 1e-9);
-  const lo = Math.min(...last.map(f => ALL[f].range[0]));
-  if (!pending.length) return { lo, hi: null, last, next: [], open: true };
-  const minE = Math.min(...pending.map(emergence));
-  const next = pending.filter(f => Math.abs(emergence(f) - minE) < 1e-9);
-  const hi = Math.max(...next.map(f => ALL[f].range[1]));
-  return { lo, hi, last, next, open: false };
 }
+function presentSet(age) { return new Set(Object.keys(ALL).filter(f => isPresent(f, age))); }
+function pendingList(age) { return Object.keys(ALL).filter(f => !isPresent(f, age)); }
 
 function renderPractice() {
   const host = document.getElementById('practice-content');
-  const age = P.age;
-  const present = presentTeeth(age);
-  const pending = pendingTeeth(age);
-  const b = defensibleBand(age);
-  const lastShown = b.last.join(', ') || '—';
-  const nextShown = b.next.join(', ') || '—';
+  const present = Array.from(presentSet(P.age));
+  const pending = pendingList(P.age);
+  const b = computeBand(presentSet(P.age));
+  const trueLo = b.last.length ? ALL[b.last[0]].range[0] : null;
+  const trueHi = b.next.length ? Math.max(...b.next.map(f => ALL[f].range[1])) : null;
+
   host.innerHTML = `
     <div class="step">
-      <h3>Step 1 · Look at the jaw</h3>
-      <p>Count the deciduous and permanent teeth. Which tooth appears to be the most recent arrival?</p>
+      <h3>Step 1 · Which tooth erupted most recently?</h3>
+      <p>Of the teeth visible on the jaw, which one is latest in the book's eruption order?</p>
       <div class="fdi-pick" id="pick-last">
         ${present.map(f => `<button data-fdi="${f}" ${P.last===f?'class="picked"':''}>${f}</button>`).join('')}
       </div>
     </div>
     ${P.last ? `
     <div class="step">
-      <h3>Step 2 · Range for ${P.last}</h3>
-      <p>${ALL[P.last].name} erupts between <b>${fmtRange(...ALL[P.last].range)}</b>.</p>
-      <p>Because it is present, the age is at least <b>${fmtYr(ALL[P.last].range[0])}</b>.</p>
+      <h3>Step 2 · Lower bound</h3>
+      <p>${ALL[P.last].name} is present. From memory, what is the earliest age at which this tooth can appear? That is your lower bound.</p>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+        <input type="number" step="0.5" id="p-lo" value="${P.loTyped}" placeholder="yr">
+      </div>
     </div>` : ''}
-    ${P.last ? `
+    ${P.loTyped !== '' ? `
     <div class="step">
       <h3>Step 3 · Which tooth is next due?</h3>
-      <p>Among the FDI codes not on the jaw, which one erupts earliest in the book order?</p>
+      <p>Among the FDI codes not on the jaw, which erupts earliest in the book order?</p>
       <div class="fdi-pick" id="pick-next">
         ${pending.map(f => `<button data-fdi="${f}" ${P.next===f?'class="picked"':''}>${f}</button>`).join('')}
       </div>
     </div>` : ''}
     ${P.next ? `
     <div class="step">
-      <h3>Step 4 · Range for ${P.next}</h3>
-      <p>${ALL[P.next].name} erupts between <b>${fmtRange(...ALL[P.next].range)}</b>.</p>
-      <p>Because it is not yet present, the age is at most <b>${fmtYr(ALL[P.next].range[1])}</b>.</p>
-    </div>
-    <div class="step">
-      <h3>Step 5 · Report the range</h3>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
-        <label style="color:#888;font-size:0.8em">Between</label>
-        <input type="number" step="0.5" id="p-lo">
-        <label style="color:#888;font-size:0.8em">and</label>
-        <input type="number" step="0.5" id="p-hi">
-        <label style="color:#888;font-size:0.8em">yr</label>
+      <h3>Step 4 · Upper bound</h3>
+      <p>${ALL[P.next].name} is not yet present. What is the latest age by which it should have appeared? That is your upper bound.</p>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+        <input type="number" step="0.5" id="p-hi" value="${P.hiTyped}" placeholder="yr">
       </div>
+    </div>` : ''}
+    ${P.next && P.hiTyped !== '' ? `
+    <div class="step">
+      <h3>Step 5 · Confirm the range</h3>
       <button class="primary" id="p-reveal">Reveal</button>
     </div>` : ''}
     <div id="practice-result"></div>`;
 
   host.querySelectorAll('#pick-last button').forEach(x =>
-    x.onclick = () => { P.last = x.dataset.fdi; P.next = null; renderPractice(); });
+    x.onclick = () => { P.last = x.dataset.fdi; P.loTyped = ''; P.next = null; P.hiTyped = ''; renderPractice(); });
+  const lo = host.querySelector('#p-lo');
+  if (lo) lo.onchange = () => { P.loTyped = lo.value; renderPractice(); };
   host.querySelectorAll('#pick-next button').forEach(x =>
-    x.onclick = () => { P.next = x.dataset.fdi; renderPractice(); });
+    x.onclick = () => { P.next = x.dataset.fdi; P.hiTyped = ''; renderPractice(); });
+  const hi = host.querySelector('#p-hi');
+  if (hi) hi.onchange = () => { P.hiTyped = hi.value; renderPractice(); };
+
   const rev = host.querySelector('#p-reveal');
   if (rev) rev.onclick = () => {
-    const lo = parseFloat(host.querySelector('#p-lo').value);
-    const hi = parseFloat(host.querySelector('#p-hi').value);
-    const trueRange = b.open ? `≥ ${fmtYr(b.lo)}` : fmtRange(b.lo, b.hi);
-    const ok = b.open
-      ? (Math.abs(lo - b.lo) <= 1)
-      : (lo <= b.lo + 1 && hi >= b.hi - 1 && (hi - lo) <= (b.hi - b.lo) + 2);
+    const loN = parseFloat(P.loTyped), hiN = parseFloat(P.hiTyped);
+    const loOK = trueLo !== null && Math.abs(loN - trueLo) <= 1;
+    const hiOK = trueHi !== null && Math.abs(hiN - trueHi) <= 1;
     host.querySelector('#practice-result').innerHTML = `
       <div class="result">
-        <div><b>Defensible answer:</b> <span class="range">${trueRange}</span></div>
-        <div>${ok ? '<span class="ok">Correct.</span>' : '<span class="near">Compare your range with the band above.</span>'}</div>
-        <div style="margin-top:8px;color:#888;font-size:0.9em">
-          Last erupted: <b>${lastShown}</b>. Next due: <b>${nextShown}</b>.
-        </div>
+        <div>${loOK ? '<span class="ok">Lower bound correct.</span>' : `<span class="no">Lower bound off — the book gives <b>${fmtYr(trueLo)}</b> for ${P.last}.</span>`}</div>
+        <div>${hiOK ? '<span class="ok">Upper bound correct.</span>' : `<span class="no">Upper bound off — the book gives <b>${fmtYr(trueHi)}</b> for ${P.next}.</span>`}</div>
+        <div style="margin-top:6px"><b>Defensible answer:</b> <span class="range">${fmtRange(trueLo, trueHi)}</span></div>
       </div>`;
   };
 }
 
 /* ============================================================
-   TEST — chart + forced reasoning
+   TEST — chart, no hints
    ============================================================ */
 let T = null;
 function startTest() {
-  T = { round: 0, score: 0, total: 10, age: null, last: null, next: null };
+  T = { round: 0, score: 0, total: 10, age: null, last: null, loTyped: '', next: null, hiTyped: '' };
   nextTestRound();
 }
 function nextTestRound() {
   if (T.round >= T.total) return testSummary();
   T.round++;
   T.age = pickRandomAge();
-  T.last = null; T.next = null;
+  T.last = null; T.loTyped = ''; T.next = null; T.hiTyped = '';
   renderTest();
+}
+
+const SLOTS = {
+  upperR: [['18'],['17'],['16'],['55','15'],['54','14'],['53','13'],['52','12'],['51','11']],
+  upperL: [['61','21'],['62','22'],['63','23'],['64','24'],['65','25'],['26'],['27'],['28']],
+  lowerL: [['71','31'],['72','32'],['73','33'],['74','34'],['75','35'],['36'],['37'],['38']],
+  lowerR: [['48'],['47'],['46'],['85','45'],['84','44'],['83','43'],['82','42'],['81','41']],
+};
+function slotPresent(slot, age) {
+  for (const f of slot) if (isPresent(f, age)) return f;
+  return null;
 }
 
 function renderTest() {
   const host = document.getElementById('test-content');
   const age = T.age;
-  const row = (slots) => slots.map(slot => {
-    const f = slotPresent(slot, age);
+  const row = slots => slots.map(s => {
+    const f = slotPresent(s, age);
     return `<div class="cell ${f ? 'present' : ''}">${f || ''}</div>`;
   }).join('');
   const chart = `
     <div class="row">${row(SLOTS.upperR)}<div style="width:14px"></div>${row(SLOTS.upperL)}</div>
     <div class="row">${row(SLOTS.lowerR)}<div style="width:14px"></div>${row(SLOTS.lowerL)}</div>`;
 
-  const present = presentTeeth(age);
-  const pending = pendingTeeth(age);
-  const b = defensibleBand(age);
+  const present = Array.from(presentSet(age));
+  const pending = pendingList(age);
 
   host.innerHTML = `
     <div style="font-size:0.8em;color:#bbb;margin-bottom:6px">
       <b style="color:#4ade80">Round ${T.round} of ${T.total}</b> · Score ${T.score}
     </div>
     <p style="font-size:0.78em;color:#bbb;line-height:1.45;margin:0 0 8px">
-      Dental chart. Green cells show the FDI of teeth present; blank cells mean absent.
-      Give a defensible age range and the reason.
+      A dental chart. Green cells show the FDI of teeth present; blank cells mean absent.
+      Answer the four questions below.
     </p>
     <div class="chart">${chart}</div>
     <div class="step" style="border-top:none">
-      <h3>Last erupted (FDI)</h3>
+      <h3>1 · Last erupted FDI</h3>
       <div class="fdi-pick" id="pick-last">
         ${present.map(f => `<button data-fdi="${f}" ${T.last===f?'class="picked"':''}>${f}</button>`).join('')}
       </div>
-      <h3 style="margin-top:10px">Next due (FDI)</h3>
+      <h3 style="margin-top:10px">2 · Lower bound (yr)</h3>
+      <input type="number" step="0.5" id="t-lo" value="${T.loTyped}" placeholder="from memory">
+      <h3 style="margin-top:10px">3 · Next due FDI</h3>
       <div class="fdi-pick" id="pick-next">
         ${pending.map(f => `<button data-fdi="${f}" ${T.next===f?'class="picked"':''}>${f}</button>`).join('')}
       </div>
-      <h3 style="margin-top:10px">Your age range</h3>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
-        <label style="color:#888;font-size:0.8em">Between</label>
-        <input type="number" step="0.5" id="t-lo">
-        <label style="color:#888;font-size:0.8em">and</label>
-        <input type="number" step="0.5" id="t-hi">
-        <label style="color:#888;font-size:0.8em">yr</label>
-      </div>
-      <p style="font-size:0.75em;color:#888;margin:6px 0 0">
-        If no tooth is next due, leave the second box blank — the answer is then only a minimum.
-      </p>
-      <button class="primary" id="t-submit">Submit</button>
+      <h3 style="margin-top:10px">4 · Upper bound (yr)</h3>
+      <input type="number" step="0.5" id="t-hi" value="${T.hiTyped}" placeholder="leave blank if none">
+      <button class="primary" id="t-submit" style="margin-top:10px">Submit</button>
     </div>
     <div id="test-result"></div>`;
 
@@ -501,42 +533,40 @@ function renderTest() {
     x.onclick = () => { T.last = x.dataset.fdi; renderTest(); });
   host.querySelectorAll('#pick-next button').forEach(x =>
     x.onclick = () => { T.next = x.dataset.fdi; renderTest(); });
-  host.querySelector('#t-submit').onclick = submitTest;
+  host.querySelector('#t-submit').onclick = () => {
+    T.loTyped = document.getElementById('t-lo').value;
+    T.hiTyped = document.getElementById('t-hi').value;
+    submitTest();
+  };
 }
 
 function submitTest() {
   const host = document.getElementById('test-result');
-  const loRaw = document.getElementById('t-lo').value.trim();
-  const hiRaw = document.getElementById('t-hi').value.trim();
-  const lo = loRaw === '' ? null : parseFloat(loRaw);
-  const hi = hiRaw === '' ? null : parseFloat(hiRaw);
-  if (lo === null && hi === null) { host.innerHTML = `<div class="result"><span class="no">Enter a range.</span></div>`; return; }
+  const lo = T.loTyped === '' ? null : parseFloat(T.loTyped);
+  const hi = T.hiTyped === '' ? null : parseFloat(T.hiTyped);
+  const markedSet = presentSet(T.age);
+  const b = computeBand(markedSet);
+  const trueLo = b.last.length ? ALL[b.last[0]].range[0] : null;
+  const trueHi = b.next.length ? Math.max(...b.next.map(f => ALL[f].range[1])) : null;
 
-  const b = defensibleBand(T.age);
-  const trueRange = b.open ? `≥ ${fmtYr(b.lo)}` : fmtRange(b.lo, b.hi);
-
-  let rangeOK = false;
-  if (b.open) {
-    const hiOK = (hi === null || hi >= b.lo + 5);
-    const loOK = (lo !== null && Math.abs(lo - b.lo) <= 1);
-    rangeOK = loOK && hiOK;
-  } else {
-    const loOK = (lo !== null && lo <= b.lo + 1 && lo >= b.lo - 2);
-    const hiOK = (hi !== null && hi >= b.hi - 1 && hi <= b.hi + 2);
-    rangeOK = loOK && hiOK;
-  }
-  const lastOK = b.last.length === 0 || b.last.includes(T.last);
-  const nextOK = b.next.length === 0 || b.next.includes(T.next);
-  const full = rangeOK && lastOK && nextOK;
+  const lastOK = b.last.includes(T.last) || (b.last.length === 0 && T.last === null);
+  const nextOK = b.next.includes(T.next) || (b.next.length === 0 && T.next === null);
+  const loOK = trueLo === null ? true : (lo !== null && Math.abs(lo - trueLo) <= 1);
+  const hiOK = b.open ? (hi === null || hi >= trueLo + 5)
+                      : (trueHi === null ? true : (hi !== null && Math.abs(hi - trueHi) <= 1));
+  const full = lastOK && nextOK && loOK && hiOK;
   if (full) T.score++;
 
+  const trueRange = b.open ? `≥ ${fmtYr(trueLo)}` : (trueLo !== null && trueHi !== null ? fmtRange(trueLo, trueHi) : '—');
   host.innerHTML = `
     <div class="result">
       <div>${full ? '<span class="ok">Correct.</span>' : '<span class="no">Not quite.</span>'}</div>
       <div style="margin-top:6px"><b>Defensible answer:</b> <span class="range">${trueRange}</span></div>
       <div style="margin-top:6px;color:#aaa;font-size:0.9em">
         <b>Last erupted:</b> ${b.last.join(', ') || '—'} — you said ${T.last || '—'}<br>
-        <b>Next due:</b> ${b.next.join(', ') || '—'} — you said ${T.next || '—'}
+        <b>Lower bound:</b> ${trueLo !== null ? fmtYr(trueLo) : '—'} — you said ${lo !== null ? lo : '—'}<br>
+        <b>Next due:</b> ${b.next.join(', ') || '—'} — you said ${T.next || '—'}<br>
+        <b>Upper bound:</b> ${trueHi !== null ? fmtYr(trueHi) : '—'} — you said ${hi !== null ? hi : '—'}
       </div>
       <button class="primary" id="t-next" style="margin-top:10px">Next chart</button>
     </div>`;
@@ -559,7 +589,10 @@ function testSummary() {
    ============================================================ */
 loadModel().then(() => {
   buildFdiGrid();
-  renderAge(0);
+  learn.scrubAge = 0;
+  learn.auto = true;
+  autoFill();
+  renderLearn();
   (function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); })();
   addEventListener('resize', () => {
     camera.aspect = innerWidth / innerHeight;
