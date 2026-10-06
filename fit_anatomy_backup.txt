@@ -1,0 +1,32 @@
+FILE: models/anatomy_backup.glb
+bone meshes: ['Mandible', 'Maxilla.l', 'Maxilla.r']
+teeth found: 28
+11: bone beyond apex = 0.04 x length, dirs hit 6/6
+12: bone beyond apex = 0.03 x length, dirs hit 6/6
+13: bone beyond apex = 0.66 x length, dirs hit 6/6
+14: bone beyond apex = 0.65 x length, dirs hit 6/6
+15: bone beyond apex = 0.78 x length, dirs hit 6/6
+16: bone beyond apex = 0.09 x length, dirs hit 6/6
+17: bone beyond apex = 0.29 x length, dirs hit 6/6
+21: bone beyond apex = 0.04 x length, dirs hit 6/6
+22: bone beyond apex = 0.03 x length, dirs hit 6/6
+23: bone beyond apex = 0.66 x length, dirs hit 6/6
+24: bone beyond apex = 0.65 x length, dirs hit 6/6
+25: bone beyond apex = 0.78 x length, dirs hit 6/6
+26: bone beyond apex = 0.09 x length, dirs hit 6/6
+27: bone beyond apex = 0.29 x length, dirs hit 6/6
+31: bone beyond apex = 0.00 x length, dirs hit 6/6
+32: bone beyond apex = 0.21 x length, dirs hit 6/6
+33: bone beyond apex = 0.16 x length, dirs hit 6/6
+34: bone beyond apex = 0.33 x length, dirs hit 6/6
+35: bone beyond apex = 0.05 x length, dirs hit 6/6
+36: bone beyond apex = 0.57 x length, dirs hit 6/6
+37: bone beyond apex = 0.00 x length, dirs hit 6/6
+41: bone beyond apex = 0.00 x length, dirs hit 6/6
+42: bone beyond apex = 0.21 x length, dirs hit 6/6
+43: bone beyond apex = 0.16 x length, dirs hit 6/6
+44: bone beyond apex = 0.33 x length, dirs hit 6/6
+45: bone beyond apex = 0.05 x length, dirs hit 6/6
+46: bone beyond apex = 0.57 x length, dirs hit 6/6
+47: bone beyond apex = 0.00 x length, dirs hit 6/6
+DONE
