@@ -213,7 +213,7 @@ function updateAge(age) {
   for (const fdi in deciduous) {
     const t = deciduous[fdi];
     const [start, hiE] = eruptWindow(t.data, 0.5), end = t.data.fall;
-    if (age < start || age >= end + 0.5) {
+    if (age < start || age >= end) {
       t.group.visible = false;
       t.group.position.y = t.baseY;
       t.group.scale.setScalar(1);

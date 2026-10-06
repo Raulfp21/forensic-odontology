@@ -3,7 +3,7 @@
     "51": {
       "name": "Upper Right Deciduous Central Incisor",
       "eruption": 0.7,
-      "fall": 6.5,
+      "fall": 6,
       "eruptionRange": [
         0.58,
         0.75
@@ -13,7 +13,7 @@
     "61": {
       "name": "Upper Left Deciduous Central Incisor",
       "eruption": 0.7,
-      "fall": 6.5,
+      "fall": 6,
       "eruptionRange": [
         0.58,
         0.75
@@ -23,7 +23,7 @@
     "71": {
       "name": "Lower Left Deciduous Central Incisor",
       "eruption": 0.6,
-      "fall": 6.5,
+      "fall": 6,
       "eruptionRange": [
         0.5,
         0.67
@@ -33,7 +33,7 @@
     "81": {
       "name": "Lower Right Deciduous Central Incisor",
       "eruption": 0.6,
-      "fall": 6.5,
+      "fall": 6,
       "eruptionRange": [
         0.5,
         0.67
@@ -43,7 +43,7 @@
     "52": {
       "name": "Upper Right Deciduous Lateral Incisor",
       "eruption": 0.75,
-      "fall": 7.5,
+      "fall": 7,
       "eruptionRange": [
         0.58,
         0.75
@@ -53,7 +53,7 @@
     "62": {
       "name": "Upper Left Deciduous Lateral Incisor",
       "eruption": 0.75,
-      "fall": 7.5,
+      "fall": 7,
       "eruptionRange": [
         0.58,
         0.75
@@ -63,7 +63,7 @@
     "72": {
       "name": "Lower Left Deciduous Lateral Incisor",
       "eruption": 0.9,
-      "fall": 7.5,
+      "fall": 7,
       "eruptionRange": [
         0.83,
         1.0
@@ -73,7 +73,7 @@
     "82": {
       "name": "Lower Right Deciduous Lateral Incisor",
       "eruption": 0.9,
-      "fall": 7.5,
+      "fall": 7,
       "eruptionRange": [
         0.83,
         1.0
@@ -83,7 +83,7 @@
     "53": {
       "name": "Upper Right Deciduous Canine",
       "eruption": 1.5,
-      "fall": 10.5,
+      "fall": 11,
       "eruptionRange": [
         1.42,
         1.5
@@ -93,7 +93,7 @@
     "63": {
       "name": "Upper Left Deciduous Canine",
       "eruption": 1.5,
-      "fall": 10.5,
+      "fall": 11,
       "eruptionRange": [
         1.42,
         1.5
@@ -103,7 +103,7 @@
     "73": {
       "name": "Lower Left Deciduous Canine",
       "eruption": 1.5,
-      "fall": 10.5,
+      "fall": 11,
       "eruptionRange": [
         1.42,
         1.5
@@ -113,7 +113,7 @@
     "83": {
       "name": "Lower Right Deciduous Canine",
       "eruption": 1.5,
-      "fall": 10.5,
+      "fall": 11,
       "eruptionRange": [
         1.42,
         1.5
@@ -123,7 +123,7 @@
     "54": {
       "name": "Upper Right Deciduous First Molar",
       "eruption": 1.15,
-      "fall": 9.5,
+      "fall": 9,
       "eruptionRange": [
         1.0,
         1.17
@@ -133,7 +133,7 @@
     "64": {
       "name": "Upper Left Deciduous First Molar",
       "eruption": 1.15,
-      "fall": 9.5,
+      "fall": 9,
       "eruptionRange": [
         1.0,
         1.17
@@ -143,7 +143,7 @@
     "74": {
       "name": "Lower Left Deciduous First Molar",
       "eruption": 1.1,
-      "fall": 9.5,
+      "fall": 9,
       "eruptionRange": [
         1.0,
         1.17
@@ -153,7 +153,7 @@
     "84": {
       "name": "Lower Right Deciduous First Molar",
       "eruption": 1.1,
-      "fall": 9.5,
+      "fall": 9,
       "eruptionRange": [
         1.0,
         1.17
@@ -163,7 +163,7 @@
     "55": {
       "name": "Upper Right Deciduous Second Molar",
       "eruption": 2.0,
-      "fall": 11.0,
+      "fall": 10,
       "eruptionRange": [
         1.67,
         2.5
@@ -173,7 +173,7 @@
     "65": {
       "name": "Upper Left Deciduous Second Molar",
       "eruption": 2.0,
-      "fall": 11.0,
+      "fall": 10,
       "eruptionRange": [
         1.67,
         2.5
@@ -183,7 +183,7 @@
     "75": {
       "name": "Lower Left Deciduous Second Molar",
       "eruption": 2.0,
-      "fall": 11.0,
+      "fall": 10,
       "eruptionRange": [
         1.67,
         2.5
@@ -193,7 +193,7 @@
     "85": {
       "name": "Lower Right Deciduous Second Molar",
       "eruption": 2.0,
-      "fall": 11.0,
+      "fall": 10,
       "eruptionRange": [
         1.67,
         2.5
