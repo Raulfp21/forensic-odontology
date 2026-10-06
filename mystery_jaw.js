@@ -82,6 +82,7 @@ const MysteryJaw = (() => {
     const s = $('ageSlider');
     if (s) s.disabled = on;
     document.body.classList.toggle('mj-active', on);
+    if (!on) unmaskLabels();
   }
   function pushAgeToApp(age) {
     const s = $('ageSlider');
@@ -93,7 +94,18 @@ const MysteryJaw = (() => {
   // Hide the answer even if an older main.js is cached: overwrite the labels directly.
   function maskLabels() {
     const a = $('age-value'); if (a) a.textContent = '?';
-    const i = $('tooth-info'); if (i) { i.dataset._saved = i.textContent; i.textContent = ''; }
+    const i = $('tooth-info');
+    if (i) {
+      i.dataset._saved = i.textContent;
+      i.textContent = 'Study the jaw — count teeth, spot the erupting ones';
+    }
+  }
+  function unmaskLabels() {
+    const i = $('tooth-info');
+    if (i && i.dataset._saved !== undefined) {
+      i.textContent = i.dataset._saved;
+      delete i.dataset._saved;
+    }
   }
   function unmaskLabels() {
     const i = $('tooth-info'); if (i && i.dataset._saved !== undefined) { i.textContent = i.dataset._saved; delete i.dataset._saved; }
