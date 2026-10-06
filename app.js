@@ -4,8 +4,10 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 /* ============================================================
-   DATA — Table 4.9 with rule 2 applied (lower ~1 yr earlier,
-   except lateral incisors).  Table 4.8 for deciduous.
+   DATA — book values only (Fig 4.21 / Table 4.9 / Table 4.8).
+   The book gives ONE range per tooth type, not per jaw.
+   Rule 2 (lower erupts earlier) is a teaching note, not a
+   shift to apply to the table.
    ============================================================ */
 const PERMANENT = {
   '18': { name: 'Upper Right Third Molar',    range: [17, 25] },
@@ -24,46 +26,45 @@ const PERMANENT = {
   '26': { name: 'Upper Left First Molar',     range: [6, 7] },
   '27': { name: 'Upper Left Second Molar',    range: [12, 14] },
   '28': { name: 'Upper Left Third Molar',     range: [17, 25] },
-
   '48': { name: 'Lower Right Third Molar',    range: [17, 25] },
-  '47': { name: 'Lower Right Second Molar',   range: [11, 13] },
+  '47': { name: 'Lower Right Second Molar',   range: [12, 14] },
   '46': { name: 'Lower Right First Molar',    range: [6, 7] },
-  '45': { name: 'Lower Right Second Premolar',range: [9, 11] },
-  '44': { name: 'Lower Right First Premolar', range: [8, 10] },
-  '43': { name: 'Lower Right Canine',         range: [10, 11] },
+  '45': { name: 'Lower Right Second Premolar',range: [10, 12] },
+  '44': { name: 'Lower Right First Premolar', range: [9, 11] },
+  '43': { name: 'Lower Right Canine',         range: [11, 12] },
   '42': { name: 'Lower Right Lateral Incisor',range: [7, 9] },
-  '41': { name: 'Lower Right Central Incisor',range: [5, 7] },
-  '31': { name: 'Lower Left Central Incisor', range: [5, 7] },
+  '41': { name: 'Lower Right Central Incisor',range: [6, 8] },
+  '31': { name: 'Lower Left Central Incisor', range: [6, 8] },
   '32': { name: 'Lower Left Lateral Incisor', range: [7, 9] },
-  '33': { name: 'Lower Left Canine',          range: [10, 11] },
-  '34': { name: 'Lower Left First Premolar',  range: [8, 10] },
-  '35': { name: 'Lower Left Second Premolar', range: [9, 11] },
+  '33': { name: 'Lower Left Canine',          range: [11, 12] },
+  '34': { name: 'Lower Left First Premolar',  range: [9, 11] },
+  '35': { name: 'Lower Left Second Premolar', range: [10, 12] },
   '36': { name: 'Lower Left First Molar',     range: [6, 7] },
-  '37': { name: 'Lower Left Second Molar',    range: [11, 13] },
+  '37': { name: 'Lower Left Second Molar',    range: [12, 14] },
   '38': { name: 'Lower Left Third Molar',     range: [17, 25] },
 };
 
 const DECIDUOUS = {
-  '55': { name: 'Upper Right Deciduous Second Molar', range: [1.67, 2.5], fall: 10.5 },
-  '54': { name: 'Upper Right Deciduous First Molar',  range: [1.0, 1.17], fall: 9.5 },
-  '53': { name: 'Upper Right Deciduous Canine',       range: [1.42, 1.5],  fall: 11.0 },
-  '52': { name: 'Upper Right Deciduous Lateral Incisor', range: [0.58, 0.75], fall: 7.0 },
-  '51': { name: 'Upper Right Deciduous Central Incisor', range: [0.58, 0.75], fall: 6.5 },
-  '61': { name: 'Upper Left Deciduous Central Incisor',  range: [0.58, 0.75], fall: 6.5 },
-  '62': { name: 'Upper Left Deciduous Lateral Incisor',  range: [0.58, 0.75], fall: 7.0 },
-  '63': { name: 'Upper Left Deciduous Canine',           range: [1.42, 1.5],  fall: 11.0 },
-  '64': { name: 'Upper Left Deciduous First Molar',      range: [1.0, 1.17], fall: 9.5 },
-  '65': { name: 'Upper Left Deciduous Second Molar',     range: [1.67, 2.5], fall: 10.5 },
-  '85': { name: 'Lower Right Deciduous Second Molar',    range: [1.67, 2.5], fall: 11.0 },
-  '84': { name: 'Lower Right Deciduous First Molar',     range: [1.0, 1.17], fall: 9.5 },
-  '83': { name: 'Lower Right Deciduous Canine',          range: [1.42, 1.5],  fall: 10.0 },
-  '82': { name: 'Lower Right Deciduous Lateral Incisor', range: [0.83, 1.0],  fall: 6.5 },
-  '81': { name: 'Lower Right Deciduous Central Incisor', range: [0.5, 0.67],  fall: 6.0 },
-  '71': { name: 'Lower Left Deciduous Central Incisor',  range: [0.5, 0.67],  fall: 6.0 },
-  '72': { name: 'Lower Left Deciduous Lateral Incisor',  range: [0.83, 1.0],  fall: 6.5 },
-  '73': { name: 'Lower Left Deciduous Canine',           range: [1.42, 1.5],  fall: 10.0 },
-  '74': { name: 'Lower Left Deciduous First Molar',      range: [1.0, 1.17],  fall: 9.5 },
-  '75': { name: 'Lower Left Deciduous Second Molar',     range: [1.67, 2.5],  fall: 11.0 },
+  '55': { name: 'Upper Right Deciduous Second Molar', range: [1.67, 2.5], fall: 11.0, replaces: null },
+  '54': { name: 'Upper Right Deciduous First Molar',  range: [1.0, 1.17], fall: 9.5,  replaces: '14' },
+  '53': { name: 'Upper Right Deciduous Canine',       range: [1.42, 1.5],  fall: 11.0, replaces: '13' },
+  '52': { name: 'Upper Right Deciduous Lateral Incisor', range: [0.58, 0.75], fall: 7.0, replaces: '12' },
+  '51': { name: 'Upper Right Deciduous Central Incisor', range: [0.58, 0.75], fall: 6.5, replaces: '11' },
+  '61': { name: 'Upper Left Deciduous Central Incisor',  range: [0.58, 0.75], fall: 6.5, replaces: '21' },
+  '62': { name: 'Upper Left Deciduous Lateral Incisor',  range: [0.58, 0.75], fall: 7.0, replaces: '22' },
+  '63': { name: 'Upper Left Deciduous Canine',           range: [1.42, 1.5],  fall: 11.0, replaces: '23' },
+  '64': { name: 'Upper Left Deciduous First Molar',      range: [1.0, 1.17], fall: 9.5, replaces: '24' },
+  '65': { name: 'Upper Left Deciduous Second Molar',     range: [1.67, 2.5], fall: 11.0, replaces: null },
+  '85': { name: 'Lower Right Deciduous Second Molar',    range: [1.67, 2.5], fall: 11.0, replaces: null },
+  '84': { name: 'Lower Right Deciduous First Molar',     range: [1.0, 1.17], fall: 9.5, replaces: '44' },
+  '83': { name: 'Lower Right Deciduous Canine',          range: [1.42, 1.5],  fall: 10.0, replaces: '43' },
+  '82': { name: 'Lower Right Deciduous Lateral Incisor', range: [0.83, 1.0],  fall: 6.5, replaces: '42' },
+  '81': { name: 'Lower Right Deciduous Central Incisor', range: [0.5, 0.67],  fall: 6.0, replaces: '41' },
+  '71': { name: 'Lower Left Deciduous Central Incisor',  range: [0.5, 0.67],  fall: 6.0, replaces: '31' },
+  '72': { name: 'Lower Left Deciduous Lateral Incisor',  range: [0.83, 1.0],  fall: 6.5, replaces: '32' },
+  '73': { name: 'Lower Left Deciduous Canine',           range: [1.42, 1.5],  fall: 10.0, replaces: '33' },
+  '74': { name: 'Lower Left Deciduous First Molar',      range: [1.0, 1.17], fall: 9.5, replaces: '34' },
+  '75': { name: 'Lower Left Deciduous Second Molar',     range: [1.67, 2.5], fall: 11.0, replaces: null },
 };
 
 const ALL = { ...PERMANENT, ...DECIDUOUS };
@@ -73,8 +74,7 @@ const mid = r => (r[0] + r[1]) / 2;
 const fmtYr = v => v < 2 ? `${Math.round(v * 12)} mo` : `${(+v.toFixed(1))} yr`;
 const fmtRange = (lo, hi) => `${fmtYr(lo)} – ${fmtYr(hi)}`;
 
-// Eruption is a POINT: at the midpoint of the book range.
-// A tooth is present iff age >= emergence age and (deciduous: age < fall).
+// Eruption is a point at the midpoint of the book range.
 const emergence = fdi => mid(ALL[fdi].range);
 function isPresent(fdi, age) {
   if (age < emergence(fdi)) return false;
@@ -82,13 +82,26 @@ function isPresent(fdi, age) {
   return true;
 }
 
-/* Book rule 2: lower erupts ~1 yr before upper.
-   Only the lateral incisor is the exception (rule 1). */
+/* Chart slots: each position holds deciduous + permanent (molar slots
+   have no deciduous counterpart). The slot shows whichever is present. */
+const SLOTS = {
+  upperR: [['18'],['17'],['16'],['55','15'],['54','14'],['53','13'],['52','12'],['51','11']],
+  upperL: [['61','21'],['62','22'],['63','23'],['64','24'],['65','25'],['26'],['27'],['28']],
+  lowerL: [['71','31'],['72','32'],['73','33'],['74','34'],['75','35'],['36'],['37'],['38']],
+  lowerR: [['48'],['47'],['46'],['85','45'],['84','44'],['83','43'],['82','42'],['81','41']],
+};
+function slotPresent(slot, age) {
+  // deciduous first (so a child's tooth is named by its deciduous code)
+  for (const f of slot) if (isPresent(f, age)) return f;
+  return null;
+}
+
 function bookRule(fdi) {
+  if (isDeciduous(fdi)) return 'Deciduous teeth erupt in a more regular sequence than the permanent set.';
   const n = fdi[1];
-  if (isDeciduous(fdi)) return 'Deciduous teeth are more regular than the permanent set but still vary.';
-  if (n === '2') return 'Exception to rule 2: lateral incisors appear earlier in the upper jaw.';
-  if (isUpper(fdi)) return 'Rule 2: the corresponding tooth in the lower jaw erupts about 1 year earlier.';
+  if (n === '2') return 'Rule 1 exception: lateral incisors erupt earlier in the upper jaw.';
+  if (n === '8') return 'Rule 3: wisdom teeth erupt first in the lower jaw, left before right.';
+  if (isUpper(fdi)) return 'Rule 2: the corresponding lower tooth erupts about 1 year earlier, so this range is the upper limit of the pair.';
   return 'Rule 2: lower teeth erupt about 1 year before their upper counterparts.';
 }
 
@@ -106,13 +119,13 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
 scene.add(new THREE.AmbientLight(0xffffff, 0.85));
-const k = new THREE.DirectionalLight(0xffffff, 2);   k.position.set(0.3, 0.5, 0.5);  scene.add(k);
-const f = new THREE.DirectionalLight(0xffe0b0, 1);   f.position.set(-0.5, 0.1, 0.3); scene.add(f);
-const r = new THREE.DirectionalLight(0xffffff, 0.8); r.position.set(0, -0.5, -0.3); scene.add(r);
+const kl = new THREE.DirectionalLight(0xffffff, 2);   kl.position.set(0.3, 0.5, 0.5); scene.add(kl);
+const fl = new THREE.DirectionalLight(0xffe0b0, 1);   fl.position.set(-0.5, 0.1, 0.3); scene.add(fl);
+const rl = new THREE.DirectionalLight(0xffffff, 0.8); rl.position.set(0, -0.5, -0.3); scene.add(rl);
 
-const teeth = {};   // fdi -> { group, data, origEmissive }
+const teeth = {};
 let maxDim = 0.15;
-let loaded = false;
+let model3D = null;
 
 function loadModel() {
   return new Promise((resolve, reject) => {
@@ -121,19 +134,18 @@ function loadModel() {
     draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
     loader.setDRACOLoader(draco);
     loader.load('models/anatomy_v12_draco.glb', gltf => {
-      const model = gltf.scene;
-      scene.add(model);
-      const box = new THREE.Box3().setFromObject(model);
+      model3D = gltf.scene;
+      scene.add(model3D);
+      const box = new THREE.Box3().setFromObject(model3D);
       const size = box.getSize(new THREE.Vector3());
       const centre = box.getCenter(new THREE.Vector3());
-      model.position.sub(centre);
+      model3D.position.sub(centre);
       maxDim = Math.max(size.x, size.y, size.z);
       camera.position.set(0, maxDim * 0.1, maxDim * 1.6);
       controls.target.set(0, 0, 0);
       controls.update();
 
-      // Material + register teeth
-      model.traverse(o => {
+      model3D.traverse(o => {
         if (!o.isMesh) return;
         let a = o, group = '';
         while (a) {
@@ -141,58 +153,63 @@ function loadModel() {
               /^(Maxill|Mandib)/.test(a.name)) { group = a.name; break; }
           a = a.parent;
         }
-        const isTooth = /^tooth_[5-8]\d$/.test(group) || (/^tooth_\d{2}$/.test(group));
+        const isTooth = /^tooth_\d{2}$/.test(group);
         const isDec   = /^tooth_[5-8]\d$/.test(group);
         const isBone  = /^(Maxill|Mandib)/.test(group);
         o.material = new THREE.MeshStandardMaterial({
           color: isDec ? 0xffffff : (isTooth ? 0xf0e8cc : (isBone ? 0xd9c79a : 0x888888)),
           roughness: isTooth ? 0.4 : 0.85,
           metalness: 0.02,
-          emissive: isTooth ? 0x080808 : 0x000000,
+          emissive: 0x000000,
         });
       });
-      model.traverse(o => {
+      model3D.traverse(o => {
         const m = o.name.match(/^tooth_(\d{2})$/);
         if (!m) return;
         const fdi = m[1];
         if (!ALL[fdi]) return;
         teeth[fdi] = { group: o, data: ALL[fdi] };
       });
-      loaded = true;
       resolve();
     }, undefined, reject);
   });
 }
 
 /* ============================================================
-   AGE — binary presence, no half-crowns
+   AGE
    ============================================================ */
 let currentAge = 0;
 const ageLabel = document.getElementById('age-label');
 const ageSlider = document.getElementById('age-slider');
-
 function renderAge(age) {
-  currentAge = age;
-  ageLabel.textContent = age.toFixed(1);
-  ageSlider.value = age;
+  currentAge = Math.max(0, Math.min(25, +(+age).toFixed(1)));
+  ageLabel.textContent = currentAge.toFixed(1);
+  ageSlider.value = currentAge;
   for (const fdi in teeth) {
-    const present = isPresent(fdi, age);
-    const t = teeth[fdi];
-    t.group.visible = present;
-    t.group.scale.setScalar(1);
+    const p = isPresent(fdi, currentAge);
+    teeth[fdi].group.visible = p;
+    teeth[fdi].group.scale.setScalar(1);
   }
+  // refresh fdi grid dim/present classes
+  document.querySelectorAll('.fdi-cell').forEach(c => {
+    const fdi = c.dataset.fdi;
+    c.classList.toggle('present', isPresent(fdi, currentAge));
+    c.classList.toggle('absent', !isPresent(fdi, currentAge));
+  });
+  // if info is showing, refresh the "on the jaw at" line
+  const shownFdi = document.getElementById('info').dataset.fdi;
+  if (shownFdi) showInfo(shownFdi);
 }
 
 /* ============================================================
-   HIGHLIGHT (used by Learn)
+   HIGHLIGHT
    ============================================================ */
-function highlight(fdi, hex = 0x4ade80) {
+function highlight(fdi) {
   const t = teeth[fdi];
   if (!t) return;
   t.group.traverse(o => {
     if (!o.isMesh) return;
-    if (!o.userData._orig) o.userData._orig = o.material.emissive.clone();
-    o.material.emissive = new THREE.Color(hex);
+    o.material.emissive = new THREE.Color(0x4ade80);
     o.material.emissiveIntensity = 1.2;
   });
 }
@@ -200,10 +217,7 @@ function clearHighlight(fdi) {
   const t = teeth[fdi];
   if (!t) return;
   t.group.traverse(o => {
-    if (o.isMesh && o.userData._orig) {
-      o.material.emissive.copy(o.userData._orig);
-      o.material.emissiveIntensity = 1;
-    }
+    if (o.isMesh) { o.material.emissive = new THREE.Color(0x000000); o.material.emissiveIntensity = 1; }
   });
 }
 function clearAllHighlights() { for (const fdi in teeth) clearHighlight(fdi); }
@@ -223,7 +237,8 @@ function switchTab(name) {
   document.querySelectorAll('#tabs button').forEach(b =>
     b.classList.toggle('active', b.dataset.tab === name));
   clearAllHighlights();
-  canvas.style.opacity = (name === 'test') ? '0.15' : '1';
+  canvas.style.opacity = (name === 'test') ? '0.12' : '1';
+  if (name === 'learn') document.getElementById('info').dataset.fdi = '';
   if (name === 'practice') startPractice();
   if (name === 'test')     startTest();
 }
@@ -235,6 +250,7 @@ document.querySelectorAll('#tabs button').forEach(b =>
    ============================================================ */
 function buildFdiGrid() {
   const host = document.getElementById('fdi-grid');
+  host.innerHTML = '';
   const rows = [
     ['18','17','16','15','14','13','12','11', null, '21','22','23','24','25','26','27','28'],
     ['48','47','46','45','44','43','42','41', null, '31','32','33','34','35','36','37','38'],
@@ -243,74 +259,91 @@ function buildFdiGrid() {
     const row = document.createElement('div');
     row.className = 'fdi-row';
     list.forEach(fdi => {
-      if (fdi === null) {
-        const gap = document.createElement('div');
-        gap.style.width = '10px';
-        row.appendChild(gap);
-        return;
-      }
+      if (fdi === null) { const g = document.createElement('div'); g.style.width='12px'; row.appendChild(g); return; }
       const b = document.createElement('button');
-      b.className = 'fdi-cell' + (isDeciduous(fdi) ? ' decid' : '');
+      b.className = 'fdi-cell';
       b.dataset.fdi = fdi;
       b.textContent = fdi;
-      b.addEventListener('click', () => onFdiClick(fdi, b));
+      b.addEventListener('click', () => onFdiPick(fdi, b));
       row.appendChild(b);
     });
     host.appendChild(row);
   });
 }
 
-function onFdiClick(fdi, btn) {
+function onFdiPick(fdi, btn) {
   document.querySelectorAll('.fdi-cell').forEach(x => x.classList.remove('selected'));
-  btn.classList.add('selected');
+  if (btn) btn.classList.add('selected');
   clearAllHighlights();
-  highlight(fdi, 0x4ade80);
+  // if the tooth is not yet erupted, advance the slider to its range start
+  if (!isPresent(fdi, currentAge) && !isDeciduous(fdi)) {
+    renderAge(ALL[fdi].range[0]);
+  }
+  highlight(fdi);
+  showInfo(fdi);
+}
+
+function showInfo(fdi) {
   const d = ALL[fdi];
   const present = isPresent(fdi, currentAge);
+  const presentTxt = present ? 'present on the jaw'
+    : (isDeciduous(fdi)
+      ? `shed (before ${fmtYr(d.fall)})`
+      : `not yet erupted (expect from ${fmtYr(d.range[0])})`);
+  document.getElementById('info').dataset.fdi = fdi;
   document.getElementById('info').innerHTML = `
     <div><span class="code">${fdi}</span> <span class="name">${d.name}</span></div>
     <div class="row"><b>Eruption range:</b> ${fmtRange(d.range[0], d.range[1])}</div>
-    ${isDeciduous(fdi) ? `<div class="row"><b>Sheds:</b> about ${fmtYr(d.fall)}</div>` : ''}
-    <div class="row"><b>On the jaw at age ${currentAge.toFixed(1)}:</b>
-      ${present ? 'present' : 'not yet erupted'}</div>
-    <div class="rule">${bookRule(fdi)}</div>
-  `;
+    ${isDeciduous(fdi) ? `<div class="row"><b>Sheds around:</b> ${fmtYr(d.fall)}</div>` : ''}
+    <div class="row"><b>At age ${currentAge.toFixed(1)}:</b> ${presentTxt}</div>
+    <div class="rule">${bookRule(fdi)}</div>`;
 }
 
-function stepAge(delta) {
-  const v = Math.max(0, Math.min(25, +(currentAge + delta).toFixed(1)));
-  renderAge(v);
-}
+function stepAge(delta) { renderAge(currentAge + delta); }
 document.getElementById('age-minus').addEventListener('click', () => stepAge(-0.5));
-document.getElementById('age-plus').addEventListener('click', () => stepAge(0.5));
+document.getElementById('age-plus').addEventListener('click',  () => stepAge(0.5));
 ageSlider.addEventListener('input', e => renderAge(parseFloat(e.target.value)));
 
+// ---- Tap the 3D jaw ----
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+canvas.addEventListener('pointerdown', e => {
+  if (activeTab !== 'learn') return;
+  ndc.x = (e.clientX / innerWidth) * 2 - 1;
+  ndc.y = -(e.clientY / innerHeight) * 2 + 1;
+  raycaster.setFromCamera(ndc, camera);
+  const hits = raycaster.intersectObjects(scene.children, true);
+  for (const hit of hits) {
+    let a = hit.object;
+    while (a) {
+      const m = a.name.match(/^tooth_(\d{2})$/);
+      if (m && teeth[m[1]]) {
+        onFdiPick(m[1], document.querySelector(`.fdi-cell[data-fdi="${m[1]}"]`));
+        return;
+      }
+      a = a.parent;
+    }
+  }
+});
+
 /* ============================================================
-   PRACTICE — guided step-by-step
+   PRACTICE
    ============================================================ */
 let P = null;
-
 function startPractice() {
   const age = pickRandomAge();
   renderAge(age);
-  P = { age, step: 1, last: null, next: null, lo: '', hi: '' };
+  P = { age, last: null, next: null };
   renderPractice();
 }
-
 function pickRandomAge() {
-  const windows = [[0.5, 2.5], [5, 9], [9, 13], [16, 22]];
-  const [lo, hi] = windows[Math.floor(Math.random() * windows.length)];
+  const w = [[0.5, 2.5], [5, 9], [9, 13], [16, 22]];
+  const [lo, hi] = w[Math.floor(Math.random() * w.length)];
   return +(lo + Math.random() * (hi - lo)).toFixed(1);
 }
+function presentTeeth(age) { return Object.keys(ALL).filter(f => isPresent(f, age)); }
+function pendingTeeth(age) { return Object.keys(ALL).filter(f => emergence(f) > age); }
 
-function presentTeeth(age) {
-  return Object.keys(ALL).filter(fdi => isPresent(fdi, age));
-}
-function pendingTeeth(age) {
-  return Object.keys(ALL).filter(fdi => emergence(fdi) > age);
-}
-
-// Defensible band from the book logic.
 function defensibleBand(age) {
   const present = presentTeeth(age);
   const pending = pendingTeeth(age);
@@ -319,128 +352,95 @@ function defensibleBand(age) {
     return { lo: 0, hi: ALL[p].range[1], last: [], next: [p], open: false };
   }
   const maxE = Math.max(...present.map(emergence));
-  const last = present.filter(f => emergence(f) === maxE);
-  if (!pending.length) return { lo: ALL[last[0]].range[0], hi: null, last, next: [], open: true };
+  const last = present.filter(f => Math.abs(emergence(f) - maxE) < 1e-9);
+  const lo = Math.min(...last.map(f => ALL[f].range[0]));
+  if (!pending.length) return { lo, hi: null, last, next: [], open: true };
   const minE = Math.min(...pending.map(emergence));
-  const next = pending.filter(f => emergence(f) === minE);
-  return { lo: ALL[last[0]].range[0], hi: Math.max(...next.map(f => ALL[f].range[1])), last, next, open: false };
+  const next = pending.filter(f => Math.abs(emergence(f) - minE) < 1e-9);
+  const hi = Math.max(...next.map(f => ALL[f].range[1]));
+  return { lo, hi, last, next, open: false };
 }
 
 function renderPractice() {
   const host = document.getElementById('practice-content');
   const age = P.age;
   const present = presentTeeth(age);
-
-  // step 1 — identify last tooth that erupted
-  const step1Html = `
-    <div class="step">
-      <h3>Step 1 · Which tooth erupted most recently?</h3>
-      <p>Of the teeth you can see on the jaw, which one is the latest in the eruption order?</p>
-      <div class="fdi-pick" id="pick-last">
-        ${present.map(f => `<button data-fdi="${f}" ${P.last === f ? 'class="picked"' : ''}>${f}</button>`).join('')}
-      </div>
-      <button class="primary" id="go2" ${P.last ? '' : 'disabled'}>Continue</button>
-    </div>`;
-
-  let step2Html = '';
-  if (P.last) {
-    const d = ALL[P.last];
-    step2Html = `
-      <div class="step">
-        <h3>Step 2 · Textbook range for ${P.last}</h3>
-        <p>${d.name} erupts between <b>${fmtRange(d.range[0], d.range[1])}</b>.</p>
-        <p>Because it has erupted, the age is at least <b>${fmtYr(d.range[0])}</b>.</p>
-      </div>`;
-  }
-
   const pending = pendingTeeth(age);
-  let step3Html = '';
-  if (P.last) {
-    step3Html = `
-      <div class="step">
-        <h3 class="${P.next ? '' : 'locked'}">Step 3 · Which tooth is next due?</h3>
-        <p>Among the teeth not yet on the jaw, which one erupts earliest in the book order?</p>
-        <div class="fdi-pick" id="pick-next">
-          ${pending.map(f => `<button data-fdi="${f}" ${P.next === f ? 'class="picked"' : ''}>${f}</button>`).join('')}
-        </div>
-        <button class="primary" id="go4" ${P.next ? '' : 'disabled'}>Continue</button>
-      </div>`;
-  }
+  const b = defensibleBand(age);
+  const lastShown = b.last.join(', ') || '—';
+  const nextShown = b.next.join(', ') || '—';
+  host.innerHTML = `
+    <div class="step">
+      <h3>Step 1 · Look at the jaw</h3>
+      <p>Count the deciduous and permanent teeth. Which tooth appears to be the most recent arrival?</p>
+      <div class="fdi-pick" id="pick-last">
+        ${present.map(f => `<button data-fdi="${f}" ${P.last===f?'class="picked"':''}>${f}</button>`).join('')}
+      </div>
+    </div>
+    ${P.last ? `
+    <div class="step">
+      <h3>Step 2 · Range for ${P.last}</h3>
+      <p>${ALL[P.last].name} erupts between <b>${fmtRange(...ALL[P.last].range)}</b>.</p>
+      <p>Because it is present, the age is at least <b>${fmtYr(ALL[P.last].range[0])}</b>.</p>
+    </div>` : ''}
+    ${P.last ? `
+    <div class="step">
+      <h3>Step 3 · Which tooth is next due?</h3>
+      <p>Among the FDI codes not on the jaw, which one erupts earliest in the book order?</p>
+      <div class="fdi-pick" id="pick-next">
+        ${pending.map(f => `<button data-fdi="${f}" ${P.next===f?'class="picked"':''}>${f}</button>`).join('')}
+      </div>
+    </div>` : ''}
+    ${P.next ? `
+    <div class="step">
+      <h3>Step 4 · Range for ${P.next}</h3>
+      <p>${ALL[P.next].name} erupts between <b>${fmtRange(...ALL[P.next].range)}</b>.</p>
+      <p>Because it is not yet present, the age is at most <b>${fmtYr(ALL[P.next].range[1])}</b>.</p>
+    </div>
+    <div class="step">
+      <h3>Step 5 · Report the range</h3>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
+        <label style="color:#888;font-size:0.8em">Between</label>
+        <input type="number" step="0.5" id="p-lo">
+        <label style="color:#888;font-size:0.8em">and</label>
+        <input type="number" step="0.5" id="p-hi">
+        <label style="color:#888;font-size:0.8em">yr</label>
+      </div>
+      <button class="primary" id="p-reveal">Reveal</button>
+    </div>` : ''}
+    <div id="practice-result"></div>`;
 
-  let step4Html = '';
-  if (P.next) {
-    const d = ALL[P.next];
-    step4Html = `
-      <div class="step">
-        <h3>Step 4 · Textbook range for ${P.next}</h3>
-        <p>${d.name} erupts between <b>${fmtRange(d.range[0], d.range[1])}</b>.</p>
-        <p>Because it has not erupted, the age is at most <b>${fmtYr(d.range[1])}</b>.</p>
-      </div>`;
-  }
-
-  let step5Html = '';
-  if (P.next) {
-    step5Html = `
-      <div class="step">
-        <h3>Step 5 · Report the age range</h3>
-        <p>Give the narrowest range the teeth can honestly support.</p>
-        <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
-          <label style="color:#888;font-size:0.8em">Between</label>
-          <input type="number" step="0.5" id="lo" value="${P.lo}">
-          <label style="color:#888;font-size:0.8em">and</label>
-          <input type="number" step="0.5" id="hi" value="${P.hi}">
-          <label style="color:#888;font-size:0.8em">yr</label>
-        </div>
-        <button class="primary" id="reveal">Reveal</button>
-      </div>`;
-  }
-
-  host.innerHTML = step1Html + step2Html + step3Html + step4Html + step5Html + '<div id="practice-result"></div>';
-
-  host.querySelectorAll('#pick-last button').forEach(b => b.onclick = () => {
-    P.last = b.dataset.fdi; renderPractice();
-  });
-  const go2 = host.querySelector('#go2');
-  if (go2) go2.onclick = () => renderPractice();
-
-  host.querySelectorAll('#pick-next button').forEach(b => b.onclick = () => {
-    P.next = b.dataset.fdi; renderPractice();
-  });
-  const go4 = host.querySelector('#go4');
-  if (go4) go4.onclick = () => renderPractice();
-
-  const rev = host.querySelector('#reveal');
+  host.querySelectorAll('#pick-last button').forEach(x =>
+    x.onclick = () => { P.last = x.dataset.fdi; P.next = null; renderPractice(); });
+  host.querySelectorAll('#pick-next button').forEach(x =>
+    x.onclick = () => { P.next = x.dataset.fdi; renderPractice(); });
+  const rev = host.querySelector('#p-reveal');
   if (rev) rev.onclick = () => {
-    P.lo = host.querySelector('#lo').value;
-    P.hi = host.querySelector('#hi').value;
-    const lo = parseFloat(P.lo), hi = parseFloat(P.hi);
-    const b = defensibleBand(age);
-    const correct = (b.open ? false : (lo <= b.lo + 1 && hi >= b.hi - 1 && (hi - lo) <= (b.hi - b.lo) + 2));
+    const lo = parseFloat(host.querySelector('#p-lo').value);
+    const hi = parseFloat(host.querySelector('#p-hi').value);
     const trueRange = b.open ? `≥ ${fmtYr(b.lo)}` : fmtRange(b.lo, b.hi);
+    const ok = b.open
+      ? (Math.abs(lo - b.lo) <= 1)
+      : (lo <= b.lo + 1 && hi >= b.hi - 1 && (hi - lo) <= (b.hi - b.lo) + 2);
     host.querySelector('#practice-result').innerHTML = `
       <div class="result">
         <div><b>Defensible answer:</b> <span class="range">${trueRange}</span></div>
-        <div>${correct ? '<span class="ok">Correct and appropriately tight.</span>' : '<span class="near">Compare your range with the defensible band above.</span>'}</div>
+        <div>${ok ? '<span class="ok">Correct.</span>' : '<span class="near">Compare your range with the band above.</span>'}</div>
         <div style="margin-top:8px;color:#888;font-size:0.9em">
-          Last erupted was <b>${b.last.join(', ') || '—'}</b>. Next due: <b>${b.next.join(', ') || '—'}</b>.
-        </div>
-        <div style="margin-top:8px;color:#888;font-size:0.9em">
-          Eruption is a point, not a process. A tooth is either through or not.
+          Last erupted: <b>${lastShown}</b>. Next due: <b>${nextShown}</b>.
         </div>
       </div>`;
   };
 }
 
 /* ============================================================
-   TEST — FDI chart only
+   TEST — chart + forced reasoning
    ============================================================ */
 let T = null;
-
 function startTest() {
-  T = { round: 0, score: 0, total: 10, age: null, style: 'range', last: null, next: null };
+  T = { round: 0, score: 0, total: 10, age: null, last: null, next: null };
   nextTestRound();
 }
-
 function nextTestRound() {
   if (T.round >= T.total) return testSummary();
   T.round++;
@@ -452,104 +452,95 @@ function nextTestRound() {
 function renderTest() {
   const host = document.getElementById('test-content');
   const age = T.age;
-  const rowLayout = [
-    ['18','17','16','15','14','13','12','11', null, '21','22','23','24','25','26','27','28'],
-    ['48','47','46','45','44','43','42','41', null, '31','32','33','34','35','36','37','38'],
-  ];
-  const chart = rowLayout.map(list => `
-    <div class="row">
-      ${list.map(fdi => {
-        if (fdi === null) return '<div style="width:14px"></div>';
-        const present = isPresent(fdi, age);
-        return `<div class="cell ${present ? 'present' : ''}">${present ? fdi : ''}</div>`;
-      }).join('')}
-    </div>`).join('');
+  const row = (slots) => slots.map(slot => {
+    const f = slotPresent(slot, age);
+    return `<div class="cell ${f ? 'present' : ''}">${f || ''}</div>`;
+  }).join('');
+  const chart = `
+    <div class="row">${row(SLOTS.upperR)}<div style="width:14px"></div>${row(SLOTS.upperL)}</div>
+    <div class="row">${row(SLOTS.lowerR)}<div style="width:14px"></div>${row(SLOTS.lowerL)}</div>`;
+
+  const present = presentTeeth(age);
+  const pending = pendingTeeth(age);
+  const b = defensibleBand(age);
 
   host.innerHTML = `
     <div style="font-size:0.8em;color:#bbb;margin-bottom:6px">
       <b style="color:#4ade80">Round ${T.round} of ${T.total}</b> · Score ${T.score}
     </div>
-    <p style="font-size:0.8em;color:#bbb;line-height:1.45;margin:0 0 8px">
-      A dental chart is shown. Teeth marked in green are present; blank cells are absent.
-      Estimate the age range.
+    <p style="font-size:0.78em;color:#bbb;line-height:1.45;margin:0 0 8px">
+      Dental chart. Green cells show the FDI of teeth present; blank cells mean absent.
+      Give a defensible age range and the reason.
     </p>
     <div class="chart">${chart}</div>
     <div class="step" style="border-top:none">
-      <h3>Your answer</h3>
-      <div style="display:flex;gap:10px;margin-bottom:8px">
-        <label style="color:#888;font-size:0.8em"><input type="radio" name="answerStyle" value="range" ${T.style==='range'?'checked':''}> Range only</label>
-        <label style="color:#888;font-size:0.8em"><input type="radio" name="answerStyle" value="both" ${T.style==='both'?'checked':''}> Range + reasoning</label>
+      <h3>Last erupted (FDI)</h3>
+      <div class="fdi-pick" id="pick-last">
+        ${present.map(f => `<button data-fdi="${f}" ${T.last===f?'class="picked"':''}>${f}</button>`).join('')}
       </div>
-      ${T.style === 'both' ? `
-        <div style="margin-bottom:6px">
-          <label style="color:#888;font-size:0.8em;display:block;margin-bottom:4px">Last erupted (FDI):</label>
-          <div class="fdi-pick" id="pick-test-last">
-            ${Object.keys(ALL).filter(f => isPresent(f, age)).map(f =>
-              `<button data-fdi="${f}" ${T.last===f?'class="picked"':''}>${f}</button>`).join('')}
-          </div>
-        </div>
-        <div style="margin-bottom:6px">
-          <label style="color:#888;font-size:0.8em;display:block;margin-bottom:4px">Next due (FDI):</label>
-          <div class="fdi-pick" id="pick-test-next">
-            ${Object.keys(ALL).filter(f => emergence(f) > age).map(f =>
-              `<button data-fdi="${f}" ${T.next===f?'class="picked"':''}>${f}</button>`).join('')}
-          </div>
-        </div>` : ''}
-      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+      <h3 style="margin-top:10px">Next due (FDI)</h3>
+      <div class="fdi-pick" id="pick-next">
+        ${pending.map(f => `<button data-fdi="${f}" ${T.next===f?'class="picked"':''}>${f}</button>`).join('')}
+      </div>
+      <h3 style="margin-top:10px">Your age range</h3>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
         <label style="color:#888;font-size:0.8em">Between</label>
-        <input type="number" step="0.5" id="test-lo">
+        <input type="number" step="0.5" id="t-lo">
         <label style="color:#888;font-size:0.8em">and</label>
-        <input type="number" step="0.5" id="test-hi">
+        <input type="number" step="0.5" id="t-hi">
         <label style="color:#888;font-size:0.8em">yr</label>
       </div>
-      <button class="primary" id="test-submit">Submit</button>
+      <p style="font-size:0.75em;color:#888;margin:6px 0 0">
+        If no tooth is next due, leave the second box blank — the answer is then only a minimum.
+      </p>
+      <button class="primary" id="t-submit">Submit</button>
     </div>
-    <div id="test-result"></div>
-  `;
+    <div id="test-result"></div>`;
 
-  host.querySelectorAll('input[name="answerStyle"]').forEach(r =>
-    r.onchange = () => { T.style = r.value; renderTest(); });
-  host.querySelectorAll('#pick-test-last button').forEach(b =>
-    b.onclick = () => { T.last = b.dataset.fdi; renderTest(); });
-  host.querySelectorAll('#pick-test-next button').forEach(b =>
-    b.onclick = () => { T.next = b.dataset.fdi; renderTest(); });
-  host.querySelector('#test-submit').onclick = submitTestAnswer;
+  host.querySelectorAll('#pick-last button').forEach(x =>
+    x.onclick = () => { T.last = x.dataset.fdi; renderTest(); });
+  host.querySelectorAll('#pick-next button').forEach(x =>
+    x.onclick = () => { T.next = x.dataset.fdi; renderTest(); });
+  host.querySelector('#t-submit').onclick = submitTest;
 }
 
-function submitTestAnswer() {
+function submitTest() {
   const host = document.getElementById('test-result');
-  const lo = parseFloat(document.getElementById('test-lo').value);
-  const hi = parseFloat(document.getElementById('test-hi').value);
-  if (isNaN(lo) || isNaN(hi) || lo >= hi) {
-    host.innerHTML = `<div class="result"><span class="no">Give a range: upper must exceed lower.</span></div>`;
-    return;
-  }
+  const loRaw = document.getElementById('t-lo').value.trim();
+  const hiRaw = document.getElementById('t-hi').value.trim();
+  const lo = loRaw === '' ? null : parseFloat(loRaw);
+  const hi = hiRaw === '' ? null : parseFloat(hiRaw);
+  if (lo === null && hi === null) { host.innerHTML = `<div class="result"><span class="no">Enter a range.</span></div>`; return; }
+
   const b = defensibleBand(T.age);
-  const rangeOK = b.open ? false : (lo <= b.lo + 1 && hi >= b.hi - 1 && (hi - lo) <= (b.hi - b.lo) + 2);
+  const trueRange = b.open ? `≥ ${fmtYr(b.lo)}` : fmtRange(b.lo, b.hi);
 
-  let reasonOK = true;
-  if (T.style === 'both') {
-    const lastOK = b.last.includes(T.last) || (b.last.length === 0);
-    const nextOK = b.next.includes(T.next) || (b.next.length === 0);
-    reasonOK = lastOK && nextOK;
+  let rangeOK = false;
+  if (b.open) {
+    const hiOK = (hi === null || hi >= b.lo + 5);
+    const loOK = (lo !== null && Math.abs(lo - b.lo) <= 1);
+    rangeOK = loOK && hiOK;
+  } else {
+    const loOK = (lo !== null && lo <= b.lo + 1 && lo >= b.lo - 2);
+    const hiOK = (hi !== null && hi >= b.hi - 1 && hi <= b.hi + 2);
+    rangeOK = loOK && hiOK;
   }
-
-  const full = rangeOK && reasonOK;
+  const lastOK = b.last.length === 0 || b.last.includes(T.last);
+  const nextOK = b.next.length === 0 || b.next.includes(T.next);
+  const full = rangeOK && lastOK && nextOK;
   if (full) T.score++;
 
-  const trueRange = b.open ? `≥ ${fmtYr(b.lo)}` : fmtRange(b.lo, b.hi);
   host.innerHTML = `
     <div class="result">
       <div>${full ? '<span class="ok">Correct.</span>' : '<span class="no">Not quite.</span>'}</div>
       <div style="margin-top:6px"><b>Defensible answer:</b> <span class="range">${trueRange}</span></div>
-      ${T.style === 'both' ? `
-        <div style="margin-top:6px;color:#aaa;font-size:0.9em">
-          <b>Last erupted:</b> ${b.last.join(', ') || '—'} — you said ${T.last || '—'}<br>
-          <b>Next due:</b> ${b.next.join(', ') || '—'} — you said ${T.next || '—'}
-        </div>` : ''}
-      <button class="primary" id="test-next" style="margin-top:10px">Next chart</button>
+      <div style="margin-top:6px;color:#aaa;font-size:0.9em">
+        <b>Last erupted:</b> ${b.last.join(', ') || '—'} — you said ${T.last || '—'}<br>
+        <b>Next due:</b> ${b.next.join(', ') || '—'} — you said ${T.next || '—'}
+      </div>
+      <button class="primary" id="t-next" style="margin-top:10px">Next chart</button>
     </div>`;
-  host.querySelector('#test-next').onclick = nextTestRound;
+  host.querySelector('#t-next').onclick = nextTestRound;
 }
 
 function testSummary() {
@@ -558,9 +549,9 @@ function testSummary() {
   host.innerHTML = `
     <div class="result" style="border-color:#4ade80">
       <div style="font-size:1.15em"><b>Score ${T.score} / ${T.total} (${pct}%)</b></div>
-      <button class="primary" id="test-restart" style="margin-top:12px">Try again</button>
+      <button class="primary" id="t-restart" style="margin-top:12px">Try again</button>
     </div>`;
-  host.querySelector('#test-restart').onclick = startTest;
+  host.querySelector('#t-restart').onclick = startTest;
 }
 
 /* ============================================================
@@ -569,11 +560,7 @@ function testSummary() {
 loadModel().then(() => {
   buildFdiGrid();
   renderAge(0);
-  (function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
-  })();
+  (function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); })();
   addEventListener('resize', () => {
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
