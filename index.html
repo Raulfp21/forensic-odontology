@@ -11,105 +11,133 @@ html, body { margin: 0; height: 100%; background: #0a0a0a; color: #e8e8e8;
 canvas { display: block; position: fixed; inset: 0; transition: opacity 0.2s; }
 
 #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-  background: rgba(10,10,10,0.92); border-bottom: 1px solid #1e1e1e;
-  padding: 8px 12px; display: flex; justify-content: space-between;
+  background: rgba(10,10,10,0.94); border-bottom: 1px solid #1e1e1e;
+  padding: 7px 12px; display: flex; justify-content: space-between;
   align-items: center; backdrop-filter: blur(10px); }
-.brand h1 { margin: 0; font-size: 0.95em; color: #4ade80; font-weight: 700; }
-.brand p  { margin: 2px 0 0; font-size: 0.68em; color: #777; }
+.brand h1 { margin: 0; font-size: 0.9em; color: #4ade80; font-weight: 700; }
+.brand p  { margin: 1px 0 0; font-size: 0.62em; color: #777; }
 
 #tabs { display: flex; gap: 4px; }
 #tabs button { background: #141414; color: #999; border: 1px solid #262626;
-  border-radius: 8px; padding: 8px 12px; font: inherit; font-size: 0.78em;
+  border-radius: 8px; padding: 7px 12px; font: inherit; font-size: 0.76em;
   font-weight: 600; cursor: pointer; }
 #tabs button.active { background: #14261a; color: #4ade80; border-color: #4ade80; }
 
-.panel { position: fixed; left: 10px; right: 10px; bottom: 10px; z-index: 20;
+.panel { position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 20;
   background: rgba(10,10,10,0.96); border: 1px solid #262626;
-  border-radius: 14px; padding: 12px; backdrop-filter: blur(12px);
-  max-height: 66vh; overflow: auto; }
+  border-radius: 14px; padding: 10px; backdrop-filter: blur(14px);
+  max-height: 42vh; overflow-y: auto; }
 .panel.hidden { display: none; }
 
-/* Learn */
-.learn-range { padding: 10px 12px; background: #0f1a12;
-  border: 1px solid #2a4a32; border-radius: 10px; margin-bottom: 10px; }
-.learn-range .label { font-size: 0.72em; color: #8ba894;
-  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-.learn-range .range-value { font-size: 1.35em; font-weight: 700;
-  color: #4ade80; margin-bottom: 4px; }
-.learn-range .range-explain { font-size: 0.78em; color: #a8c8b0; line-height: 1.4; }
+/* Info popover — floats at top of jaw */
+#info-pop {
+  position: fixed; top: 58px; left: 10px; right: 10px; z-index: 15;
+  background: rgba(10,10,10,0.97); border: 1px solid #2a4a32;
+  border-left: 3px solid #4ade80; border-radius: 10px;
+  padding: 10px 12px; font-size: 0.8em; line-height: 1.45;
+  backdrop-filter: blur(12px); display: none; }
+#info-pop.show { display: block; }
+#info-pop .code { font-size: 1.3em; font-weight: 700; color: #4ade80; }
+#info-pop .name { color: #e8e8e8; font-weight: 500; }
+#info-pop .row  { color: #aaa; font-size: 0.9em; margin-top: 2px; }
+#info-pop .row b { color: #888; font-weight: 500; }
+#info-pop .rule { margin-top: 6px; color: #a8c8e8; font-size: 0.85em;
+  padding-top: 6px; border-top: 1px solid #1f1f1f; }
+#info-pop .close { position: absolute; top: 8px; right: 10px;
+  background: none; border: none; color: #666; font-size: 1.1em; cursor: pointer; }
+
+/* Learn range card — single line, expandable */
+.learn-range { padding: 8px 10px; background: #0f1a12;
+  border: 1px solid #2a4a32; border-radius: 8px; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 10px; }
+.learn-range .label { font-size: 0.65em; color: #8ba894;
+  text-transform: uppercase; letter-spacing: 0.4px; }
+.learn-range .range-value { font-size: 1.15em; font-weight: 700;
+  color: #4ade80; }
+.learn-range .range-explain { font-size: 0.72em; color: #a8c8b0;
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; }
 .learn-range .range-explain b { color: #d8e8d8; font-weight: 600; }
+.learn-range.expanded .range-explain { white-space: normal; }
+.learn-range .expand-btn { background: none; border: none; color: #666;
+  font-size: 0.8em; cursor: pointer; padding: 2px 4px; }
 
-.age-row { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
-.age-btn { width: 42px; height: 42px; background: #141414; color: #4ade80;
-  border: 1px solid #262626; border-radius: 10px; font-size: 1.3em;
-  font-weight: 700; cursor: pointer; }
-.age-btn:active { background: #14261a; }
-#age-slider { flex: 1; height: 6px; appearance: none; background: #262626;
-  border-radius: 3px; outline: none; }
-#age-slider::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px;
-  background: #4ade80; border-radius: 50%; cursor: pointer;
-  box-shadow: 0 0 10px rgba(74,222,128,0.5); }
-#age-label { font-size: 1.15em; font-weight: 700; color: #4ade80;
-  min-width: 44px; text-align: right; }
+/* FDI grid — permanent/deciduous tabbed */
+.fdi-tabs { display: flex; gap: 4px; margin-bottom: 6px; }
+.fdi-tabs button { background: #141414; color: #777;
+  border: 1px solid #262626; border-radius: 20px;
+  padding: 4px 12px; font: inherit; font-size: 0.7em; cursor: pointer; }
+.fdi-tabs button.active { background: #14261a; color: #4ade80;
+  border-color: #4ade80; }
 
-.fdi-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; }
-.fdi-cell { flex: 1 1 0; min-width: 0; height: 38px; background: #0f0f0f; color: #666;
-  border: 1px solid #262626; border-radius: 6px; font: inherit;
-  font-size: 0.78em; font-weight: 600; cursor: pointer; padding: 0 4px; }
-.fdi-cell.present { background: #1a3a24; color: #4ade80; border-color: #4ade80; }
+.fdi-grid-host { }
+.fdi-quad { margin-bottom: 2px; }
+.fdi-quad-label { font-size: 0.6em; color: #555;
+  text-transform: uppercase; letter-spacing: 0.4px; margin: 4px 0 2px 2px; }
+.fdi-row { display: flex; gap: 3px; margin-bottom: 3px; }
+.fdi-cell { flex: 1 1 0; min-width: 0; height: 34px;
+  background: #0f0f0f; color: #666;
+  border: 1px solid #262626; border-radius: 6px;
+  font: inherit; font-size: 0.76em; font-weight: 600;
+  cursor: pointer; padding: 0 2px; }
+.fdi-cell.present { background: #1a3a24; color: #4ade80;
+  border-color: #4ade80; }
 .fdi-cell:active { background: #222; }
 
-.learn-actions { display: flex; gap: 4px; margin: 8px 0; flex-wrap: wrap; }
+/* Age row (compact) */
+.age-row { display: flex; gap: 6px; align-items: center; margin-top: 8px; }
+.age-btn { width: 36px; height: 36px; background: #141414; color: #4ade80;
+  border: 1px solid #262626; border-radius: 9px; font-size: 1.15em;
+  font-weight: 700; cursor: pointer; flex-shrink: 0; }
+.age-btn:active { background: #14261a; }
+#age-slider { flex: 1; height: 5px; appearance: none;
+  background: #262626; border-radius: 3px; outline: none; }
+#age-slider::-webkit-slider-thumb { appearance: none; width: 20px;
+  height: 20px; background: #4ade80; border-radius: 50%; cursor: pointer;
+  box-shadow: 0 0 8px rgba(74,222,128,0.5); }
+#age-label { font-size: 1.05em; font-weight: 700; color: #4ade80;
+  min-width: 40px; text-align: right; flex-shrink: 0; }
+
+/* Milestone chip row */
+.learn-actions { display: flex; gap: 4px; margin-top: 6px;
+  overflow-x: auto; padding-bottom: 2px; }
 .learn-actions button { background: #141414; color: #999;
   border: 1px solid #262626; border-radius: 6px;
-  padding: 6px 10px; font: inherit; font-size: 0.72em; cursor: pointer; }
+  padding: 5px 10px; font: inherit; font-size: 0.7em; cursor: pointer;
+  flex-shrink: 0; white-space: nowrap; }
 .learn-actions button:active { background: #1a1a1a; }
 
-#info { margin-top: 8px; padding: 10px 12px; background: #131313;
-  border-left: 3px solid #4ade80; border-radius: 0 8px 8px 0;
-  font-size: 0.82em; line-height: 1.5; }
-#info .code { font-size: 1.4em; font-weight: 700; color: #4ade80; }
-#info .name { color: #e8e8e8; font-weight: 500; }
-#info .row  { color: #aaa; font-size: 0.92em; margin-top: 3px; }
-#info .row b { color: #888; font-weight: 500; }
-#info .rule { margin-top: 8px; color: #a8c8e8; font-size: 0.88em;
-  padding-top: 8px; border-top: 1px solid #1f1f1f; }
-
 /* Practice & Test */
-.step { padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
+.step { padding: 8px 0; border-bottom: 1px solid #1a1a1a; }
 .step:last-child { border-bottom: none; }
-.step h3 { margin: 0 0 6px; font-size: 0.85em; color: #4ade80;
-  font-weight: 600; }
-.step p { margin: 4px 0; font-size: 0.8em; color: #bbb; line-height: 1.45; }
-.step .fdi-pick { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.step .fdi-pick button { min-width: 40px; padding: 6px 8px; background: #141414;
-  color: #ccc; border: 1px solid #262626; border-radius: 6px; font: inherit;
-  font-size: 0.78em; cursor: pointer; }
+.step h3 { margin: 0 0 4px; font-size: 0.8em; color: #4ade80; font-weight: 600; }
+.step p { margin: 3px 0; font-size: 0.76em; color: #bbb; line-height: 1.4; }
+.step .fdi-pick { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.step .fdi-pick button { min-width: 36px; padding: 5px 7px;
+  background: #141414; color: #ccc; border: 1px solid #262626;
+  border-radius: 6px; font: inherit; font-size: 0.74em; cursor: pointer; }
 .step .fdi-pick button.picked { background: #14261a; color: #4ade80;
   border-color: #4ade80; }
-.step input[type=number] { width: 90px; padding: 8px; background: #131313;
+.step input[type=number] { width: 80px; padding: 7px; background: #131313;
   color: #e8e8e8; border: 1px solid #262626; border-radius: 6px;
-  font: inherit; text-align: center; margin-top: 6px; }
-.step button.primary { padding: 10px 16px; background: #1a3a24; color: #4ade80;
+  font: inherit; text-align: center; margin-top: 4px; }
+.step button.primary { padding: 9px 14px; background: #1a3a24; color: #4ade80;
   border: 1px solid #4ade80; border-radius: 8px; font: inherit;
-  font-size: 0.85em; font-weight: 600; cursor: pointer; margin-top: 8px; }
+  font-size: 0.82em; font-weight: 600; cursor: pointer; margin-top: 6px; }
 
-.result { padding: 12px; margin-top: 10px; background: #131313;
+.result { padding: 10px; margin-top: 8px; background: #131313;
   border-left: 3px solid #f59e0b; border-radius: 0 8px 8px 0;
-  font-size: 0.85em; line-height: 1.5; }
+  font-size: 0.82em; line-height: 1.45; }
 .result .ok { color: #4ade80; font-weight: 600; }
 .result .no { color: #f87171; font-weight: 600; }
-.result .near { color: #fbbf24; font-weight: 600; }
-.result .range { color: #f59e0b; font-weight: 700; font-size: 1.15em; }
+.result .range { color: #f59e0b; font-weight: 700; font-size: 1.1em; }
 
-/* Test chart */
-.chart { padding: 10px 4px; }
-.chart .row { display: flex; justify-content: center; gap: 3px;
-  margin-bottom: 3px; }
-.chart .cell { flex: 1 1 0; min-width: 0; height: 38px; display: flex;
-  align-items: center; justify-content: center; font-size: 0.75em;
-  font-weight: 600; border-radius: 6px; border: 1px solid #262626;
-  background: #0f0f0f; color: #333; }
+.chart { padding: 6px 2px; }
+.chart .row { display: flex; gap: 2px; margin-bottom: 2px; }
+.chart .cell { flex: 1 1 0; min-width: 0; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7em; font-weight: 600; border-radius: 5px;
+  border: 1px solid #262626; background: #0f0f0f; color: #333; }
 .chart .cell.present { background: #1a3a24; color: #4ade80;
   border-color: #4ade80; }
 </style>
@@ -129,13 +157,35 @@ canvas { display: block; position: fixed; inset: 0; transition: opacity 0.2s; }
   </nav>
 </header>
 
+<div id="info-pop">
+  <button class="close" onclick="document.getElementById('info-pop').classList.remove('show')">✕</button>
+  <div id="info-content"></div>
+</div>
+
 <section id="learn-panel" class="panel">
-  <div class="learn-range">
-    <div class="label">Defensible age range</div>
-    <div class="range-value" id="learn-range-value">—</div>
-    <div class="range-explain" id="learn-range-explain">Mark teeth on the grid, or scrub to an age, to compute the range.</div>
+  <div class="learn-range" id="learn-range">
+    <div>
+      <div class="label">Defensible age</div>
+      <div class="range-value" id="learn-range-value">—</div>
+    </div>
+    <div class="range-explain" id="learn-range-explain">Mark teeth or use a milestone chip.</div>
+    <button class="expand-btn" id="range-expand">▾</button>
   </div>
-  <div id="fdi-grid"></div>
+
+  <div class="fdi-tabs">
+    <button data-set="permanent" class="active">Permanent</button>
+    <button data-set="deciduous">Deciduous</button>
+  </div>
+
+  <div class="fdi-grid-host" id="fdi-grid"></div>
+
+  <div class="age-row">
+    <button class="age-btn" id="age-minus">−</button>
+    <input type="range" id="age-slider" min="0" max="25" step="0.5" value="0">
+    <button class="age-btn" id="age-plus">+</button>
+    <span id="age-label">0.0</span>
+  </div>
+
   <div class="learn-actions">
     <button data-clear>Clear</button>
     <button data-age="2">2 yr</button>
@@ -145,13 +195,6 @@ canvas { display: block; position: fixed; inset: 0; transition: opacity 0.2s; }
     <button data-age="18">18 yr</button>
     <button data-age="22">22 yr</button>
   </div>
-  <div class="age-row">
-    <button class="age-btn" id="age-minus">−</button>
-    <input type="range" id="age-slider" min="0" max="25" step="0.5" value="0">
-    <button class="age-btn" id="age-plus">+</button>
-    <span id="age-label">0.0</span>
-  </div>
-  <div id="info"><span style="color:#666">Tap a tooth on the jaw to see its details.</span></div>
 </section>
 
 <section id="practice-panel" class="panel hidden">

@@ -234,39 +234,63 @@ function applyMarkedToJaw() {
   }
 }
 
+let learnSet = 'permanent';   // 'permanent' | 'deciduous'
+
 function buildFdiGrid() {
   const host = document.getElementById('fdi-grid');
   host.innerHTML = '';
-  // 4 rows of 8 for permanent (upper-right, upper-left, lower-right, lower-left),
-  // then 4 rows of ≤5 for deciduous under each quadrant.
-  const layout = [
-    ['18','17','16','15','14','13','12','11'],
-    ['21','22','23','24','25','26','27','28'],
-    ['48','47','46','45','44','43','42','41'],
-    ['31','32','33','34','35','36','37','38'],
-    ['55','54','53','52','51','', '', ''],
-    ['61','62','63','64','65','', '', ''],
-    ['85','84','83','82','81','', '', ''],
-    ['71','72','73','74','75','', '', ''],
-  ];
-  const labels = ['Upper right permanent','Upper left permanent','Lower right permanent','Lower left permanent',
-                  'Upper right deciduous','Upper left deciduous','Lower right deciduous','Lower left deciduous'];
-  layout.forEach((list, i) => {
-    const row = document.createElement('div');
-    row.className = 'fdi-row';
-    row.dataset.label = labels[i];
-    list.forEach(fdi => {
-      if (!fdi) { const g = document.createElement('div'); g.style.flex='1 1 0'; row.appendChild(g); return; }
-      const b = document.createElement('button');
-      b.className = 'fdi-cell';
-      b.dataset.fdi = fdi;
-      b.textContent = fdi;
-      b.addEventListener('click', () => toggleFdi(fdi));
-      row.appendChild(b);
-    });
-    host.appendChild(row);
-  });
+  if (learnSet === 'permanent') {
+    // 4 quadrants, 8 slots each, in a 4-row grid
+    const quads = [
+      ['18','17','16','15','14','13','12','11'],
+      ['21','22','23','24','25','26','27','28'],
+      ['48','47','46','45','44','43','42','41'],
+      ['31','32','33','34','35','36','37','38'],
+    ];
+    quads.forEach(list => host.appendChild(makeRow(list)));
+  } else {
+    // deciduous quadrants, 5 each (55-51, 61-65, 85-81, 71-75)
+    const quads = [
+      ['55','54','53','52','51'],
+      ['61','62','63','64','65'],
+      ['85','84','83','82','81'],
+      ['71','72','73','74','75'],
+    ];
+    quads.forEach(list => host.appendChild(makeRow(list)));
+  }
 }
+
+function makeRow(list) {
+  const row = document.createElement('div');
+  row.className = 'fdi-row';
+  list.forEach(fdi => {
+    const b = document.createElement('button');
+    b.className = 'fdi-cell';
+    b.dataset.fdi = fdi;
+    b.textContent = fdi;
+    b.addEventListener('click', () => { toggleFdi(fdi); showInfo(fdi); });
+    row.appendChild(b);
+  });
+  // pad with invisible fillers so 5-cell rows align with 8-cell rows
+  for (let i = list.length; i < 8; i++) {
+    const g = document.createElement('div'); g.style.flex='1 1 0'; row.appendChild(g);
+  }
+  return row;
+}
+
+document.querySelectorAll('.fdi-tabs button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.fdi-tabs button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    learnSet = b.dataset.set;
+    buildFdiGrid();
+    renderLearn();
+  });
+});
+
+document.getElementById('range-expand').addEventListener('click', () => {
+  document.getElementById('learn-range').classList.toggle('expanded');
+});
 
 function renderLearn() {
   document.querySelectorAll('.fdi-cell').forEach(c => {
@@ -335,12 +359,13 @@ function showInfo(fdi) {
   const d = ALL[fdi];
   const isDec = isDeciduous(fdi);
   const present = learn.marked.has(fdi);
-  document.getElementById('info').innerHTML = `
+  document.getElementById('info-content').innerHTML = `
     <div><span class="code">${fdi}</span> <span class="name">${d.name}</span></div>
     <div class="row"><b>Eruption range:</b> ${fmtRange(d.range[0], d.range[1])}</div>
     ${isDec ? `<div class="row"><b>Sheds:</b> at about ${fmtYr(d.fall)} (successor ${d.perm})</div>` : ''}
     <div class="row"><b>Marked:</b> ${present ? 'present' : 'absent'}</div>
     <div class="rule">${bookRule(fdi)}</div>`;
+  document.getElementById('info-pop').classList.add('show');
 }
 
 /* ============================================================
