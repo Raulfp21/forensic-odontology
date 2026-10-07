@@ -414,21 +414,36 @@ function practiceChart(age) {
 function eruptionTable() {
   return `
     <details class="erupt-ref">
-      <summary>Eruption table (from the book)</summary>
+      <summary>Permanent teeth — eruption table (Fig 4.21)</summary>
       <table>
         <thead><tr><th>Tooth</th><th>Range</th></tr></thead>
         <tbody>
           <tr><td>Central incisor</td><td>6 – 8 yr</td></tr>
           <tr><td>Lateral incisor</td><td>7 – 9 yr</td></tr>
-          <tr><td>First molar</td><td>6 – 7 yr</td></tr>
+          <tr><td>Canine</td><td>11 – 12 yr</td></tr>
           <tr><td>First bicuspid</td><td>9 – 11 yr</td></tr>
           <tr><td>Second bicuspid</td><td>10 – 12 yr</td></tr>
-          <tr><td>Canine</td><td>11 – 12 yr</td></tr>
+          <tr><td>First molar</td><td>6 – 7 yr</td></tr>
           <tr><td>Second molar</td><td>12 – 14 yr</td></tr>
           <tr><td>Third molar</td><td>17 – 25 yr</td></tr>
         </tbody>
       </table>
-      <p class="erupt-note"><b>Rule 2:</b> lower teeth erupt about 1 year earlier than their upper counterparts, except lateral incisors (upper earlier).</p>
+      <p class="erupt-note"><b>Rule 2:</b> lower permanent teeth erupt about 1 year earlier than their upper counterparts — except lateral incisors, which appear earlier in the upper jaw.</p>
+    </details>
+    <details class="erupt-ref">
+      <summary>Deciduous teeth — eruption table (Fig 4.20)</summary>
+      <table>
+        <thead><tr><th>Tooth</th><th>Range</th></tr></thead>
+        <tbody>
+          <tr><td>Central incisor</td><td>6 – 9 mo</td></tr>
+          <tr><td>Lateral incisor</td><td>7 – 12 mo</td></tr>
+          <tr><td>First molar</td><td>12 – 14 mo</td></tr>
+          <tr><td>Canine</td><td>17 – 18 mo</td></tr>
+          <tr><td>Second molar</td><td>20 – 30 mo</td></tr>
+        </tbody>
+      </table>
+      <p class="erupt-note"><b>Rule 1:</b> central incisors appear earlier in the lower jaw; lateral incisors appear earlier in the upper jaw.<br>
+      <b>Shedding:</b> deciduous roots begin resorbing from the 4th year; teeth are shed between 6 and 12 years.</p>
     </details>`;
 }
 
