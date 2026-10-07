@@ -140,6 +140,27 @@ canvas { display: block; position: fixed; inset: 0; transition: opacity 0.2s; }
   border: 1px solid #262626; background: #0f0f0f; color: #333; }
 .chart .cell.present { background: #1a3a24; color: #4ade80;
   border-color: #4ade80; }
+
+.erupt-ref { margin: 8px 0; background: #0f1a12;
+  border: 1px solid #2a4a32; border-radius: 8px;
+  font-size: 0.75em; }
+.erupt-ref summary { padding: 8px 12px; cursor: pointer;
+  color: #4ade80; font-weight: 600; list-style: none; }
+.erupt-ref summary::-webkit-details-marker { display: none; }
+.erupt-ref summary::before { content: "▸ "; color: #666; }
+.erupt-ref[open] summary::before { content: "▾ "; }
+.erupt-ref table { width: 100%; border-collapse: collapse;
+  margin: 0 0 6px; }
+.erupt-ref th, .erupt-ref td { padding: 4px 12px; text-align: left;
+  border-top: 1px solid #1c2e22; }
+.erupt-ref th { color: #888; font-weight: 500; font-size: 0.9em; }
+.erupt-ref td { color: #d8e8d8; }
+.erupt-ref td:last-child { color: #4ade80; font-weight: 600;
+  text-align: right; font-variant-numeric: tabular-nums; }
+.erupt-ref .erupt-note { padding: 6px 12px 8px; margin: 0;
+  color: #8ba894; font-size: 0.9em; line-height: 1.4;
+  border-top: 1px solid #1c2e22; }
+.erupt-ref .erupt-note b { color: #4ade80; }
 </style>
 </head>
 <body>

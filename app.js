@@ -195,7 +195,7 @@ function switchTab(name) {
   for (const k in panels) panels[k].classList.toggle('hidden', k !== name);
   document.querySelectorAll('#tabs button').forEach(b =>
     b.classList.toggle('active', b.dataset.tab === name));
-  canvas.style.opacity = (name === 'test') ? '0.12' : '1';
+  canvas.style.display = (name === 'learn') ? 'block' : 'none';
   if (name === 'learn')    renderLearn();
   if (name === 'practice') startPractice();
   if (name === 'test')     startTest();
@@ -395,6 +395,42 @@ function startPractice() {
   renderPractice();
 }
 
+function practiceChart(age) {
+  const set = presentSet(age);
+  const row = slots => slots.map(s => {
+    const f = slotFdi(s, set);
+    return `<div class="cell ${f ? 'present' : ''}">${f || ''}</div>`;
+  }).join('');
+  return `
+    <div class="chart">
+      <div class="row">${row(SLOTS.upperR)}</div>
+      <div class="row">${row(SLOTS.upperL)}</div>
+      <div class="row">${row(SLOTS.lowerR)}</div>
+      <div class="row">${row(SLOTS.lowerL)}</div>
+    </div>`;
+}
+
+function eruptionTable() {
+  return `
+    <details class="erupt-ref">
+      <summary>Eruption table (from the book)</summary>
+      <table>
+        <thead><tr><th>Tooth</th><th>Range</th></tr></thead>
+        <tbody>
+          <tr><td>Central incisor</td><td>6 – 8 yr</td></tr>
+          <tr><td>Lateral incisor</td><td>7 – 9 yr</td></tr>
+          <tr><td>First molar</td><td>6 – 7 yr</td></tr>
+          <tr><td>First bicuspid</td><td>9 – 11 yr</td></tr>
+          <tr><td>Second bicuspid</td><td>10 – 12 yr</td></tr>
+          <tr><td>Canine</td><td>11 – 12 yr</td></tr>
+          <tr><td>Second molar</td><td>12 – 14 yr</td></tr>
+          <tr><td>Third molar</td><td>17 – 25 yr</td></tr>
+        </tbody>
+      </table>
+      <p class="erupt-note"><b>Rule 2:</b> lower teeth erupt about 1 year earlier than their upper counterparts, except lateral incisors (upper earlier).</p>
+    </details>`;
+}
+
 function renderPractice() {
   const host = document.getElementById('practice-content');
   const present = Array.from(presentSet(P.age));
@@ -404,9 +440,12 @@ function renderPractice() {
   const trueHi = b.next.length ? Math.min(...b.next.map(f => ALL[f].range[1])) : null;
 
   host.innerHTML = `
+    <div style="font-size:0.72em;color:#8ba894;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px">Chart — teeth present</div>
+    ${practiceChart(P.age)}
+    ${eruptionTable()}
     <div class="step">
       <h3>Step 1 · Which tooth erupted most recently?</h3>
-      <p>Of the teeth visible on the jaw, which one is latest in the book's eruption order?</p>
+      <p>Of the teeth shown in the chart, which one is latest in the book's eruption order?</p>
       <div class="fdi-pick" id="pick-last">
         ${present.map(f => `<button data-fdi="${f}" ${P.last===f?'class="picked"':''}>${f}</button>`).join('')}
       </div>
@@ -414,13 +453,13 @@ function renderPractice() {
     ${P.last ? `
     <div class="step">
       <h3>Step 2 · Lower bound</h3>
-      <p>From memory: what is the earliest age at which <b>${P.last}</b> appears?</p>
+      <p>Using the table above: what is the earliest age at which <b>${P.last}</b> appears?</p>
       <input type="number" step="0.5" id="p-lo" value="${P.loTyped}" placeholder="yr">
     </div>` : ''}
     ${P.loTyped !== '' && pending.length ? `
     <div class="step">
       <h3>Step 3 · Which tooth is next due?</h3>
-      <p>Among the FDI codes not on the jaw, which erupts earliest in the book order?</p>
+      <p>Among the FDI codes NOT in the chart, which erupts earliest in the book order?</p>
       <div class="fdi-pick" id="pick-next">
         ${pending.map(f => `<button data-fdi="${f}" ${P.next===f?'class="picked"':''}>${f}</button>`).join('')}
       </div>
@@ -428,21 +467,17 @@ function renderPractice() {
     ${P.loTyped !== '' && !pending.length ? `
     <div class="step">
       <h3>Step 3 · Upper bound</h3>
-      <p>No textbook tooth is next due — every tooth is on the jaw. In that case <b>only a minimum age</b> can be given.</p>
+      <p>No textbook tooth is next due — every tooth is on the chart. In that case <b>only a minimum age</b> can be given.</p>
     </div>` : ''}
     ${P.next ? `
     <div class="step">
       <h3>Step 4 · Upper bound</h3>
-      <p>From memory: what is the latest age by which <b>${P.next}</b> should have appeared?</p>
+      <p>Using the table: what is the latest age by which <b>${P.next}</b> should have appeared?</p>
       <input type="number" step="0.5" id="p-hi" value="${P.hiTyped}" placeholder="yr">
     </div>` : ''}
-    ${P.next && P.hiTyped !== '' ? `
+    ${(P.next && P.hiTyped !== '') || (P.loTyped !== '' && !pending.length) ? `
     <div class="step">
       <h3>Step 5 · Confirm</h3>
-      <button class="primary" id="p-reveal">Reveal</button>
-    </div>` : ''}
-    ${P.loTyped !== '' && !pending.length ? `
-    <div class="step">
       <button class="primary" id="p-reveal">Reveal</button>
     </div>` : ''}
     <div id="practice-result"></div>`;
