@@ -28,6 +28,7 @@ canvas { display: block; position: fixed; inset: 0; transition: opacity 0.2s; }
   border-radius: 14px; padding: 10px; backdrop-filter: blur(14px);
   max-height: 42vh; overflow-y: auto; }
 .panel.hidden { display: none; }
+body.no-jaw .panel { max-height: calc(100vh - 64px); }
 
 /* Info popover — floats at top of jaw */
 #info-pop {

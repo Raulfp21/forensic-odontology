@@ -196,6 +196,7 @@ function switchTab(name) {
   document.querySelectorAll('#tabs button').forEach(b =>
     b.classList.toggle('active', b.dataset.tab === name));
   canvas.style.display = (name === 'learn') ? 'block' : 'none';
+  document.body.classList.toggle('no-jaw', name !== 'learn');
   if (name === 'learn')    renderLearn();
   if (name === 'practice') startPractice();
   if (name === 'test')     startTest();
